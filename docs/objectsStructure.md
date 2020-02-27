@@ -10,13 +10,27 @@ Variables:
 - Root node: this node will support the whole tree structure
 
 - Best fitness score (so we dont have to recompute the fitness if we already computed it)
-- Best ubication
+- ~~Best ubication (Best ubication should be for a specific DNA, so this should be an array, and probably it's not optimal to save an array for every organism)~~
 
 Methods:
 
 - cross over and offspring given a certain organism
 - mutation of an organism
 - compute fitness of an organism given a set of positive and negative data
+
+### OrganismFactory
+
+The organism factory can create all necessary elements to make an organism(PSSMObjects and ConnectorObjects)
+
+Variables:
+- ID (we can identify each organism by ID)
+ 
+
+Methods:
+- get a new Organism (builds the full tree structure)
+- get a new PSSM Object (creates a PSSM object)
+- get a new Connector objects (creates a connector and the corresponding PSSMObjects)
+
 
 
 ### Node
@@ -30,14 +44,13 @@ The Node class will contain abstract methods for: mutation, compute energy...
 Meta-parameters:
 
 - Width: length of DNA recognition region (bp)
-- Depth: simulated number of sequences making up the motif (i.e. max counts)
+- ~~Depth: simulated number of sequences making up the motif (i.e. max counts)~~
 
 Variables:
-- ID_origin: Specifies the ID from the parent organism
 - numpy array PWM
-- numpy array PSSM (not a Biopython motif, it reduces mutation and crossover possibilities, in my opinion)
-- last position
-- last score
+- numpy array PSSM (not a Biopython motif, but can be reinspected)
+- ~~last position (this should be an array, so better to have it in another location)~~
+- ~~last score (if negative datasets change over the execution, last score will "almost" never have the same value)~~
 Methods:
 
 - Mutation sub-methods
@@ -50,29 +63,24 @@ Methods:
   - bio-motif methods: pwm, pssm, score...
   - compute energy (return (best) binding energy (i.e. score) and position on sequence)
   
-  - get the similarity between an organism and parents(return similarity to parent A and parent B)
-  - set origin to organism origin to all connections
-
 
 ### C objects (Connectors)
 
 Variables:
 
-- ID_origin: Specifies the ID from the parent organism
 - mu and sigma: mean "ideal" distance and "variance" (smoothness) for distance among connected element
 - Two connected nodes
-- last best position
-- last best score
 
 Methods:
 
 - Mutation sub-methods
   - Point mutation (alter C μ or σ by rand(sign) * int(rand(τMC)))
-  - Swap connecting elements within connector
+  - **Swap connecting elements within connector**
 
 - Operational methods
   - compute energy (return binding energy, given connected elements, and position on sequence)
-  - set origin to organism origin
+
+
 
 ## Non-object functions and main variables
 
@@ -80,7 +88,7 @@ Variables:
   - Unmutable positive DNA dataset
   - Unmutable negative DNA dataset
   - Collection of organisms (population)
-
+  - a matrix to save the best position of a given PSSMObject to a DNA sequence **(To check: this could save some time)**
 Methods:
   - generate a random organism (can be called multiple times to get the initial population)
   - recombine two organisms (selecting a random node from each organism and swapping pointers)
