@@ -1,12 +1,9 @@
-# Node object
+# Node abstract object to support conector and recognizing objects
+
 import random
-DEFAULT_LENGTH = 5
 
 class Node:
     
     def __init__(self):
         self.ID = random.randint(0,100)
-
-    def doNothing(self):
-        print("Doing nothing... from Node Object.")
 

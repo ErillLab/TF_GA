@@ -8,7 +8,8 @@ class OrganismObject():
         self.ID = ID
         self.rootNode = rootNode
         self.bestFitnessScore = None
-
+    
+    # Setters an getters
     def setRootNode(self, rootNode):
         self.rootNode = rootNode
     
@@ -16,20 +17,21 @@ class OrganismObject():
         return self.ID
 
 
-    # Mutates a part of the organism
+    # TODO: Mutates a part of the organism
     def mutate(self):
         print("Mutating organism {}".format(self.ID))
     
-    # Return the fitness of the organism for a given DNA sequence
+    # TODO: Return the fitness of the organism for a given DNA sequence
     def getBestAllFitness(self, sDNA):
 
         return 0
 
-    # Return the total Fitness for an array of DNA sequences and the fitness method 
+    # TODO: Return the total Fitness for an array of DNA sequences and the fitness method 
     def getScore(self, aDNA):
         
         return 0
 
+    # Prints the whole tree data structure
     def print(self):
         print("Organism " + str(self.ID))
         print()

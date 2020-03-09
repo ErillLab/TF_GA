@@ -5,11 +5,11 @@ from objects.nodeObject import Node
 
 class ConnectorObject(Node):
 
-    # Connector constructor
+    # Connector constructor gets mu, sigma and can get the two initial nodes.
     def __init__(self, mu, sigma, node1 = None, node2 = None):
         Node.__init__(self)
-        self.mu = mu # Mean discance
-        self.sigma = sigma # Variance between elements
+        self.mu = mu            # Mean discance
+        self.sigma = sigma      # Variance between elements
         self.node1 = node1
         self.node2 = node2
 
@@ -26,15 +26,14 @@ class ConnectorObject(Node):
     def setNode2(self, node2):
         self.node2 = node2
     
-    #Operational functions
-    def doNothing(self):
-        print("Doing nothing... from P Object.")
-
+    # TODO: implement
     def mutate(self):
         print("Mutating Connector..." + str(self.ID))
         self.node1.mutate()
         self.node2.mutate()
+
+    # It prints the connector mu, sigma values and its children values in tree structure
     def print(self, distance):
-        print("--"*distance +"Cnnection: "+str(self.mu) + " " + str(self.sigma))
+        print("----"*distance +"Connection: "+str(self.mu) + " " + str(self.sigma))
         self.node1.print(distance + 1)
-        self.node2.print(distance+ 1)
+        self.node2.print(distance + 1)
