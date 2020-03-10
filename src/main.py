@@ -7,7 +7,11 @@ import random
 import copy
 
 POPULATION_LENGTH = 10
-POSITIVE_FILENAME = '61383_ref_mLynCan4_v1.p_chrA1.fa'
+DATASETS_BASE_DIR = 'datasets/'
+POSITIVE_FILENAME = 'myFakeDataset1.fa'
+NEGATIVE_FILENAME = 'myFakeDataset2.fa'
+
+MAX_FIT_SEQUENCES = 50
 
 organismPopulation = []
 
@@ -15,48 +19,88 @@ positiveDataset = []
 negativeDataset = []
 
 threshold = 5
-
+pm = 0.2
 
 def main():
     
     # TEST READ  DATASET
     # mySeq = readFastaFile(POSITIVE_FILENAME)
     # print(len(mySeq))
+    positiveDataset = readFastaFile(POSITIVE_FILENAME)
+    negativeDataset = readFastaFile(NEGATIVE_FILENAME)
 
+    #print(positiveDataset)
+    #print(negativeDataset)
     # Generate initial population
     organismFactory = OrganismFactory()
     for i in range(POPULATION_LENGTH):
         organismPopulation.append(organismFactory.getOrganism())
     print("Total population: "+str(len(organismPopulation)))
-    
-    algo = 10
+    maxScore = float("-inf")
+    lastMaxScore = 0.0 
     # Main loop, it iterates untill organisms do not get a significant change.
-    while algo > threshold:
+    while abs(lastMaxScore - maxScore) > threshold:
         
         # Shuffle population
         random.shuffle(organismPopulation)
-
+        random.shuffle(negativeDataset)
+        random.shuffle(positiveDataset)
+        lastMaxScore = maxScore    
+        maxScore = float("-inf")
         # Iterate over pairs of organisms
         for i in range(0, len(organismPopulation) - 1, 2):
-            print(i)
             org1 = organismPopulation[i]
             org2 = organismPopulation[i+1]
-            id1 = org1.getID()            
-            id2 = org2.getID()            
-            print("Pareja: {} {}".format(id1, id2))
+            print("Parents: {} {}".format(org1.ID, org2.ID))
+            # Cross parents to get childs
             children = combineOrganisms(org1, org2, organismFactory)
-            org1.print()
-            org2.print()
-            for child in children:
-                child["child"].print()
+            
+            # Match with its closest child
+            # There are 2 possible combinations p1-c1, p2-c2 & p1-c2, p2-c1
+            # We select a combination based on a sum of similarities in combinations
+            combination1 = children[0]["simOrg1"] + children[1]["simOrg2"] # Match the first parent to first child and second parent to second child 
+            combination2 = children[0]["simOrg2"] + children[1]["simOrg1"] # Match the first parent to second child and second parent to first child
+            pairChildren = []
+            
+            #TODO: Mutate children and parents with a probability pm
 
-            print("---- objects ---")
-            print(children)
+            if combination1 > combination2:
+                pairChildren.append((org1, children[0]["child"]))
+                pairChildren.append((org2, children[1]["child"]))
+            else:
+                pairChildren.append((org1, children[1]["child"]))
+                pairChildren.append((org2, children[0]["child"]))
+            for p, c in pairChildren:
+                print("Fighting: {} {}".format(p.ID, c.ID))
+            # "Fight" two organisms
+            for j in range(len(pairChildren)):
 
-            break
-        # Update organisms changes
-        break
-        algo -= 4
+                firstOrganism = pairChildren[j][0]
+                secondOrganism = pairChildren[j][1]
+
+                score1 = firstOrganism.getScore(positiveDataset[:MAX_FIT_SEQUENCES]) / firstOrganism.getScore(negativeDataset[:MAX_FIT_SEQUENCES])
+                score2 = secondOrganism.getScore(positiveDataset[:MAX_FIT_SEQUENCES]) / secondOrganism.getScore(negativeDataset[:MAX_FIT_SEQUENCES])
+                
+                if(score1 > score2):
+                    organismPopulation[i+j] = firstOrganism
+                    print("Wins {} - {}".format(firstOrganism.ID, score1))
+                    if score1 > maxScore:
+                        maxScore = score1
+                else:
+                    organismPopulation[i+j] = secondOrganism
+                    print("Wins {} - {}".format(secondOrganism.ID, score2))
+                    if score2 > maxScore:
+                        maxScore = score2
+                #END FOR j
+            
+            # END FOR i
+
+        # Show IDs of final array
+        print("-"*10)
+        for i in range(len(organismPopulation)):
+            print(str(organismPopulation[i].ID))
+        print("-"*10)
+        # END WHILE
 
 # Gets 2 organisms, and returns 2 children with format (child, similarity to parent 1, similarity to parent 2)
 def combineOrganisms(organism1, organism2, organismFactory):
@@ -92,7 +136,8 @@ def combineOrganisms(organism1, organism2, organismFactory):
     parentNode1 = child1.getParent(node1.ID)
     parentNode2 = child2.getParent(node2.ID)
     
-    #Set nodes in 
+    # Swap nodes
+    # Set nodes in oposite children 
     if parentNode1[0]:
         # Its the root node of child 1
         child1.setRootNode(node2)
@@ -114,19 +159,6 @@ def combineOrganisms(organism1, organism2, organismFactory):
         else:
             # Child on left side
             parentNode2[1].setNode2(node1)
-
-
-    # Swap nodes
-    #print("NODE1.ID = {}\nNODE2.ID = {}".format(node1.ID, node2.ID)) 
-    #child1.setNode(node2, node1.ID)
-    #print("NODE1.ID = {}\nNODE2.ID = {}".format(node1.ID, node2.ID)) 
-    #child2.setNode(node1, node2.ID)
-    #print("NODE1.ID = {}\nNODE2.ID = {}".format(node1.ID, node2.ID)) 
-    
-    #tmp = node1
-    #node1 = node2
-    #node2 = tmp
-    
 
     nNodesChild1 = child1.countNodes()
     nNodesChild2 = child2.countNodes()
@@ -151,7 +183,8 @@ def combineOrganisms(organism1, organism2, organismFactory):
 # Reads a fasta files and return an array of DNA sequences (strings)
 def readFastaFile(filename):
     dataset = []
-    fasta_sequences = SeqIO.parse(open(filename), 'fasta')    
+
+    fasta_sequences = SeqIO.parse(open(DATASETS_BASE_DIR + filename), 'fasta')    
 
     for fasta in fasta_sequences:
         dataset.append(str(fasta.seq))

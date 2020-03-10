@@ -1,6 +1,6 @@
 # Oragnism object
 # It allocates the full data structure
-
+import random
 class OrganismObject():
 
     # Organism constructor
@@ -30,8 +30,12 @@ class OrganismObject():
 
     # TODO: Return the total Fitness for an array of DNA sequences and the fitness method 
     def getScore(self, aDNA):
-        
-        return 0
+        score = 0
+        for sDNA in aDNA:
+            score += self.getBestAllFitness(sDNA)
+
+
+        return random.randint(1,100)
 
     # Returns a node Number N based on in-order search. [0-N)
     def getNode(self, objective):
