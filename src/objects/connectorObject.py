@@ -2,7 +2,8 @@
 # Connects two nodes at an specific distance
 
 from objects.nodeObject import Node
-
+import numpy as np
+import random 
 class ConnectorObject(Node):
 
     # Connector constructor gets mu, sigma and can get the two initial nodes.
@@ -60,8 +61,28 @@ class ConnectorObject(Node):
             checkNode = self.node2.getParent(ID)
         return checkNode
 
+    # returns an array of all pssm objects of the organism 
+    def getAllPssm(self, aPssms):
+        aPssms = self.node1.getAllPssm(aPssms)
+        aPssms = self.node2.getAllPssm(aPssms)
+        return aPssms
 
+    # calculate best all strategy for pssm position based on a table of pssm scores.
+    def getBestAll(self, table):
+        
+        tau = 8
+        
+        eNode1, distance1 = self.node1.getBestAll(table)
+        eNode2, distance2 = self.node2.getBestAll(table)
+        
+        numerator = (self.mu - abs(distance1-distance2))**2
+        exponent = - numerator / (1 + 2 * (self.sigma ** 2))
+        eConnector = (tau/np.log10(10 + self.sigma ** 2)) * np.exp(exponent)
+        
+        energy = eNode1 + eNode2 + eConnector
+        distance = (distance1 + distance2) / 2
 
+        return energy, distance 
 
     # Sets the node on a given ID
     def setNode(self, node, ID):
@@ -74,15 +95,40 @@ class ConnectorObject(Node):
             self.node1.setNode(node, ID)    
             self.node2.setNode(node, ID)    
 
+    def resetID(self, newID):
+        newID = self.node1.resetID(newID)
+        self.ID = newID
+        newID = self.node2.resetID(newID + 1)
+        return newID
 
-    # TODO: implement
-    def mutate(self):
-        print("Mutating Connector..." + str(self.ID))
-        self.node1.mutate()
-        self.node2.mutate()
+    # mutation for a connector
+    def mutate(self, orgFactory):
+        #print("Mutating Connector..." + str(self.ID))
+        #print("Start: mu: {} sigma: {} ID1: {} ID2: {}".format(self.mu, self.sigma, self.node1.ID, self.node2.ID))
+        # TODO: How to mutate, based on probability maybe? 
+        if random.random() < 0.5:
+
+            tau = 3
+
+            # Alter sigma
+            newSigma = self.sigma + random.randint(-tau, tau)
+            self.sigma = newSigma
+
+            # Alter mu
+            newMu = self.mu + random.randint(-tau, tau)
+            self.mu = newMu
+        else:
+            # Swap connectors
+            tmpNode = self.node1
+            self.node1 = self.node2
+            self.node2 = tmpNode
+
+        #print("End:   mu: {} sigma: {} ID1: {} ID2: {} \n".format(self.mu, self.sigma, self.node1.ID, self.node2.ID))
+        #self.node1.mutate()
+        #self.node2.mutate()
 
     # It prints the connector mu, sigma values and its children values in tree structure
     def print(self, distance):
         self.node1.print(distance + 1)
-        print("----"*distance +"Connection: "+str(self.ID)) #+str(self.mu) + " " + str(self.sigma))
+        print("----    "*distance +"Connection: "+str(self.ID)+" mu: {} sigma: {}".format(self.mu, self.sigma))
         self.node2.print(distance + 1)

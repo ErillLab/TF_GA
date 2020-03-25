@@ -2,6 +2,10 @@
 # Saves al specific PSSM data structure
 
 from objects.nodeObject import Node
+import numpy as np
+import random
+
+PSEUDO_COUNT = 1e-20
 
 class PssmObject(Node):
 
@@ -28,20 +32,112 @@ class PssmObject(Node):
     def getParent(self, ID):
         return None
 
-    # TODO: Mutate PSSM object
-    def mutate(self):
-        print("Mutating..." + str(self.ID))
-        return 0
+    # Mutate PSSM object
+    def mutate(self, orgFactory):
 
-    # TODO: Calculate self.pssm based on self.pwm
+        #print("Mutating PSSM..." + str(self.ID))
+        randNum = random.random()
+        #print("Start: randum = {}\n".format(randNum)+str(self.pwm))
+
+        if randNum < 0.25:
+            
+            #Randomize PSSM column
+            newCol = orgFactory.getPwmColumn()
+            # Select a random col in self.pwm
+            columnToUpdate = random.randint(0, self.length - 1)
+            # Insert it in that position
+            self.pwm[columnToUpdate] = newCol
+        elif randNum < 0.5:
+            # Flip two columns
+
+            col1, col2 = random.sample(range(self.length),2)
+            # Select two random columns and swap it
+            tmpCol = self.pwm[col1]
+            self.pwm[col1] = self.pwm[col2]
+            self.pwm[col2] = tmpCol
+            
+
+        elif randNum < 0.75:
+            # Flip two rows
+            # Save values of two rows and swap it (its gonna be one by one)
+            bases = ['a','c','g','t']
+            random.shuffle(bases)
+            base1, base2 = bases[:2]
+        
+            # Swap rows
+            for i in range(self.length):
+                tmpBase = self.pwm[i][base1]
+                self.pwm[i][base1] = self.pwm[i][base2]
+                self.pwm[i][base2] = tmpBase
+
+        else:
+            #Shift to right/left
+            # See np.roll(array, positions)
+            shift = 1
+            negativeShiftProbability = 0.5
+            if random.random() < negativeShiftProbability:
+                shift = -shift
+            self.pwm = np.roll(self.pwm, shift)
+        #print("END:\n"+str(self.pwm))
+
+        self.recalculatePSSM()
+
+    # Calculate self.pssm based on self.pwm
     def recalculatePSSM(self):
-        self.pssm = self.pssm
+        tmpPSSM = []
+        for column in self.pwm:
+            # From pwm to pssm
+            # log2(base/0.25) = log2(4.0*base)
+            decimals = 2
+            tmpBases = []
+            # cast to float so round function does not become crazy
+            tmpBases.append(float(np.log2(4.0 * column["c"] + PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["t"] + PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["g"] + PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["a"] + PSEUDO_COUNT)))
+
+            tmpPSSM.append({
+                "c":round(tmpBases[0], decimals), 
+                "t":round(tmpBases[1], decimals), 
+                "g":round(tmpBases[2], decimals), 
+                "a":round(tmpBases[3], decimals)
+                })
+        self.pssm = np.array(tmpPSSM)
+
+    # Searchs himself on the table and returns position and score
+    def getBestAll(self, table):
+        for ID, score, position, length in table:
+            if self.ID == ID:
+                #Maybe add half the length so the position is centered 
+                return score, float(position) 
+        return 0, 0
+
+    # Adds himself as a pssm recognizer    
+    def getAllPssm(self, aPssms):
+        aPssms.append(self)
+        return aPssms
+
+    # returns a score to that DNA secuence
+    def getScore(self, sDNA):
+        # gets a score from pssm
+        score = 0
+        if len(sDNA) != len(self.pssm):
+            return -3000
+
+        for i in range(len(sDNA)):
+            score += self.pssm[i][sDNA[i]]
+        return score
 
     # Nodes cannot be setted from recognizer objects
     def setNode(self, node, ID):
         return 0
 
+    def resetID(self, newID):
+        self.ID = newID
+        return newID + 1
+
     # TODO: Print PSSM object (Matrix)
     def print(self, distance):
-        print("----"*distance + "Node "+str(self.ID))#+ str(self.pwm))
+        print("----    "*distance + "Node "+str(self.ID))
+        print(str(self.pssm))
 

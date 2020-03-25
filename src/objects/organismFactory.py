@@ -8,11 +8,11 @@ import numpy
 INITIAL_PROBABILITY = 0.9
 PROBABILITY_REDUCED_FACTOR = 0.5
 
-MIN_MU = 0
-MAX_MU = 50
+MIN_MU = -20
+MAX_MU = 20
 
 MIN_SIGMA = 0
-MAX_SIGMA = 25
+MAX_SIGMA = 10
 # The number of positions, PSSM object can recognize
 PWM_LENGTH = 4
 
