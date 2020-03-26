@@ -5,18 +5,21 @@ from objects.nodeObject import Node
 import numpy as np
 import random
 
-PSEUDO_COUNT = 1e-20
-
 class PssmObject(Node):
 
         
     # PSSM Constructor
-    def __init__(self, pwm):
+    def __init__(self, pwm, config):
         Node.__init__(self)
         self.length = len(pwm) #length of the numpy array
         self.pwm = pwm # numpy array of dictionaries
         self.pssm = None
-
+        self.MUTATE_PROBABILITY_RANDOM_COL = config["MUTATE_PROBABILITY_RANDOM_COL"]
+        self.MUTATE_PROBABILITY_FLIP_COLS = config["MUTATE_PROBABILITY_FLIP_COL"]
+        self.MUTATE_PROBABILITY_FLIP_ROWS = config["MUTATE_PROBABILITY_FLIP_ROW"]
+        self.MUTATE_PROBABILITY_SHIFT_LEFT = config["MUTATE_PROBABILITY_SHIFT_LEFT"]
+        self.MUTATE_PROBABILITY_SHIFT_RIGHT = config["MUTATE_PROBABILITY_SHIFT_RIGHT"]
+        self.PSEUDO_COUNT = config["PSEUDO_COUNT"]
         # It first calculates PSSM Matrix based on  pwm
         self.recalculatePSSM()
 
@@ -39,7 +42,7 @@ class PssmObject(Node):
         randNum = random.random()
         #print("Start: randum = {}\n".format(randNum)+str(self.pwm))
 
-        if randNum < 0.25:
+        if random.random() < self.MUTATE_PROBABILITY_RANDOM_COL:
             
             #Randomize PSSM column
             newCol = orgFactory.getPwmColumn()
@@ -47,7 +50,8 @@ class PssmObject(Node):
             columnToUpdate = random.randint(0, self.length - 1)
             # Insert it in that position
             self.pwm[columnToUpdate] = newCol
-        elif randNum < 0.5:
+
+        if random.random() < self.MUTATE_PROBABILITY_FLIP_COLS:
             # Flip two columns
 
             col1, col2 = random.sample(range(self.length),2)
@@ -57,7 +61,7 @@ class PssmObject(Node):
             self.pwm[col2] = tmpCol
             
 
-        elif randNum < 0.75:
+        if random.random() < self.MUTATE_PROBABILITY_FLIP_ROWS:
             # Flip two rows
             # Save values of two rows and swap it (its gonna be one by one)
             bases = ['a','c','g','t']
@@ -70,15 +74,13 @@ class PssmObject(Node):
                 self.pwm[i][base1] = self.pwm[i][base2]
                 self.pwm[i][base2] = tmpBase
 
-        else:
+        if random.random() < self.MUTATE_PROBABILITY_SHIFT_LEFT:
             #Shift to right/left
-            # See np.roll(array, positions)
-            shift = 1
-            negativeShiftProbability = 0.5
-            if random.random() < negativeShiftProbability:
-                shift = -shift
-            self.pwm = np.roll(self.pwm, shift)
-        #print("END:\n"+str(self.pwm))
+            self.pwm = np.roll(self.pwm, -1)
+
+        if random.random() < self.MUTATE_PROBABILITY_SHIFT_RIGHT:
+            #Shift to right/left
+            self.pwm = np.roll(self.pwm, 1)
 
         self.recalculatePSSM()
 
@@ -91,10 +93,10 @@ class PssmObject(Node):
             decimals = 2
             tmpBases = []
             # cast to float so round function does not become crazy
-            tmpBases.append(float(np.log2(4.0 * column["c"] + PSEUDO_COUNT)))
-            tmpBases.append(float(np.log2(4.0 * column["t"] + PSEUDO_COUNT)))
-            tmpBases.append(float(np.log2(4.0 * column["g"] + PSEUDO_COUNT)))
-            tmpBases.append(float(np.log2(4.0 * column["a"] + PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["c"] + self.PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["t"] + self.PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["g"] + self.PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["a"] + self.PSEUDO_COUNT)))
 
             tmpPSSM.append({
                 "c":round(tmpBases[0], decimals), 
@@ -122,6 +124,7 @@ class PssmObject(Node):
         # gets a score from pssm
         score = 0
         if len(sDNA) != len(self.pssm):
+            print("Not a valid length!")
             return -3000
 
         for i in range(len(sDNA)):
@@ -136,8 +139,12 @@ class PssmObject(Node):
         self.ID = newID
         return newID + 1
 
-    # TODO: Print PSSM object (Matrix)
+    # Print PSSM object (Matrix)
     def print(self, distance):
         print("----    "*distance + "Node "+str(self.ID))
         print(str(self.pssm))
-
+    
+    # Exports pssm to a file
+    def export(self, exportFile, level):
+        exportFile.write("\n"+"----    "*level + "Node "+str(self.ID))
+        exportFile.write("\n"+str(self.pssm))

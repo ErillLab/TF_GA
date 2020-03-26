@@ -5,10 +5,11 @@ import random
 class OrganismObject():
 
     # Organism constructor
-    def __init__(self, ID = None, rootNode = None):
+    def __init__(self, ID, conf, rootNode = None):
         self.ID = ID
         self.rootNode = rootNode
         self.bestFitnessScore = None
+        self.CUMULATIVE_FIT_METHOD = conf["CUMULATIVE_FIT_METHOD"]
     
     # Setters an getters
     def setRootNode(self, rootNode):
@@ -61,7 +62,7 @@ class OrganismObject():
             pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
 
         # This is to see how its going... not definitive
-        '''
+        ''' 
         verbose = random.random()<0.001
         if verbose:
             print("\n{}".format(sDNA))
@@ -106,17 +107,17 @@ class OrganismObject():
         return False
 
     # Return the total Fitness for an array of DNA sequences and the fitness method (for now only one) 
-    def getScore(self, aDNA, method):
+    def getScore(self, aDNA):
         
         score = 0
         # sum method returns the sum of all fitness to DNA sequences
-        if method.lower() == "sum":
+        if self.CUMULATIVE_FIT_METHOD == "sum":
 
             for sDNA in aDNA:
                 score+=self.getBestAllFitness(sDNA.lower())
 
         # mean method returns the mean of all fitness to SNA sequences
-        elif method.lower() == "mean":
+        elif self.CUMULATIVE_FIT_METHOD == "mean":
 
             scores = []
             for sDNA in aDNA:
@@ -178,3 +179,68 @@ class OrganismObject():
         print()
         print("***** Organism {} *****".format(self.ID))
         self.rootNode.print(1)
+
+    # Exports the whole tree data structure
+    def export(self, filename):
+        organismFile = open(filename, "w+")
+        organismFile.write("***** Organism {} *****".format(self.ID))
+
+        self.rootNode.export(organismFile, 0)
+        organismFile.write("\n")
+        organismFile.close()
+
+    # Exports all DNA sequences organism binding to a file
+    def exportResults(self, aDNA, filename):
+
+        #Sort the array, so its always shown in the same order
+        aDNA.sort()
+
+        resultsFile = open(filename, "w+")
+
+        for sDNA in aDNA:
+            
+            sDNA = sDNA.lower()
+            sequenceLength = len(sDNA)
+
+            # get all PSSM recognizers
+            aPssmObjects = self.rootNode.getAllPssm([])
+
+            #check position where it fits (position)
+            pssmPositionScoreTable = []
+
+            # Go through all PSSM objects to check where it fits
+            for pssm in aPssmObjects:
+                pssmLength = pssm.length
+                maxScore = float("-inf")    
+                position = 0
+
+                # Check every position possible on the sequence
+                for pos in range(sequenceLength - pssmLength):
+                    score = pssm.getScore(sDNA[pos:pos+pssmLength])
+
+                    # Update max score if the actual score is acctually better
+                    # Also check that the position is not overlapping other pssm object
+                    if score > maxScore and not self.isOverlapping(pos, pssmLength,
+                        pssmPositionScoreTable):
+                    
+                        maxScore = score
+                        position = pos
+
+                # Add to a table the ID, maxScore and position of a pssm object
+                pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
+            
+            resultsFile.write("\n{}\n".format(sDNA))
+            mapPositions = " "*len(sDNA)
+            
+            for ids, sc, pos, length in pssmPositionScoreTable:
+                strId = str(ids)
+                while len(strId) < length:
+                    strId += "*"
+                mapPositions = mapPositions[0:pos] + strId + mapPositions[pos+length:]
+                
+            resultsFile.write(mapPositions + "\n")
+
+        resultsFile.close()
+                
+
+

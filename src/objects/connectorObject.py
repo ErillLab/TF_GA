@@ -7,10 +7,17 @@ import random
 class ConnectorObject(Node):
 
     # Connector constructor gets mu, sigma and can get the two initial nodes.
-    def __init__(self, mu, sigma, node1 = None, node2 = None):
+    def __init__(self, mu, sigma, config, node1 = None, node2 = None):
         Node.__init__(self)
         self.mu = mu            # Mean discance
         self.sigma = sigma      # Variance between elements
+        self.MUTATE_PROBABILITY_SIGMA = config["MUTATE_PROBABILITY_SIGMA"]
+        self.MUTATE_PROBABILITY_MU = config["MUTATE_PROBABILITY_MU"]
+        self.MUTATE_PROBABILITY_SWAP = config["MUTATE_PROBABILITY_SWAP"]
+        self.TAU = config["TAU"]
+        self.MUTATE_VARIANCE_SIGMA = config["MUTATE_VARIANCE_SIGMA"]
+        self.MUTATE_VARIANCE_MU = config["MUTATE_VARIANCE_MU"]
+
         self.node1 = node1
         self.node2 = node2
 
@@ -69,8 +76,8 @@ class ConnectorObject(Node):
 
     # calculate best all strategy for pssm position based on a table of pssm scores.
     def getBestAll(self, table):
-        
-        tau = 8
+        # This tau shows how much value we give to the connector fit 
+        tau = self.TAU
         
         eNode1, distance1 = self.node1.getBestAll(table)
         eNode2, distance2 = self.node2.getBestAll(table)
@@ -79,7 +86,9 @@ class ConnectorObject(Node):
         exponent = - numerator / (1 + 2 * (self.sigma ** 2))
         eConnector = (tau/np.log10(10 + self.sigma ** 2)) * np.exp(exponent)
         
-        energy = eNode1 + eNode2 + eConnector
+        #energy = eNode1 + eNode2 + eConnector
+        #print("N1:{} N2:{} C:{}".format(eNode1, eNode2, eConnector))
+        energy = (eNode1 + eNode2) * eConnector
         distance = (distance1 + distance2) / 2
 
         return energy, distance 
@@ -104,31 +113,30 @@ class ConnectorObject(Node):
     # mutation for a connector
     def mutate(self, orgFactory):
         #print("Mutating Connector..." + str(self.ID))
-        #print("Start: mu: {} sigma: {} ID1: {} ID2: {}".format(self.mu, self.sigma, self.node1.ID, self.node2.ID))
-        # TODO: How to mutate, based on probability maybe? 
-        if random.random() < 0.5:
-
-            tau = 3
-
+        if random.random() < self.MUTATE_PROBABILITY_SIGMA:
             # Alter sigma
-            newSigma = self.sigma + random.randint(-tau, tau)
-            self.sigma = newSigma
+            self.sigma += random.randint(-self.MUTATE_VARIANCE_SIGMA, self.MUTATE_VARIANCE_SIGMA)
 
+        if random.random() < self.MUTATE_PROBABILITY_MU:
             # Alter mu
-            newMu = self.mu + random.randint(-tau, tau)
-            self.mu = newMu
-        else:
+            self.mu += random.randint(-self.MUTATE_VARIANCE_MU, self.MUTATE_VARIANCE_MU)
+
+        if random.random() < self.MUTATE_PROBABILITY_SWAP:
             # Swap connectors
             tmpNode = self.node1
             self.node1 = self.node2
             self.node2 = tmpNode
-
-        #print("End:   mu: {} sigma: {} ID1: {} ID2: {} \n".format(self.mu, self.sigma, self.node1.ID, self.node2.ID))
-        #self.node1.mutate()
-        #self.node2.mutate()
 
     # It prints the connector mu, sigma values and its children values in tree structure
     def print(self, distance):
         self.node1.print(distance + 1)
         print("----    "*distance +"Connection: "+str(self.ID)+" mu: {} sigma: {}".format(self.mu, self.sigma))
         self.node2.print(distance + 1)
+
+
+    # Exports Connector data to the given file
+    def export(self, exportFile, level):
+        self.node1.export(exportFile, level + 1)
+        exportFile.write("\n"+"----    "*level +"Connection "+str(self.ID)+": mu: {} sigma: {}".format(self.mu, self.sigma))
+        self.node2.export(exportFile, level + 1)
+        

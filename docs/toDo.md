@@ -6,8 +6,8 @@
 
 - [ ] Complexity penalty (+ prob delete)
 - [ ] Check energy function
-- [ ] Independent parameters (+ JSON)
-- [ ] Increase connector tau
+- [x] Independent parameters (+ JSON)
+- [x] Increase connector tau
 - [ ] Check ETE3 python lib
 
 

@@ -5,31 +5,42 @@ import time
 from objects.organismFactory import OrganismFactory
 import random
 import copy
+import json
 
-POPULATION_LENGTH = 100
-DATASETS_BASE_DIR = 'datasets/'
-# POSITIVE_FILENAME = 'myFakeDataset1.fa'
-POSITIVE_FILENAME = 'positive_dataset.fas'
-# NEGATIVE_FILENAME = 'myFakeDataset2.fa'
-NEGATIVE_FILENAME = 'negative_dataset.fas'
 
-MAX_FIT_SEQUENCES = 50
-MIN_ITERATIONS = 5
+POPULATION_LENGTH = 0
+DATASET_BASE_PATH_DIR = '' 
+RESULT_BASE_PATH_DIR = '' 
+POSITIVE_FILENAME  = ''
+NEGATIVE_FILENAME  = ''
+JSON_CONFIG_FILENAME = "config.json"
+configOrganism = {}
+configOrganismFactory = {}
+configConnector = {}
+configPssm = {}
+
+MAX_SEQUENCES_TO_FIT = 0
+MIN_ITERATIONS = 0
+MIN_SCORE = 0
+
 organismPopulation = []
+
 
 positiveDataset = []
 negativeDataset = []
 
-threshold = 10
-pm = 0.05
+THRESHOLD = 0.0
+MUTATION_PROBABILITY = 0.0
 
 def main():
+
     
-    positiveDataset = readFastaFile(POSITIVE_FILENAME)
-    negativeDataset = readFastaFile(NEGATIVE_FILENAME)
+    positiveDataset = readFastaFile(DATASET_BASE_PATH_DIR + POSITIVE_FILENAME)
+    negativeDataset = readFastaFile(DATASET_BASE_PATH_DIR + NEGATIVE_FILENAME)
 
     # Generate initial population
-    organismFactory = OrganismFactory()
+    organismFactory = OrganismFactory(configOrganism, configOrganismFactory, configConnector, configPssm)
+
     for i in range(POPULATION_LENGTH):
         newOrganism = organismFactory.getOrganism()
         newOrganism.resetIDs()
@@ -41,16 +52,14 @@ def main():
     lastMaxScore = 0.0 
     bestOrganism = (None, 0.0)
 
+    timeformat = "%Y-%m-%d--%H-%M-%S"
     # Main loop, it iterates until organisms do not get a significant change 
     # or MIN_ITERATIONS is reached.
     # it can be done untill you get a score over a value
-    MIN_SCORE = 500
     try:
-        #while maxScore < MIN_SCORE: 
-        #while abs(lastMaxScore - maxScore) > threshold:
-        while iterations < MIN_ITERATIONS:
+        while not isFinished(END_WHILE_METHOD, iterations, maxScore, lastMaxScore):
         
-            # Shuffle population
+            # Shuffle population & datasets
             random.shuffle(organismPopulation)
             random.shuffle(negativeDataset)
             random.shuffle(positiveDataset)
@@ -58,7 +67,7 @@ def main():
             # Reset maxScore
             lastMaxScore = maxScore    
             maxScore = float("-inf")
-
+            changedBestScore = False
             # Iterate over pairs of organisms
             for i in range(0, len(organismPopulation) - 1, 2):
                 org1 = organismPopulation[i]
@@ -75,16 +84,17 @@ def main():
                 # We select a combination based on a sum of similarities in combinations
                 combination1 = children[0]["simOrg1"] + children[1]["simOrg2"] # Match the first parent to first child and second parent to second child 
                 combination2 = children[0]["simOrg2"] + children[1]["simOrg1"] # Match the first parent to second child and second parent to first child
+
                 pairChildren = []
             
                 # Mutate children and parents with a probability pm
-                if random.random() < pm:
+                if random.random() < MUTATION_PROBABILITY:
                     org1.mutate(organismFactory)
-                if random.random() < pm:
+                if random.random() < MUTATION_PROBABILITY:
                     org2.mutate(organismFactory)
-                if random.random() < pm:
+                if random.random() < MUTATION_PROBABILITY:
                     child1.mutate(organismFactory)
-                if random.random() < pm:
+                if random.random() < MUTATION_PROBABILITY:
                     child2.mutate(organismFactory)
 
 
@@ -100,13 +110,11 @@ def main():
 
                     firstOrganism = pairChildren[j][0]
                     secondOrganism = pairChildren[j][1]
-                    p1 = firstOrganism.getScore(positiveDataset[:MAX_FIT_SEQUENCES], "sum")
-                    #p1 = firstOrganism.getScore(negativeDataset[50:MAX_FIT_SEQUENCES+50])
-                    n1 = firstOrganism.getScore(negativeDataset[:MAX_FIT_SEQUENCES], "sum")
+                    p1 = firstOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT])
+                    n1 = firstOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT])
                 
-                    p2 = secondOrganism.getScore(positiveDataset[:MAX_FIT_SEQUENCES], "sum")
-                    #p2 = secondOrganism.getScore(negativeDataset[50:MAX_FIT_SEQUENCES+50])
-                    n2 = secondOrganism.getScore(negativeDataset[:MAX_FIT_SEQUENCES], "sum")
+                    p2 = secondOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT])
+                    n2 = secondOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT])
 
                     score1 = p1 / n1
 
@@ -118,23 +126,28 @@ def main():
                     if(score1 > score2): # The first organism wins
                         # Set it back to the population
                         organismPopulation[i+j] = firstOrganism
+
                         # Check if its the max score in that iteration
                         if score1 > maxScore:
                             maxScore = score1
+
                         #Check if its the max score in the program
                         if score1 > bestOrganism[1]:
                             bestOrganism = (firstOrganism, score1)
-                            #print("New best organism: {}".format(firstOrganism.ID))
+                            changedBestScore = True
+
                     else: # The second organism wins
                         # Set it back to the population
                         organismPopulation[i+j] = secondOrganism
+
                         # Check if its the max score in that iteration
                         if score2 > maxScore:
                             maxScore = score2
+
                         #Check if its the max score in the program
                         if score2 > bestOrganism[1]:
                             bestOrganism = (secondOrganism, score2)
-                            #print("New best organism: {}".format(secondOrganism.ID))
+                            changedBestScore = True
 
                      
                     #END FOR j
@@ -146,18 +159,46 @@ def main():
             #for i in range(len(organismPopulation)):
             #    print(str(organismPopulation[i].ID))
             print("Iter: {} Max Score: {} -  BestOrg: {} Score: {}".format(iterations, maxScore, bestOrganism[0].ID, bestOrganism[1]))
+            if(changedBestScore):
+                filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0].ID)
+                exportOrganism(bestOrganism[0], positiveDataset, filename)
             #print("-"*10)
             iterations += 1
             # END WHILE
 
-    except:
-        print("Exited program")
+    except Exception as e:
+        print("Exited program: \n{}\n".format(e))
     finally:
         print()
         print("-"*10)
         print("Best Organism: {}".format(bestOrganism[1]))
         bestOrganism[0].print()
+
         print("-"*10)
+
+# Checks if main while loop is finished
+# methods: 'Iterations', 'minScore', 'Threshold'
+def isFinished(method, iterations, maxScore, lastMaxScore):
+
+    if method.lower() == 'iterations':
+        return iterations >= MIN_ITERATIONS
+
+    elif method.lower() == 'minscore':
+        return maxScore >= MIN_SCORE
+
+    elif method.lower() == 'threshold':
+        return abs(lastMaxScore - maxScore) <= THRESHOLD
+
+    return True
+
+def exportOrganism(organism, dataset, filename):
+    
+    organismFile = "{}{}_organism.txt".format(RESULT_BASE_PATH_DIR, filename)
+    resultsFile = "{}{}_results.txt".format(RESULT_BASE_PATH_DIR, filename)
+
+    organism.export(organismFile)
+    organism.exportResults(dataset, resultsFile)
+
 
 
 # Gets 2 organisms, and returns 2 children with format (child, similarity to parent 1, similarity to parent 2)
@@ -242,22 +283,71 @@ def combineOrganisms(organism1, organism2, organismFactory):
     return [child1Similarities, child2Similarities]
 
 
+# Reads configuration file and sets up all program variables
+def setUp():
+    global END_WHILE_METHOD
+    global POPULATION_LENGTH
+    global DATASET_BASE_PATH_DIR 
+    global RESULT_BASE_PATH_DIR
+    global POSITIVE_FILENAME 
+    global NEGATIVE_FILENAME 
+    global RESULT_PATH_PATH_DIR
+    global MAX_SEQUENCES_TO_FIT
+    global MIN_ITERATIONS
+    global MIN_SCORE
+    global THRESHOLD
+    global MUTATION_PROBABILITY
     
-# Reads a fasta files and return an array of DNA sequences (strings)
+    global configOrganism
+    global configOrganismFactory
+    global configConnector
+    global configPssm
+
+    config = readJsonFile(JSON_CONFIG_FILENAME)
+    POPULATION_LENGTH = config["main"]["POPULATION_LENGTH"]
+    DATASET_BASE_PATH_DIR = config["main"]["DATASET_BASE_PATH_DIR"]
+    RESULT_BASE_PATH_DIR = config["main"]["RESULT_BASE_PATH_DIR"]
+    POSITIVE_FILENAME = config["main"]["POSITIVE_FILENAME"]
+    NEGATIVE_FILENAME = config["main"]["NEGATIVE_FILENAME"]
+    MAX_SEQUENCES_TO_FIT = config["main"]["MAX_SEQUENCES_TO_FIT"]
+    MIN_ITERATIONS = config["main"]["MIN_ITERATIONS"]
+    MIN_SCORE = config["main"]["MIN_SCORE"]
+    THRESHOLD = config["main"]["THRESHOLD"]
+    MUTATION_PROBABILITY = config["main"]["MUTATION_PROBABILITY"]
+    END_WHILE_METHOD = config["main"]["END_WHILE_METHOD"]
+
+
+    configOrganism = config["organism"]
+    configOrganismFactory = config["organismFactory"]
+    configConnector = config["connector"]
+    configPssm = config["pssm"]
+
+
+# Reads a fasta file and returns an array of DNA sequences (strings)
 def readFastaFile(filename):
     dataset = []
 
-    fasta_sequences = SeqIO.parse(open(DATASETS_BASE_DIR + filename), 'fasta')    
+    fasta_sequences = SeqIO.parse(open(filename), 'fasta')    
 
     for fasta in fasta_sequences:
         dataset.append(str(fasta.seq))
 
     return dataset
 
+
+# Reads a JSON file and returns a dictionary
+def readJsonFile(filename):
+    
+    with open(filename) as json_content:
+
+        return json.load(json_content)
+
+
 # Entry point to app execution
 # It calculates the time, but could include other app stats
 if __name__ == '__main__':
     initial = time.time()
+    setUp()
     main()
     print("\n")
     print("-"*50)
