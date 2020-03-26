@@ -4,7 +4,7 @@ from objects.pssmObject import PssmObject
 
 import random
 import numpy
-
+import json
 class OrganismFactory:
 
     def __init__(self, confOrg, confOrgFac, confCon, confPssm):
@@ -135,4 +135,99 @@ class OrganismFactory:
                 "c":round(probabilities[2],decimals),
                 "t":round(probabilities[3],decimals)
                 } 
+    #Import Organism from file
+    def importOrganisms(self, fileName):
+        organismList = []
+        organismJSON = {}
+        with open(fileName) as json_file:
+            organismJSON = json.load(json_file)
+        
+        for organism in organismJSON:
 
+
+
+            newOrganism = OrganismObject(self.getID(), self.confOrg)
+            rootNode = None
+
+            if organism["rootNode"]["objectType"] == "pssm":
+                rootNode = self.importPSSM(organism["rootNode"])
+            else:
+                rootNode = self.importConnector(organism["rootNode"])
+            
+            newOrganism.setRootNode(rootNode)
+
+            organismList.append(newOrganism)
+
+        return organismList
+
+    # Import Connector from JSON object
+    def importConnector(self, connector):
+        newConnector = ConnectorObject(connector["mu"], connector["sigma"], self.confCon)
+        
+        node1 = None
+        if connector["node1"]["objectType"] == "pssm":
+            node1 = self.importPSSM(connector["node1"])
+        else:
+            node1 = self.importConnector(connector["node1"])
+
+        newConnector.setNode1(node1)
+
+        node2 = None
+        if connector["node2"]["objectType"] == "pssm":
+            node2 = self.importPSSM(connector["node2"])
+        else:
+            node2 = self.importConnector(connector["node2"])
+
+        newConnector.setNode2(node2)
+
+        return newConnector
+
+
+    # Import PSSM from JSON object
+    def importPSSM(self, pssm):
+        return PssmObject(numpy.array(pssm["pwm"]), self.confPssm)
+
+
+    # Export a list of organisms to JSON format
+    def exportOrganisms(self, aOrganisms, filename):
+        listJsonOrganisms = []
+        for oOrganism in aOrganisms:
+            organism = {}
+            if oOrganism.rootNode.isConnector():
+                organism["rootNode"] = self.exportConnector(oOrganism.rootNode)
+            else:
+                organism["rootNode"] = self.exportPSSM(oOrganism.rootNode)
+            listJsonOrganisms.append(organism)
+
+
+        with open(filename, "w+") as json_file:
+            json.dump(listJsonOrganisms, json_file, indent=2)
+    
+
+    #Export connector object
+    def exportConnector(self, oConnector):
+        connector = {}
+        connector["objectType"] = "connector"
+        connector["mu"] = oConnector.mu
+        connector["sigma"] = oConnector.sigma
+        # Check if its pssm
+        if oConnector.node1.isConnector():
+            connector["node1"] = self.exportConnector(oConnector.node1)
+        else:
+            connector["node1"] = self.exportPSSM(oConnector.node1)
+        
+
+        if oConnector.node2.isConnector():
+            connector["node2"] = self.exportConnector(oConnector.node2)
+        else:
+            connector["node2"] = self.exportPSSM(oConnector.node2)
+
+        return connector
+
+
+    # Export PSSM object
+    def exportPSSM(self, oPssm):
+        pssm = {}
+        pssm["objectType"] = "pssm"
+        pssm["pwm"] = oPssm.pwm.tolist()
+        return pssm

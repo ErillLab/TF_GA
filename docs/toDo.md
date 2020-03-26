@@ -11,3 +11,12 @@
 - [ ] Check ETE3 python lib
 
 
+
+## To Discuss
+- [ ] Inclinació en la transformació de pwm a pssm (log2(4x) baixa lent)
+- [ ] Connector multiplicaiu (log2(4x) puja rapid)
+- [ ] ratio --> diferencia/exponenciacio
+- [ ] Funció de particio Z i exp E
+- [ ] Llegir i avaluar un organisme desde fitxer?
+- [ ] Afegir complexitat --> 1+(depthOptima - depth) o 1+(pssmsOptims - pssms)
+- [ ] Afegir/Treure nodes -> amb mes probabilitat de trure

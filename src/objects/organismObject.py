@@ -28,7 +28,11 @@ class OrganismObject():
         randomNode = random.randint(0, nNodes - 1)
         mutatedNode = self.getNode(randomNode)
         mutatedNode.mutate(orgFactory)
-    
+   
+    # Returns the complexity of the organism
+    def getComplexity(self):
+        return len(self.rootNode.getAllPssm([]))
+
     # Return the fitness of the organism for a given DNA sequence
     def getBestAllFitness(self, sDNA):
         
@@ -78,7 +82,7 @@ class OrganismObject():
         '''
         # call recursively to get the total fitness of the organism
         finalScore, distance = self.rootNode.getBestAll(pssmPositionScoreTable)           
-        
+       
         # return score in that dataset
         return finalScore
     

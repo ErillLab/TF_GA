@@ -38,6 +38,7 @@ def main():
     positiveDataset = readFastaFile(DATASET_BASE_PATH_DIR + POSITIVE_FILENAME)
     negativeDataset = readFastaFile(DATASET_BASE_PATH_DIR + NEGATIVE_FILENAME)
 
+
     # Generate initial population
     organismFactory = OrganismFactory(configOrganism, configOrganismFactory, configConnector, configPssm)
 
@@ -110,15 +111,24 @@ def main():
 
                     firstOrganism = pairChildren[j][0]
                     secondOrganism = pairChildren[j][1]
-                    p1 = firstOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT])
+                    p1 = firstOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT]) 
                     n1 = firstOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT])
-                
+                    c1 = firstOrganism.getComplexity()
+
                     p2 = secondOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT])
                     n2 = secondOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT])
+                    c2 = secondOrganism.getComplexity()
+                    
+                    if(p1 < 0 or n1 < 0):
+                        print("Negative values on {}!!Pos: {} Neg:{}".format(firstOrganism.ID, p1, n1))
 
-                    score1 = p1 / n1
+                    if(p2 < 0 or n2 < 0):
+                        print("Negative values on {}!!POS: {} Neg:{}".format(secondOrganism.ID, p1, n1))
 
-                    score2 = p2 / n2
+
+                    score1 = (p1 - n1)/c1
+
+                    score2 = (p2 - n2)/c2
 
                 
                     # print("ID1: {} Score1:{}/{} =  {} ID2: {} Score2: {}/{} = {}".format(firstOrganism.ID, p1, n1, score1, secondOrganism.ID, p2, n2, score2))
@@ -173,7 +183,6 @@ def main():
         print("-"*10)
         print("Best Organism: {}".format(bestOrganism[1]))
         bestOrganism[0].print()
-
         print("-"*10)
 
 # Checks if main while loop is finished

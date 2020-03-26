@@ -7,7 +7,7 @@ A tree will be the data struture to save the models (organism). In this data str
 - Connectors: node objects that connect up to parent node and down to two nodes. A connector has a specified ideal distance between its downstream connecting elements.
 - PSSM-type recognizers: node objects that specify a short (e.g. 4-5 bp) DNA recognition pattern. Based on the BioPython [motifs](https://biopython-cn.readthedocs.io/zh_CN/latest/en/chr14.html) class.
 
-## Install
+## Install with virtualenv
 
 I personally use virtualenv from python to create the virtual environment.
 
@@ -66,11 +66,55 @@ And to install the necessary packages:
 # pip install PACKAGE
 ```
 
+
+## Install with conda
+
+If you are more confortable using conda you can import the env using the following YAML:
+```yaml
+name: TF_GA_env_conda
+channels:
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - biopython=1.76=py37h7b6447c_0
+  - blas=1.0=mkl
+  - ca-certificates=2020.1.1=0
+  - certifi=2019.11.28=py37_0
+  - intel-openmp=2020.0=166
+  - ld_impl_linux-64=2.33.1=h53a641e_7
+  - libedit=3.1.20181209=hc058e9b_0
+  - libffi=3.2.1=hd88cf55_4
+  - libgcc-ng=9.1.0=hdf63c60_0
+  - libgfortran-ng=7.3.0=hdf63c60_0
+  - libstdcxx-ng=9.1.0=hdf63c60_0
+  - mkl=2020.0=166
+  - ncurses=6.1=he6710b0_1
+  - numpy=1.11.3=py37h7e9f1db_12
+  - numpy-base=1.11.3=py37hde5b4d6_12
+  - openssl=1.1.1d=h7b6447c_4
+  - pip=20.0.2=py37_1
+  - python=3.7.3=h0371630_0
+  - readline=7.0=h7b6447c_5
+  - setuptools=45.2.0=py37_0
+  - sqlite=3.31.1=h7b6447c_0
+  - tk=8.6.8=hbc83047_0
+  - wheel=0.34.2=py37_0
+  - xz=5.2.4=h14c3975_4
+  - zlib=1.2.11=h7b6447c_3
+
+```
+
+You can create it using the following command:
+```bash
+conda env create -f environment.yml
+```
+
 ## Python related
 
 Developing in 
 **Python 3.7.3** 
 
 Libraries:
-- 
+- BioPython 1.76
+- numpy 1.11.3 
 

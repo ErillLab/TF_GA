@@ -148,3 +148,10 @@ class PssmObject(Node):
     def export(self, exportFile, level):
         exportFile.write("\n"+"----    "*level + "Node "+str(self.ID))
         exportFile.write("\n"+str(self.pssm))
+
+
+    def isConnector(self): 
+        return False
+
+    def isPSSM(self):
+        return True

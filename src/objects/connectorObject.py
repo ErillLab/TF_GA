@@ -86,9 +86,9 @@ class ConnectorObject(Node):
         exponent = - numerator / (1 + 2 * (self.sigma ** 2))
         eConnector = (tau/np.log10(10 + self.sigma ** 2)) * np.exp(exponent)
         
-        #energy = eNode1 + eNode2 + eConnector
+        energy = eNode1 + eNode2 + eConnector
         #print("N1:{} N2:{} C:{}".format(eNode1, eNode2, eConnector))
-        energy = (eNode1 + eNode2) * eConnector
+        #energy = (eNode1 + eNode2) * eConnector
         distance = (distance1 + distance2) / 2
 
         return energy, distance 
@@ -139,4 +139,9 @@ class ConnectorObject(Node):
         self.node1.export(exportFile, level + 1)
         exportFile.write("\n"+"----    "*level +"Connection "+str(self.ID)+": mu: {} sigma: {}".format(self.mu, self.sigma))
         self.node2.export(exportFile, level + 1)
-        
+    
+    def isConnector(self): 
+        return True
+
+    def isPSSM(self):
+        return False
