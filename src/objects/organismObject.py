@@ -150,7 +150,7 @@ class OrganismObject():
     def getParent(self, ID):
         
         if self.rootNode.ID == ID:
-            return [True]
+            return {"isRootNode": True}
 
         return self.rootNode.getParent(ID)
 

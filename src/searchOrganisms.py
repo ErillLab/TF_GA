@@ -44,7 +44,6 @@ def main():
 
     for i in range(POPULATION_LENGTH):
         newOrganism = organismFactory.getOrganism()
-        newOrganism.resetIDs()
         organismPopulation.append(newOrganism)
 
     iterations = 0
@@ -63,7 +62,7 @@ def main():
             # Shuffle population & datasets
             random.shuffle(organismPopulation)
             random.shuffle(negativeDataset)
-            random.shuffle(positiveDataset)
+            #random.shuffle(positiveDataset) (HAS no effect)
 
             # Reset maxScore
             lastMaxScore = maxScore    
@@ -77,22 +76,19 @@ def main():
                 # Cross parents to get childs
                 children = combineOrganisms(org1, org2, organismFactory)
             
-                child1 = children[0]["child"]
-                child2 = children[1]["child"]
+                child1 = children["child1"]["child"]
+                child2 = children["child2"]["child"]
 
                 # Match with its closest child
                 # There are 2 possible combinations p1-c1, p2-c2 & p1-c2, p2-c1
                 # We select a combination based on a sum of similarities in combinations
-                combination1 = children[0]["simOrg1"] + children[1]["simOrg2"] # Match the first parent to first child and second parent to second child 
-                combination2 = children[0]["simOrg2"] + children[1]["simOrg1"] # Match the first parent to second child and second parent to first child
+                combination1 = children["child1"]["simOrg1"] + children["child2"]["simOrg2"] # Match the first parent to first child and second parent to second child 
+                combination2 = children["child1"]["simOrg2"] + children["child2"]["simOrg1"] # Match the first parent to second child and second parent to first child
 
                 pairChildren = []
             
                 # Mutate children and parents with a probability pm
-                if random.random() < MUTATION_PROBABILITY:
-                    org1.mutate(organismFactory)
-                if random.random() < MUTATION_PROBABILITY:
-                    org2.mutate(organismFactory)
+
                 if random.random() < MUTATION_PROBABILITY:
                     child1.mutate(organismFactory)
                 if random.random() < MUTATION_PROBABILITY:
@@ -106,29 +102,32 @@ def main():
                     pairChildren.append((org1, child2))
                     pairChildren.append((org2, child1))
 
-                # "Fight" two organisms
+                # "Fight" two organisms (DO NOT take two organisms directly 
+                # because it uses j index to reinsert the winner organisms 
+                # into the global population)
                 for j in range(len(pairChildren)):
 
                     firstOrganism = pairChildren[j][0]
                     secondOrganism = pairChildren[j][1]
                     p1 = firstOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT]) 
                     n1 = firstOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT])
-                    c1 = firstOrganism.getComplexity()
+                    #c1 = firstOrganism.getComplexity()
 
                     p2 = secondOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT])
                     n2 = secondOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT])
-                    c2 = secondOrganism.getComplexity()
+                    #c2 = secondOrganism.getComplexity()
                     
-                    if(p1 < 0 or n1 < 0):
-                        print("Negative values on {}!!Pos: {} Neg:{}".format(firstOrganism.ID, p1, n1))
+                    # Check negative scores (horrible matching)
+                    #if(p1 < 0 or n1 < 0):
+                    #    print("Negative values on {}!!Pos: {} Neg:{}".format(firstOrganism.ID, p1, n1))
 
-                    if(p2 < 0 or n2 < 0):
-                        print("Negative values on {}!!POS: {} Neg:{}".format(secondOrganism.ID, p1, n1))
+                    #if(p2 < 0 or n2 < 0):
+                    #    print("Negative values on {}!!POS: {} Neg:{}".format(secondOrganism.ID, p2, n2))
 
 
-                    score1 = (p1 - n1)/c1
+                    score1 = (p1 - n1)
 
-                    score2 = (p2 - n2)/c2
+                    score2 = (p2 - n2)
 
                 
                     # print("ID1: {} Score1:{}/{} =  {} ID2: {} Score2: {}/{} = {}".format(firstOrganism.ID, p1, n1, score1, secondOrganism.ID, p2, n2, score2))
@@ -166,8 +165,6 @@ def main():
 
             # Show IDs of final array
             #print("-"*10)
-            #for i in range(len(organismPopulation)):
-            #    print(str(organismPopulation[i].ID))
             print("Iter: {} Max Score: {} -  BestOrg: {} Score: {}".format(iterations, maxScore, bestOrganism[0].ID, bestOrganism[1]))
             if(changedBestScore):
                 filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0].ID)
@@ -178,6 +175,7 @@ def main():
 
     except Exception as e:
         print("Exited program: \n{}\n".format(e))
+
     finally:
         print()
         print("-"*10)
@@ -233,11 +231,6 @@ def combineOrganisms(organism1, organism2, organismFactory):
     nNodesFromOrg1 = node1.countNodes()
     nNodesFromOrg2 = node2.countNodes()
 
-    # parentNodeX has an specific scructure:
-    # parentNodeX[0] = isRootNode
-    # parentNodeX[1] = parentNode
-    # parentNodeX[2] = isLeftSideNode
-    # 
     # Search is done by ID, so this should be checked bc 
     # you could find duplicated IDs!!
 
@@ -246,27 +239,27 @@ def combineOrganisms(organism1, organism2, organismFactory):
     
     # Swap nodes
     # Set nodes in oposite children 
-    if parentNode1[0]:
+    if parentNode1["isRootNode"]:
         # Its the root node of child 1
         child1.setRootNode(node2)
     else:
-        if parentNode1[2]:
+        if parentNode1["isLeftSide"]:
             # Child on left side
-            parentNode1[1].setNode1(node2)
+            parentNode1["self"].setNode1(node2)
         else:
-            # Child on left side
-            parentNode1[1].setNode2(node2)
+            # Child on right side
+            parentNode1["self"].setNode2(node2)
 
-    if parentNode2[0]:
+    if parentNode2["isRootNode"]:
         # Its the root node of child 2
         child2.setRootNode(node1)
     else: 
-        if parentNode2[2]:
+        if parentNode2["isLeftSide"]:
             # Child on left side
-            parentNode2[1].setNode1(node1)
+            parentNode2["self"].setNode1(node1)
         else:
-            # Child on left side
-            parentNode2[1].setNode2(node1)
+            # Child on right side
+            parentNode2["self"].setNode2(node1)
 
     nNodesChild1 = child1.countNodes()
     nNodesChild2 = child2.countNodes()
@@ -289,11 +282,14 @@ def combineOrganisms(organism1, organism2, organismFactory):
             "simOrg2": (nNodesChild2 - nNodesFromOrg1) / nNodesChild2,
             "child": child2
             }
-    return [child1Similarities, child2Similarities]
+    return {"child1": child1Similarities, "child2": child2Similarities}
 
 
 # Reads configuration file and sets up all program variables
 def setUp():
+
+    # specify as global variable so it can be accesed in local contexts outside setUp
+
     global END_WHILE_METHOD
     global POPULATION_LENGTH
     global DATASET_BASE_PATH_DIR 
@@ -307,6 +303,7 @@ def setUp():
     global THRESHOLD
     global MUTATION_PROBABILITY
     
+    # Config data
     global configOrganism
     global configOrganismFactory
     global configConnector
@@ -358,6 +355,8 @@ if __name__ == '__main__':
     initial = time.time()
     setUp()
     main()
+
+
     print("\n")
     print("-"*50)
     print(" "*20+"STATS")

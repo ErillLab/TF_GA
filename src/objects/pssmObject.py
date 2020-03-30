@@ -121,15 +121,24 @@ class PssmObject(Node):
 
     # returns a score to that DNA secuence
     def getScore(self, sDNA):
+
+        complement = {"a":"t", "t":"a", "g":"c", "c":"g"}
+        revSDNA = "".join(complement[i] for i in reversed(sDNA))
         # gets a score from pssm
         score = 0
+        scoreReverse = 0
+
         if len(sDNA) != len(self.pssm):
             print("Not a valid length!")
             return -3000
+        
 
         for i in range(len(sDNA)):
+
             score += self.pssm[i][sDNA[i]]
-        return score
+            scoreReverse += self.pssm[i][revSDNA[i]]
+        # Returns the max binding score
+        return score if score > scoreReverse else scoreReverse
 
     # Nodes cannot be setted from recognizer objects
     def setNode(self, node, ID):

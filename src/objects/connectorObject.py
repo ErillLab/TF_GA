@@ -58,10 +58,12 @@ class ConnectorObject(Node):
 
         if self.node1.ID == ID:
             # Return itself and specify child is on left side
-            return [False, self, True]
+            return { "isRootNode": False, "self": self, "isLeftSide": True }
+
         elif self.node2.ID == ID:
             # Return itself and specify child is on right side
-            return [False, self, False]
+            return { "isRootNode": False, "self": self, "isLeftSide": False }
+
         checkNode = None
         checkNode = self.node1.getParent(ID)
         if checkNode == None:
@@ -86,8 +88,8 @@ class ConnectorObject(Node):
         exponent = - numerator / (1 + 2 * (self.sigma ** 2))
         eConnector = (tau/np.log10(10 + self.sigma ** 2)) * np.exp(exponent)
         
-        energy = eNode1 + eNode2 + eConnector
-        #print("N1:{} N2:{} C:{}".format(eNode1, eNode2, eConnector))
+        energy = (eNode1 + eNode2) * eConnector
+        #print("N1:{} N2:{} C:{} SIGMA:{} MU {}\n".format(eNode1, eNode2, eConnector, self.sigma, self.mu))
         #energy = (eNode1 + eNode2) * eConnector
         distance = (distance1 + distance2) / 2
 

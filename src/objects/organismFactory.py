@@ -51,6 +51,7 @@ class OrganismFactory:
             rootNode = self.createPSSM(self.PWM_LENGTH)
 
         newOrganism.setRootNode(rootNode)
+        newOrganism.resetIDs()
 
         return newOrganism
     
@@ -155,6 +156,7 @@ class OrganismFactory:
                 rootNode = self.importConnector(organism["rootNode"])
             
             newOrganism.setRootNode(rootNode)
+            newOrganism.resetIDs()
 
             organismList.append(newOrganism)
 
