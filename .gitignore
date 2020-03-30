@@ -1,3 +1,4 @@
 src/results/
 src/datasets/
 src/resultsTEST/
+**/__pycache__
