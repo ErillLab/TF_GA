@@ -6,23 +6,16 @@
 - [x] Independent parameters (+ JSON)
 - [x] Increase connector tau
 - [x] Check complementary reverse
+- [x] Llegir i avaluar un organisme desde fitxer?
+- [x] Treure nodes -> amb mes probabilitat de trure 
 
 - [ ] Complexity penalty (+ prob delete)
-- [ ] Check energy function
+- [x] Check energy function
 - [ ] Check ETE3 python lib
-- [ ] PSEUDO COUNT ON PWM transform (before log)
+- [ ] PSEUDO COUNT ON PWM reduced
 
 
 ## To Discuss
-- [ ] Inclinació en la transformació de pwm a pssm (log2(4x) baixa lent)
-- [ ] Connector multiplicaiu (log2(4x) puja rapid)
 - [ ] ratio --> diferencia/exponenciacio
-- [x] Llegir i avaluar un organisme desde fitxer?
 - [ ] Afegir complexitat --> 1+(depthOptima - depth) o 1+(pssmsOptims - pssms)
 
-- [ ] Afegir/Treure nodes -> amb mes probabilitat de trure 
-
-New Mutations
-- Subtituir per PSSM nova
-
-- Pujar fill

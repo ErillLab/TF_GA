@@ -10,7 +10,10 @@ class OrganismObject():
         self.rootNode = rootNode
         self.bestFitnessScore = None
         self.CUMULATIVE_FIT_METHOD = conf["CUMULATIVE_FIT_METHOD"]
-    
+        self.MUTATE_PROBABILITY_SUBSTITUTE_PSSM = conf["MUTATE_PROBABILITY_SUBSTITUTE_PSSM"]
+        self.MUTATE_PROBABILITY_RISE_CHILD = conf["MUTATE_PROBABILITY_RISE_CHILD"]
+        self.MUTATE_PROBABILITY_NODE_MUTATION = conf["MUTATE_PROBABILITY_NODE_MUTATION"]
+        
     # Setters an getters
     def setRootNode(self, rootNode):
         self.rootNode = rootNode
@@ -23,12 +26,65 @@ class OrganismObject():
 
     # Mutates a part of the organism
     def mutate(self, orgFactory):
-        #print("Mutating organism {}".format(self.ID))
-        nNodes = self.countNodes()
-        randomNode = random.randint(0, nNodes - 1)
-        mutatedNode = self.getNode(randomNode)
-        mutatedNode.mutate(orgFactory)
    
+
+        # Substitute a random node by a random PSSM
+        if random.random() < self.MUTATE_PROBABILITY_SUBSTITUTE_PSSM:
+            
+            nNodes = self.countNodes()
+            randomNode = random.randint(0, nNodes - 1)
+            substitutedNode = self.getNode(randomNode)
+            parentNode = self.getParent(substitutedNode.ID)
+            # It can be improved so you can not pass the length by parameter jsjs
+            newNode = orgFactory.createPSSM(orgFactory.PWM_LENGTH)
+            
+            if parentNode["isRootNode"]:
+
+                self.rootNode = newNode
+            else:
+
+                if parentNode["isLeftSide"]:
+
+                    parentNode["self"].setNode1(newNode)
+                else:
+
+                    parentNode["self"].setNode2(newNode)
+
+            self.resetIDs()
+
+        # Rise the level of a child
+        if random.random() < self.MUTATE_PROBABILITY_RISE_CHILD:
+
+            nNodes = self.countNodes()
+            randomNode = random.randint(0, nNodes - 1)
+            risedNode = self.getNode(randomNode)
+            parentNode = self.getParent(risedNode.ID)
+            
+            # 
+            if not risedNode.ID == self.rootNode.ID:
+
+
+                parent1 = self.getParent(risedNode.ID)
+                parent2 = self.getParent(parent1["self"].ID)
+
+                if parent2["isRootNode"]:
+                    self.rootNode = risedNode
+                else:
+                    if parent2["isLeftSide"]:
+                        parent2["self"].setNode1(risedNode)
+                    else:
+                        parent2["self"].setNode2(risedNode)
+                self.resetIDs()
+
+        # Mutate a random node
+        if random.random() < self.MUTATE_PROBABILITY_NODE_MUTATION:
+
+            nNodes = self.countNodes()
+            randomNode = random.randint(0, nNodes - 1)
+            mutatedNode = self.getNode(randomNode)
+            mutatedNode.mutate(orgFactory)
+   
+
     # Returns the complexity of the organism
     def getComplexity(self):
         return len(self.rootNode.getAllPssm([]))
