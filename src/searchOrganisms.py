@@ -6,6 +6,7 @@ from objects.organismFactory import OrganismFactory
 import random
 import copy
 import json
+import numpy as np
 
 
 POPULATION_LENGTH = 0
@@ -24,13 +25,16 @@ MIN_ITERATIONS = 0
 MIN_SCORE = 0
 
 organismPopulation = []
+# meanNodes are the mean nodes of the population organisms lately
+# used to calculate organism complexity
+meanNodes = 0 
+meanFitness = 0
 
 
 positiveDataset = []
 negativeDataset = []
 
 THRESHOLD = 0.0
-MUTATION_PROBABILITY = 0.0
 
 def main():
 
@@ -38,14 +42,18 @@ def main():
     positiveDataset = readFastaFile(DATASET_BASE_PATH_DIR + POSITIVE_FILENAME)
     negativeDataset = readFastaFile(DATASET_BASE_PATH_DIR + NEGATIVE_FILENAME)
 
-
+    meanNodes = 0
+    meanFitness = 0
     # Generate initial population
     organismFactory = OrganismFactory(configOrganism, configOrganismFactory, configConnector, configPssm)
-
     for i in range(POPULATION_LENGTH):
         newOrganism = organismFactory.getOrganism()
         organismPopulation.append(newOrganism)
+        meanNodes += newOrganism.countNodes()
+        
 
+    meanNodes /= POPULATION_LENGTH
+    #print("mean: {}".format(meanNodes))
     iterations = 0
 
     maxScore = float("-inf")
@@ -68,6 +76,11 @@ def main():
             lastMaxScore = maxScore    
             maxScore = float("-inf")
             changedBestScore = False
+            initial = time.time()
+
+            aFitness = []
+            aNodes = []
+
             # Iterate over pairs of organisms
             for i in range(0, len(organismPopulation) - 1, 2):
                 org1 = organismPopulation[i]
@@ -87,12 +100,10 @@ def main():
 
                 pairChildren = []
             
-                # Mutate children and parents with a probability pm
+                # Mutate children 
 
-                if random.random() < MUTATION_PROBABILITY:
-                    child1.mutate(organismFactory)
-                if random.random() < MUTATION_PROBABILITY:
-                    child2.mutate(organismFactory)
+                child1.mutate(organismFactory)
+                child2.mutate(organismFactory)
 
 
                 if combination1 > combination2:
@@ -107,15 +118,17 @@ def main():
                 # into the global population)
                 for j in range(len(pairChildren)):
 
-                    firstOrganism = pairChildren[j][0]
-                    secondOrganism = pairChildren[j][1]
+                    firstOrganism = pairChildren[j][0] # Parent Organism
+                    secondOrganism = pairChildren[j][1] # Chid Organism
                     p1 = firstOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT]) 
                     n1 = firstOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT])
-                    #c1 = firstOrganism.getComplexity()
-
+                    # Compute complexity after gettig the score
+                    c1 = firstOrganism.getComplexity(meanNodes, meanFitness)
+                    
                     p2 = secondOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT])
                     n2 = secondOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT])
-                    #c2 = secondOrganism.getComplexity()
+                    # Compute complexity after gettig the score
+                    c2 = secondOrganism.getComplexity(meanNodes, meanFitness)
                     
                     # Check negative scores (horrible matching)
                     #if(p1 < 0 or n1 < 0):
@@ -124,38 +137,48 @@ def main():
                     #if(p2 < 0 or n2 < 0):
                     #    print("Negative values on {}!!POS: {} Neg:{}".format(secondOrganism.ID, p2, n2))
 
+                    fitness1 = p1 - n1
+                    effectiveFitness1 = fitness1 - COMPLEXITY_FACTOR * c1
 
-                    score1 = (p1 - n1)
-
-                    score2 = (p2 - n2)
+                    fitness2 = p2 - n2
+                    effectiveFitness2 = fitness2 - COMPLEXITY_FACTOR * c2
 
                 
-                    # print("ID1: {} Score1:{}/{} =  {} ID2: {} Score2: {}/{} = {}".format(firstOrganism.ID, p1, n1, score1, secondOrganism.ID, p2, n2, score2))
+                    #print("ID1: {} EFitness1:{:.2f}-{:.2f}-{:.2f} =  {:.2f} \nID2: {} EFitness2: {:.2f}-{:.2f}-{:.2f} = {:.2f}".format(firstOrganism.ID, p1, n1, c1, effectiveFitness1, secondOrganism.ID, p2, n2, c2, effectiveFitness2))
                 
-                    if(score1 > score2): # The first organism wins
-                        # Set it back to the population
+                    if(effectiveFitness1 > effectiveFitness2): # The first organism wins
+                        # Set it back to the population and save fitness for next iteration
                         organismPopulation[i+j] = firstOrganism
+                        aFitness.append(fitness1)
+                        # If the parent wins, meanNodes don't change
+                        aNodes.append(firstOrganism.countNodes())
+
 
                         # Check if its the max score in that iteration
-                        if score1 > maxScore:
-                            maxScore = score1
-
+                        if effectiveFitness1 > maxScore:
+                            maxScore = effectiveFitness1
+                            maxScoreP = p1
                         #Check if its the max score in the program
-                        if score1 > bestOrganism[1]:
-                            bestOrganism = (firstOrganism, score1)
+                        if effectiveFitness1 > bestOrganism[1]:
+                            bestOrganism = (firstOrganism, effectiveFitness1)
                             changedBestScore = True
 
                     else: # The second organism wins
-                        # Set it back to the population
+                        # Set it back to the population and save fitness for next iteration
                         organismPopulation[i+j] = secondOrganism
+                        aFitness.append(fitness2)
+                        # If the child wins, update meanNodes
+                        #meanNodes = ((meanNodes * POPULATION_LENGTH) + secondOrganism.countNodes() - firstOrganism.countNodes()) / POPULATION_LENGTH
+                        aNodes.append(secondOrganism.countNodes())
 
                         # Check if its the max score in that iteration
-                        if score2 > maxScore:
-                            maxScore = score2
+                        if effectiveFitness2 > maxScore:
+                            maxScore = effectiveFitness2
+                            maxScoreP = p2
 
                         #Check if its the max score in the program
-                        if score2 > bestOrganism[1]:
-                            bestOrganism = (secondOrganism, score2)
+                        if effectiveFitness2 > bestOrganism[1]:
+                            bestOrganism = (secondOrganism, effectiveFitness2)
                             changedBestScore = True
 
                      
@@ -163,15 +186,25 @@ def main():
             
                 # END FOR i
 
+            # Compute mean fitness of the organisms
+            meanFitness = np.mean(aFitness)
+            meanNodes = np.mean(aNodes)
+            
             # Show IDs of final array
             #print("-"*10)
-            print("Iter: {} Max Score: {} -  BestOrg: {} Score: {}".format(iterations, maxScore, bestOrganism[0].ID, bestOrganism[1]))
+            m, s = divmod((time.time()-initial), 60)
+            h, m = divmod(m, 60)
+            sTime = "{}h:{}m:{:.2f}s".format(int(h),int(m),s)
+            print("Iter: {} MN:{:.2f} MF:{:.2f} MS: {:.2f} MSP: {:.2f}-  BO: {} S: {:.2f} Time: {}"
+                    .format(iterations, meanNodes, meanFitness, maxScore, maxScoreP, bestOrganism[0].ID, bestOrganism[1], sTime))
             if(changedBestScore):
                 filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0].ID)
-                exportOrganism(bestOrganism[0], positiveDataset, filename)
+                exportOrganism(bestOrganism[0], positiveDataset, filename, organismFactory)
             #print("-"*10)
             iterations += 1
             # END WHILE
+        
+
 
     except Exception as e:
         print("Exited program: \n{}\n".format(e))
@@ -179,9 +212,7 @@ def main():
     finally:
         print()
         print("-"*10)
-        print("Best Organism: {}".format(bestOrganism[1]))
-        bestOrganism[0].print()
-        print("-"*10)
+        print("Best Organism {}: {}".format(bestOrganism[0].ID, bestOrganism[1]))
 
 # Checks if main while loop is finished
 # methods: 'Iterations', 'minScore', 'Threshold'
@@ -198,14 +229,15 @@ def isFinished(method, iterations, maxScore, lastMaxScore):
 
     return True
 
-def exportOrganism(organism, dataset, filename):
+def exportOrganism(organism, dataset, filename, factory):
     
     organismFile = "{}{}_organism.txt".format(RESULT_BASE_PATH_DIR, filename)
+    organismFileJSON = "{}{}_organism.json".format(RESULT_BASE_PATH_DIR, filename)
     resultsFile = "{}{}_results.txt".format(RESULT_BASE_PATH_DIR, filename)
 
     organism.export(organismFile)
     organism.exportResults(dataset, resultsFile)
-
+    factory.exportOrganisms([organism], organismFileJSON)
 
 
 # Gets 2 organisms, and returns 2 children with format (child, similarity to parent 1, similarity to parent 2)
@@ -268,6 +300,12 @@ def combineOrganisms(organism1, organism2, organismFactory):
     child1.resetIDs()
     child2.resetIDs()
 
+    # Reset fitness Scores
+    child1.resetScores()
+    child2.resetScores()
+    
+
+
     
     # dictionary with an organism and similarities to each parent
     child1Similarities = {
@@ -301,7 +339,7 @@ def setUp():
     global MIN_ITERATIONS
     global MIN_SCORE
     global THRESHOLD
-    global MUTATION_PROBABILITY
+    global COMPLEXITY_FACTOR
     
     # Config data
     global configOrganism
@@ -319,8 +357,8 @@ def setUp():
     MIN_ITERATIONS = config["main"]["MIN_ITERATIONS"]
     MIN_SCORE = config["main"]["MIN_SCORE"]
     THRESHOLD = config["main"]["THRESHOLD"]
-    MUTATION_PROBABILITY = config["main"]["MUTATION_PROBABILITY"]
     END_WHILE_METHOD = config["main"]["END_WHILE_METHOD"]
+    COMPLEXITY_FACTOR = config["main"]["COMPLEXITY_FACTOR"]
 
 
     configOrganism = config["organism"]
@@ -349,6 +387,11 @@ def readJsonFile(filename):
         return json.load(json_content)
 
 
+def printConfigJSON(config, name):
+    print("{}:".format(name))
+    for key in config.keys():
+        print("{}: {}".format(key, config[key]))
+
 # Entry point to app execution
 # It calculates the time, but could include other app stats
 if __name__ == '__main__':
@@ -361,7 +404,14 @@ if __name__ == '__main__':
     print("-"*50)
     print(" "*20+"STATS")
     print("-"*50)
-    print("Time: {}".format(time.time()-initial))
+    print("Iterations: {}".format(MIN_ITERATIONS))
+    print("Population length: {}".format(POPULATION_LENGTH))
+    print("Complexity Factor: {}".format(COMPLEXITY_FACTOR))
+    printConfigJSON(configOrganism, "OrganismConfig")
+    print("-"*50)
+    m, s = divmod((time.time()-initial), 60)
+    h, m = divmod(m, 60)
+    print("Time: {}h:{}m:{:.2f}s".format(int(h),int(m),s))
     print("-"*50)
 
 

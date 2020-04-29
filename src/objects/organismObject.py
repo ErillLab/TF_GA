@@ -8,7 +8,9 @@ class OrganismObject():
     def __init__(self, ID, conf, rootNode = None):
         self.ID = ID
         self.rootNode = rootNode
-        self.bestFitnessScore = None
+        self.meanFitnessScore = 0 # Mean fitness score on all datasets computed
+        self.numSequencesScored = 0 # Number of datasets computed
+        self.numNodes = 0 # Number of nodes of the oranism
         self.CUMULATIVE_FIT_METHOD = conf["CUMULATIVE_FIT_METHOD"]
         self.MUTATE_PROBABILITY_SUBSTITUTE_PSSM = conf["MUTATE_PROBABILITY_SUBSTITUTE_PSSM"]
         self.MUTATE_PROBABILITY_RISE_CHILD = conf["MUTATE_PROBABILITY_RISE_CHILD"]
@@ -17,7 +19,10 @@ class OrganismObject():
     # Setters an getters
     def setRootNode(self, rootNode):
         self.rootNode = rootNode
-    
+        # Compute nodes on the organism
+        self.numNodes = 0
+         
+
     def getID(self):
         return self.ID
     
@@ -86,8 +91,11 @@ class OrganismObject():
    
 
     # Returns the complexity of the organism
-    def getComplexity(self):
-        return len(self.rootNode.getAllPssm([]))
+    def getComplexity(self, meanNodes, meanFitness):
+        # Complexity is calculed as:
+        # meanFitnessScore * # nodes / meanNodes
+        
+        return meanFitness * self.numNodes / meanNodes
 
     # Return the fitness of the organism for a given DNA sequence
     def getBestAllFitness(self, sDNA):
@@ -166,16 +174,29 @@ class OrganismObject():
 
         return False
 
-    # Return the total Fitness for an array of DNA sequences and the fitness method (for now only one) 
+    # Return the total Fitness for an array of DNA sequences and the fitness method
+    # It also updates mean sequences score
     def getScore(self, aDNA):
         
         score = 0
+        aDNALength = len(aDNA)
+
         # sum method returns the sum of all fitness to DNA sequences
         if self.CUMULATIVE_FIT_METHOD == "sum":
 
             for sDNA in aDNA:
-                score+=self.getBestAllFitness(sDNA.lower())
+                score += self.getBestAllFitness(sDNA.lower())
 
+            # Assign values if its the first time
+            if self.numSequencesScored == 0:
+
+                self.numSequencesScored = aDNALength
+                self.meanFitnessScore = score/aDNALength
+            # Calculate new values else
+            else:
+                self.meanFitnessScore = (self.meanFitnessScore * self.numSequencesScored + score)/(aDNALength + self.numSequencesScored)
+                self.numSequencesScored += aDNALength
+                
         # mean method returns the mean of all fitness to SNA sequences
         elif self.CUMULATIVE_FIT_METHOD == "mean":
 
@@ -183,6 +204,16 @@ class OrganismObject():
             for sDNA in aDNA:
                 scores.append(self.getBestAllFitness(sDNA.lower()))
             score = np.mean(scores)
+
+            # Assign values if its the first time
+            if self.numSequencesScored == 0:
+
+                self.numSequencesScored = aDNALength
+                self.meanFitnessScore = score
+            # Calculate new values else
+            else:
+                self.meanFitnessScore = (self.meanFitnessScore * self.numSequencesScored + np.sum(scores))/(aDNALength + self.numSequencesScored)
+                self.numSequencesScored += aDNALength
 
         return score
 
@@ -194,8 +225,6 @@ class OrganismObject():
     # Set positions a given a node and ID where is has to be
     def setNode(self, node, ID):
         
-        # CANNOT BE BY ID BC SECOND IS OVERWRITED
-
         print("node.ID = {} ID to change {}".format(node.ID, ID))
         if self.rootNode.ID == ID:
             self.rootNode = node
@@ -226,13 +255,20 @@ class OrganismObject():
 
     # Returns the number of nodes of the organism
     def countNodes(self):
-        return self.rootNode.countNodes()
+        self.numNodes = self.rootNode.countNodes()
+        
+        return self.numNodes
 
 
     # Reset IDs of the full organism
     def resetIDs(self):
         firstID = 0
         self.rootNode.resetID(firstID)
+
+    #Reset mean sequences scores and mean sequences scored
+    def resetScores(self):
+        self.meanFitnessScore = 0 
+        self.numSequencesScored = 0
 
     # Prints the whole tree data structure
     def print(self):

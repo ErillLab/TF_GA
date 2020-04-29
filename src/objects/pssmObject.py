@@ -111,7 +111,7 @@ class PssmObject(Node):
         for ID, score, position, length in table:
             if self.ID == ID:
                 #Maybe add half the length so the position is centered 
-                return score, float(position) 
+                return score, float(position) + self.length/2
         return 0, 0
 
     # Adds himself as a pssm recognizer    

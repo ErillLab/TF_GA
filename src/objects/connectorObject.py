@@ -88,9 +88,10 @@ class ConnectorObject(Node):
         exponent = - numerator / (1 + 2 * (self.sigma ** 2))
         eConnector = (tau/np.log10(10 + self.sigma ** 2)) * np.exp(exponent)
         
-        energy = (eNode1 + eNode2) * eConnector
+        #energy = (eNode1 + eNode2) + eConnector
         #print("N1:{} N2:{} C:{} SIGMA:{} MU {}\n".format(eNode1, eNode2, eConnector, self.sigma, self.mu))
         #energy = (eNode1 + eNode2) * eConnector
+        energy = max(eNode1*eConnector +eNode2, eNode2*eConnector +eNode1)
         distance = (distance1 + distance2) / 2
 
         return energy, distance 
