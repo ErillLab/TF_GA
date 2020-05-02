@@ -1,0 +1,37 @@
+- need to create an md file detailing the config parameters and their role
+- must print to results the configuration file (for the record)
+- save as file also the trace (what's printed at each iteration on screen)
+- MAX_SEQUENCES_TO_FIT should have separate values for positive and negative
+  datasets. That is, we should be able to control what is the sample size for
+  the negative dataset independently of the size of the positive set.
+- To deal with uneven pos/neg dataset sample sizes, we should average the
+  fitness component of each dataset (i.e. score over positive, score over
+  negative) before taking the difference.
+- During run:
+  It would be ideal to display the node number for the best organism, together
+  with its score. Also, the node number (and org # and complexity penalty) for
+  the best organism in current iteration.
+- A visual representation of the organisms using consensus sequences and 
+  connectors in a tree-like structure would work great. Consensus sequences
+  could use IUPAC extended code or upper (freq>0.5) lower (freq<0.5) case.
+
+Example:
+c0 - c1 - CWGT <-- [IUPAC: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2865858/]
+   |    |  (mu)14 (sigma)5
+   |    |  aCAg <-- [upper/lowercase]
+   | c2 - c3 - ATgA
+   |    |    | 6 12
+   |    |    | TTaa
+   |    - TAAt
+
+- Ability to launch multiple runs (and generate results1, results2....) folders
+  to exploit multicore CPUs
+
+- inputOrganisms_dataset3_0.json performs worse than inputOrganisms_dataset3_1.json
+  on positive_dataset3.fas, even though it makes more "good" CTGT-n8-ACAG matches
+  on the positive dataset because its PSSMs are a bit more "relaxed" (realistic).
+  this is because such relaxation leads to more binding on the background, which
+  suggests that we are not giving enough weight to the connector binding.
+  Upgraded Thau to 10.0 and this "fixes" the problem.   
+
+- complexity penalty could increase with the log of the number of iterations
