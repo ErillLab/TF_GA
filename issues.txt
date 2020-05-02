@@ -34,4 +34,7 @@ c0 - c1 - CWGT <-- [IUPAC: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2865858/
   suggests that we are not giving enough weight to the connector binding.
   Upgraded Thau to 10.0 and this "fixes" the problem.   
 
-- complexity penalty could increase with the log of the number of iterations
+- complexity penalty could increase with the log of the number of iterations    
+- Complexity penalty (or rates for simplifier mutation should be scaled by
+  Thau; otherwise there is intrinsic reward for many connectors if Thau is
+  raised)
