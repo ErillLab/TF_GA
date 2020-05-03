@@ -1,16 +1,22 @@
 - need to create an md file detailing the config parameters and their role
+
 - must print to results the configuration file (for the record)
+
 - save as file also the trace (what's printed at each iteration on screen)
+
 - MAX_SEQUENCES_TO_FIT should have separate values for positive and negative
   datasets. That is, we should be able to control what is the sample size for
   the negative dataset independently of the size of the positive set.
+
 - To deal with uneven pos/neg dataset sample sizes, we should average the
   fitness component of each dataset (i.e. score over positive, score over
   negative) before taking the difference.
+
 - During run:
   It would be ideal to display the node number for the best organism, together
   with its score. Also, the node number (and org # and complexity penalty) for
   the best organism in current iteration.
+
 - A visual representation of the organisms using consensus sequences and 
   connectors in a tree-like structure would work great. Consensus sequences
   could use IUPAC extended code or upper (freq>0.5) lower (freq<0.5) case.
@@ -38,3 +44,18 @@ c0 - c1 - CWGT <-- [IUPAC: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2865858/
 - Complexity penalty (or rates for simplifier mutation should be scaled by
   Thau; otherwise there is intrinsic reward for many connectors if Thau is
   raised)
+
+- homogeneize fitness vs. effective fitness. why isn't eff_fit used across the
+  board? confusing MS vs. MF. Denote A for average and M for max. Use fitness
+  (effective fitness) all across, or display both fitness and penalty component.
+
+- output to file whenever MSP(t+1)>MSP(t), this makes it easier to track what
+  the GA is doing. Alternatively, output to file every X iterations (user-def).
+
+- Also, would be neat to output the max organism against one single sequence
+  from the positive set, to see what the organism is doing.
+
+- Discuss convenience of deterministic crowding when pop.size is relatively small.
+
+- Discuss recombination (cross-over). Is it happening always? No probability of
+  cross-over? Are parents mutated, or just offspring?
