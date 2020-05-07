@@ -158,6 +158,10 @@ class OrganismFactory:
             newOrganism.setRootNode(rootNode)
             newOrganism.resetIDs()
 
+            if "isTracked" in organism.keys():
+                print("Organism {} tracked...".format(newOrganism.ID))
+                newOrganism.setIsTracked(organism["isTracked"])
+
             organismList.append(newOrganism)
 
         return organismList

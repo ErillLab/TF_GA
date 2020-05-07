@@ -14,13 +14,18 @@ DATASET_BASE_PATH_DIR = ''
 RESULT_BASE_PATH_DIR = '' 
 POSITIVE_FILENAME  = ''
 NEGATIVE_FILENAME  = ''
+POPULATION_ORIGIN = ''
+POPULATION_FILL_TYPE = ''
+INPUT_FILENAME = ''
+
 JSON_CONFIG_FILENAME = "config.json"
 configOrganism = {}
 configOrganismFactory = {}
 configConnector = {}
 configPssm = {}
 
-MAX_SEQUENCES_TO_FIT = 0
+MAX_SEQUENCES_TO_FIT_POS = 0
+MAX_SEQUENCES_TO_FIT_NEG = 0
 MIN_ITERATIONS = 0
 MIN_SCORE = 0
 
@@ -46,11 +51,45 @@ def main():
     meanFitness = 0
     # Generate initial population
     organismFactory = OrganismFactory(configOrganism, configOrganismFactory, configConnector, configPssm)
-    for i in range(POPULATION_LENGTH):
-        newOrganism = organismFactory.getOrganism()
-        organismPopulation.append(newOrganism)
-        meanNodes += newOrganism.countNodes()
+    
+    organismPopulation = []
+    
+    if POPULATION_ORIGIN.lower() == "random":
+        # For a random origin, we can generate #POPULATION_LENGTH organisms.
+        for i in range(POPULATION_LENGTH):
+            newOrganism = organismFactory.getOrganism()
+            organismPopulation.append(newOrganism)
+            meanNodes += newOrganism.countNodes()
+
+    elif POPULATION_ORIGIN.lower() == "file":
+        # Set the file organisms and fill with random/same organisms
+        # POPULATION_LENGTH must be >= len(fileOrganisms)
+        fileOrganisms = organismFactory.importOrganisms(INPUT_FILENAME)
+        remainingOrganisms = POPULATION_LENGTH - len(fileOrganisms) 
+        fillOrganismPopulation = []
+        if POPULATION_FILL_TYPE.lower() == "random":
+            ## FILL WITH RANDOM
+            for i in range(remainingOrganisms):
+                newOrganism = organismFactory.getOrganism()
+                fillOrganismPopulation.append(newOrganism)
+
+        elif POPULATION_FILL_TYPE.lower() == "same":
+            ## FILL WITH SAME
+            for i in range(remainingOrganisms):
+                newOrganism = copy.deepcopy(fileOrganisms[i%len(fileOrganisms)])
+                fillOrganismPopulation.append(newOrganism)
+                newOrganism.setID(organismFactory.getID())
+
+        #join & calculate mean nodes
+        organismPopulation = fileOrganisms + fillOrganismPopulation
         
+        for org in organismPopulation:
+            meanNodes += org.countNodes()
+
+
+    else:
+        print("Not a valid population origin, check the configuration file.")
+        return -1
 
     meanNodes /= POPULATION_LENGTH
     #print("mean: {}".format(meanNodes))
@@ -120,13 +159,13 @@ def main():
 
                     firstOrganism = pairChildren[j][0] # Parent Organism
                     secondOrganism = pairChildren[j][1] # Chid Organism
-                    p1 = firstOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT]) 
-                    n1 = firstOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT])
+                    p1 = firstOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT_POS]) 
+                    n1 = firstOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT_NEG])
                     # Compute complexity after gettig the score
                     c1 = firstOrganism.getComplexity(meanNodes, meanFitness)
                     
-                    p2 = secondOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT])
-                    n2 = secondOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT])
+                    p2 = secondOrganism.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT_POS])
+                    n2 = secondOrganism.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT_NEG])
                     # Compute complexity after gettig the score
                     c2 = secondOrganism.getComplexity(meanNodes, meanFitness)
                     
@@ -170,6 +209,16 @@ def main():
                         # If the child wins, update meanNodes
                         #meanNodes = ((meanNodes * POPULATION_LENGTH) + secondOrganism.countNodes() - firstOrganism.countNodes()) / POPULATION_LENGTH
                         aNodes.append(secondOrganism.countNodes())
+
+                        # Set the tracking to the new child...
+                        secondOrganism.setIsTracked(firstOrganism.isTracked)
+
+                        if secondOrganism.isTracked:
+                            # Export it If its being tracked
+                            print("Evolution {}->{}".format(firstOrganism.ID, secondOrganism.ID))
+                            filename = "tr{}_{}".format(time.strftime(timeformat), secondOrganism.ID)
+                            exportOrganism(secondOrganism, positiveDataset, filename, organismFactory)
+                        
 
                         # Check if its the max score in that iteration
                         if effectiveFitness2 > maxScore:
@@ -335,11 +384,15 @@ def setUp():
     global POSITIVE_FILENAME 
     global NEGATIVE_FILENAME 
     global RESULT_PATH_PATH_DIR
-    global MAX_SEQUENCES_TO_FIT
+    global MAX_SEQUENCES_TO_FIT_POS
+    global MAX_SEQUENCES_TO_FIT_NEG
     global MIN_ITERATIONS
     global MIN_SCORE
     global THRESHOLD
     global COMPLEXITY_FACTOR
+    global POPULATION_ORIGIN
+    global POPULATION_FILL_TYPE
+    global INPUT_FILENAME
     
     # Config data
     global configOrganism
@@ -353,12 +406,16 @@ def setUp():
     RESULT_BASE_PATH_DIR = config["main"]["RESULT_BASE_PATH_DIR"]
     POSITIVE_FILENAME = config["main"]["POSITIVE_FILENAME"]
     NEGATIVE_FILENAME = config["main"]["NEGATIVE_FILENAME"]
-    MAX_SEQUENCES_TO_FIT = config["main"]["MAX_SEQUENCES_TO_FIT"]
+    MAX_SEQUENCES_TO_FIT_POS = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
+    MAX_SEQUENCES_TO_FIT_NEG = config["main"]["MAX_SEQUENCES_TO_FIT_NEG"]
     MIN_ITERATIONS = config["main"]["MIN_ITERATIONS"]
     MIN_SCORE = config["main"]["MIN_SCORE"]
     THRESHOLD = config["main"]["THRESHOLD"]
     END_WHILE_METHOD = config["main"]["END_WHILE_METHOD"]
     COMPLEXITY_FACTOR = config["main"]["COMPLEXITY_FACTOR"]
+    POPULATION_ORIGIN = config["main"]["POPULATION_ORIGIN"]
+    POPULATION_FILL_TYPE = config["main"]["POPULATION_FILL_TYPE"]
+    INPUT_FILENAME = config["main"]["INPUT_FILENAME"]
 
 
     configOrganism = config["organism"]

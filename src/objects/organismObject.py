@@ -15,6 +15,9 @@ class OrganismObject():
         self.MUTATE_PROBABILITY_SUBSTITUTE_PSSM = conf["MUTATE_PROBABILITY_SUBSTITUTE_PSSM"]
         self.MUTATE_PROBABILITY_RISE_CHILD = conf["MUTATE_PROBABILITY_RISE_CHILD"]
         self.MUTATE_PROBABILITY_NODE_MUTATION = conf["MUTATE_PROBABILITY_NODE_MUTATION"]
+        self.isTracked = False
+
+
         
     # Setters an getters
     def setRootNode(self, rootNode):
@@ -27,7 +30,11 @@ class OrganismObject():
         return self.ID
     
     def setID(self, iD):
+
         self.ID = iD
+
+    def setIsTracked(self, newTracked):
+        self.isTracked = newTracked
 
     # Mutates a part of the organism
     def mutate(self, orgFactory):

@@ -13,6 +13,8 @@ def main():
     positivePath = config["main"]["DATASET_BASE_PATH_DIR"] + config["main"]["POSITIVE_FILENAME"]
     negativePath = config["main"]["DATASET_BASE_PATH_DIR"] + config["main"]["NEGATIVE_FILENAME"]
     complexityFactor = config["main"]["COMPLEXITY_FACTOR"]
+    MAX_SEQUENCES_TO_FIT_POS = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
+    MAX_SEQUENCES_TO_FIT_NEG = config["main"]["MAX_SEQUENCES_TO_FIT_NEG"]
     
     inputOrganismsPath = config["main"]["INPUT_FILENAME"]
     mean_nodes = 3.0
@@ -31,8 +33,8 @@ def main():
         #org.print()
         nodes = org.countNodes()
 
-        p1 = org.getScore(positiveDataset)
-        n1 = org.getScore(negativeDataset[:50])
+        p1 = org.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT_POS])
+        n1 = org.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT_NEG])
         c1 = org.getComplexity(mean_nodes, mean_fitness)
         
         #Score

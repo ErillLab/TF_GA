@@ -1,23 +1,26 @@
 {
   "main": {
     "POPULATION_LENGTH":100,
+    "POPULATION_ORIGIN":"file",
+    "POPULATION_FILL_TYPE":"random",
     "DATASET_BASE_PATH_DIR":"datasets/",
     "RESULT_BASE_PATH_DIR":"results/",
     "RESULT_TEST_BASE_PATH_DIR": "resultsTEST/",
     "POSITIVE_FILENAME":"positive_dataset.fas",
     "NEGATIVE_FILENAME":"negative_dataset.fas",
-    "INPUT_FILENAME":"inputOrganisms.json",
-    "MAX_SEQUENCES_TO_FIT":50,
+    "INPUT_FILENAME":"inputOrganisms2.json",
+    "MAX_SEQUENCES_TO_FIT_POS":50,
+    "MAX_SEQUENCES_TO_FIT_NEG":50,
+    "END_WHILE_METHOD":"iterations",
     "MIN_ITERATIONS":100,
     "MIN_SCORE":10,
     "THRESHOLD":0.05,
-    "END_WHILE_METHOD":"iterations",
     "COMPLEXITY_FACTOR":0.5
 
   },
 
   "organism": {
-    "CUMULATIVE_FIT_METHOD":"sum",
+    "CUMULATIVE_FIT_METHOD":"mean",
     "MUTATE_PROBABILITY_SUBSTITUTE_PSSM":0.15,
     "MUTATE_PROBABILITY_RISE_CHILD":0.05,
     "MUTATE_PROBABILITY_NODE_MUTATION":0.05
@@ -38,7 +41,7 @@
     "MUTATE_PROBABILITY_SIGMA":0.4,
     "MUTATE_PROBABILITY_MU":0.4,
     "MUTATE_PROBABILITY_SWAP":0.4,
-    "TAU":2.0,
+    "TAU":10.0,
     "MUTATE_VARIANCE_SIGMA":10,
     "MUTATE_VARIANCE_MU":10
   },
