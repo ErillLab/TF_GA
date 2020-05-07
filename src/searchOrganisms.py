@@ -29,6 +29,8 @@ MAX_SEQUENCES_TO_FIT_NEG = 0
 MIN_ITERATIONS = 0
 MIN_SCORE = 0
 
+COMBINATION_PROBABILITY = 0.0
+
 organismPopulation = []
 # meanNodes are the mean nodes of the population organisms lately
 # used to calculate organism complexity
@@ -255,7 +257,7 @@ def main():
             print("Iter: {} AN:{:.2f} AF:{:.2f} - MF: {:.2f} MSP: {:.2f} MP: {:.2f} MN: {} -  BO: {} BF: {:.2f} BN: {} BP: {:.2f} Time: {}"
                     .format(iterations, meanNodes, meanFitness, maxScore, maxScoreP, maxPenalty, maxNodes, bestOrganism[0].ID, bestOrganism[1], bestOrganism[2], bestOrganism[3], sTime))
             if(changedBestScore):
-                filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0])
+                filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0].ID)
                 exportOrganism(bestOrganism[0], positiveDataset, filename, organismFactory)
 
             #print("-"*10)
@@ -310,74 +312,98 @@ def combineOrganisms(organism1, organism2, organismFactory):
 
     child1.setID(organismFactory.getID())
     child2.setID(organismFactory.getID())
-
-    # Select random nodes from each child
-    randomNode1 = random.randint(0,nNodesOrg1 - 1)
-    randomNode2 = random.randint(0,nNodesOrg2 - 1)
-    node1 = child1.getNode(randomNode1)
-    node2 = child2.getNode(randomNode2)
-
-    # Save the number of nodes taken from each  child
-    nNodesFromOrg1 = node1.countNodes()
-    nNodesFromOrg2 = node2.countNodes()
-
-    # Search is done by ID, so this should be checked bc 
-    # you could find duplicated IDs!!
-
-    parentNode1 = child1.getParent(node1.ID)
-    parentNode2 = child2.getParent(node2.ID)
     
-    # Swap nodes
-    # Set nodes in oposite children 
-    if parentNode1["isRootNode"]:
-        # Its the root node of child 1
-        child1.setRootNode(node2)
-    else:
-        if parentNode1["isLeftSide"]:
-            # Child on left side
-            parentNode1["self"].setNode1(node2)
+    # Combine parents with a probability p
+    
+    if random.random() < COMBINATION_PROBABILITY:
+
+    
+        # Select random nodes from each child
+        randomNode1 = random.randint(0,nNodesOrg1 - 1)
+        randomNode2 = random.randint(0,nNodesOrg2 - 1)
+        node1 = child1.getNode(randomNode1)
+        node2 = child2.getNode(randomNode2)
+
+        # Save the number of nodes taken from each  child
+        nNodesFromOrg1 = node1.countNodes()
+        nNodesFromOrg2 = node2.countNodes()
+
+        # Search is done by ID, so this should be checked bc 
+        # you could find duplicated IDs!!
+
+        parentNode1 = child1.getParent(node1.ID)
+        parentNode2 = child2.getParent(node2.ID)
+    
+        # Swap nodes
+        # Set nodes in oposite children 
+        if parentNode1["isRootNode"]:
+            # Its the root node of child 1
+            child1.setRootNode(node2)
         else:
-            # Child on right side
-            parentNode1["self"].setNode2(node2)
+            if parentNode1["isLeftSide"]:
+                # Child on left side
+                parentNode1["self"].setNode1(node2)
+            else:
+                # Child on right side
+                parentNode1["self"].setNode2(node2)
 
-    if parentNode2["isRootNode"]:
-        # Its the root node of child 2
-        child2.setRootNode(node1)
-    else: 
-        if parentNode2["isLeftSide"]:
-            # Child on left side
-            parentNode2["self"].setNode1(node1)
-        else:
-            # Child on right side
-            parentNode2["self"].setNode2(node1)
+        if parentNode2["isRootNode"]:
+            # Its the root node of child 2
+            child2.setRootNode(node1)
+        else: 
+            if parentNode2["isLeftSide"]:
+                # Child on left side
+                parentNode2["self"].setNode1(node1)
+            else:
+                # Child on right side
+                parentNode2["self"].setNode2(node1)
 
-    nNodesChild1 = child1.countNodes()
-    nNodesChild2 = child2.countNodes()
+        nNodesChild1 = child1.countNodes()
+        nNodesChild2 = child2.countNodes()
 
-    # Reset childs IDs
-    child1.resetIDs()
-    child2.resetIDs()
+        # Reset childs IDs
+        child1.resetIDs()
+        child2.resetIDs()
 
-    # Reset fitness Scores
-    child1.resetScores()
-    child2.resetScores()
+        # Reset fitness Scores
+        child1.resetScores()
+        child2.resetScores()
     
 
 
     
-    # dictionary with an organism and similarities to each parent
-    child1Similarities = {
+        # dictionary with an organism and similarities to each parent
+        child1Similarities = {
             "simOrg1": (nNodesChild1 - nNodesFromOrg2) / nNodesChild1,
             "simOrg2": nNodesFromOrg2 / nNodesChild1,
             "child": child1
             }
-    
 
-    child2Similarities = {
+        child2Similarities = {
             "simOrg1": nNodesFromOrg1 / nNodesChild2,
             "simOrg2": (nNodesChild2 - nNodesFromOrg1) / nNodesChild2,
             "child": child2
             }
+    else:
+
+        # Reset fitness Scores
+        child1.resetScores()
+        child2.resetScores()
+
+
+        #If childs are not recombined, return the same organisms and their similarities
+        child1Similarities = {
+            "simOrg1": 1, # Equal to organism 1
+            "simOrg2": 0,
+            "child": child1
+            }
+
+        child2Similarities = {
+            "simOrg1": 0,
+            "simOrg2": 1, # Equal to organism2
+            "child": child2
+            }
+
     return {"child1": child1Similarities, "child2": child2Similarities}
 
 
@@ -402,6 +428,7 @@ def setUp():
     global POPULATION_ORIGIN
     global POPULATION_FILL_TYPE
     global INPUT_FILENAME
+    global COMBINATION_PROBABILITY
     
     # Config data
     global configOrganism
@@ -425,6 +452,7 @@ def setUp():
     POPULATION_ORIGIN = config["main"]["POPULATION_ORIGIN"]
     POPULATION_FILL_TYPE = config["main"]["POPULATION_FILL_TYPE"]
     INPUT_FILENAME = config["main"]["INPUT_FILENAME"]
+    COMBINATION_PROBABILITY = config["main"]["COMBINATION_PROBABILITY"]
 
 
     configOrganism = config["organism"]

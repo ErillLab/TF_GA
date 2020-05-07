@@ -15,8 +15,8 @@
     "MIN_ITERATIONS":100,
     "MIN_SCORE":10,
     "THRESHOLD":0.05,
-    "COMPLEXITY_FACTOR":0.5
-
+    "COMPLEXITY_FACTOR":0.5,
+    "COMBINATION_PROBABILITY":0.5
   },
 
   "organism": {
