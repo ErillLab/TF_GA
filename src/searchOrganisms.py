@@ -43,7 +43,7 @@ THRESHOLD = 0.0
 
 def main():
 
-    
+    print("Loading parameters...")
     positiveDataset = readFastaFile(DATASET_BASE_PATH_DIR + POSITIVE_FILENAME)
     negativeDataset = readFastaFile(DATASET_BASE_PATH_DIR + NEGATIVE_FILENAME)
 
@@ -97,9 +97,10 @@ def main():
 
     maxScore = float("-inf")
     lastMaxScore = 0.0 
-    bestOrganism = (None, 0.0)
+    bestOrganism = (None, 0.0, 0, 0.0)
 
     timeformat = "%Y-%m-%d--%H-%M-%S"
+    print("Starting execution...")
     # Main loop, it iterates until organisms do not get a significant change 
     # or MIN_ITERATIONS is reached.
     # it can be done untill you get a score over a value
@@ -197,9 +198,13 @@ def main():
                         if effectiveFitness1 > maxScore:
                             maxScore = effectiveFitness1
                             maxScoreP = p1
+                            maxPenalty = c1
+                            maxNodes = firstOrganism.countNodes()
+
                         #Check if its the max score in the program
                         if effectiveFitness1 > bestOrganism[1]:
-                            bestOrganism = (firstOrganism, effectiveFitness1)
+                            # ID, EF, Nodes, Penalty applied
+                            bestOrganism = (firstOrganism, effectiveFitness1, firstOrganism.countNodes(), c1)
                             changedBestScore = True
 
                     else: # The second organism wins
@@ -224,10 +229,13 @@ def main():
                         if effectiveFitness2 > maxScore:
                             maxScore = effectiveFitness2
                             maxScoreP = p2
+                            maxPenalty = c2
+                            maxNodes = secondOrganism.countNodes()
 
                         #Check if its the max score in the program
                         if effectiveFitness2 > bestOrganism[1]:
-                            bestOrganism = (secondOrganism, effectiveFitness2)
+                            # ID, EF, Nodes, Penalty applied
+                            bestOrganism = (secondOrganism, effectiveFitness2, secondOrganism.countNodes(), c2)
                             changedBestScore = True
 
                      
@@ -244,11 +252,12 @@ def main():
             m, s = divmod((time.time()-initial), 60)
             h, m = divmod(m, 60)
             sTime = "{}h:{}m:{:.2f}s".format(int(h),int(m),s)
-            print("Iter: {} MN:{:.2f} MF:{:.2f} MS: {:.2f} MSP: {:.2f}-  BO: {} S: {:.2f} Time: {}"
-                    .format(iterations, meanNodes, meanFitness, maxScore, maxScoreP, bestOrganism[0].ID, bestOrganism[1], sTime))
+            print("Iter: {} AN:{:.2f} AF:{:.2f} - MF: {:.2f} MSP: {:.2f} MP: {:.2f} MN: {} -  BO: {} BF: {:.2f} BN: {} BP: {:.2f} Time: {}"
+                    .format(iterations, meanNodes, meanFitness, maxScore, maxScoreP, maxPenalty, maxNodes, bestOrganism[0].ID, bestOrganism[1], bestOrganism[2], bestOrganism[3], sTime))
             if(changedBestScore):
-                filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0].ID)
+                filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0])
                 exportOrganism(bestOrganism[0], positiveDataset, filename, organismFactory)
+
             #print("-"*10)
             iterations += 1
             # END WHILE
@@ -261,7 +270,7 @@ def main():
     finally:
         print()
         print("-"*10)
-        print("Best Organism {}: {}".format(bestOrganism[0].ID, bestOrganism[1]))
+        print("Best Organism {}: {}".format(bestOrganism[0], bestOrganism[1]))
 
 # Checks if main while loop is finished
 # methods: 'Iterations', 'minScore', 'Threshold'
