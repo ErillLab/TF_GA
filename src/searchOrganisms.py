@@ -7,6 +7,7 @@ import random
 import copy
 import json
 import numpy as np
+import os
 
 
 POPULATION_LENGTH = 0
@@ -17,6 +18,7 @@ NEGATIVE_FILENAME  = ''
 POPULATION_ORIGIN = ''
 POPULATION_FILL_TYPE = ''
 INPUT_FILENAME = ''
+OUTPUT_FILENAME = ''
 
 JSON_CONFIG_FILENAME = "config.json"
 configOrganism = {}
@@ -222,7 +224,7 @@ def main():
 
                         if secondOrganism.isTracked:
                             # Export it If its being tracked
-                            print("Evolution {}->{}".format(firstOrganism.ID, secondOrganism.ID))
+                            println("Evolution {}->{}".format(firstOrganism.ID, secondOrganism.ID), RESULT_BASE_PATH_DIR + "evolution.txt")
                             filename = "tr{}_{}".format(time.strftime(timeformat), secondOrganism.ID)
                             exportOrganism(secondOrganism, positiveDataset, filename, organismFactory)
                         
@@ -254,8 +256,8 @@ def main():
             m, s = divmod((time.time()-initial), 60)
             h, m = divmod(m, 60)
             sTime = "{}h:{}m:{:.2f}s".format(int(h),int(m),s)
-            print("Iter: {} AN:{:.2f} AF:{:.2f} - MF: {:.2f} MSP: {:.2f} MP: {:.2f} MN: {} -  BO: {} BF: {:.2f} BN: {} BP: {:.2f} Time: {}"
-                    .format(iterations, meanNodes, meanFitness, maxScore, maxScoreP, maxPenalty, maxNodes, bestOrganism[0].ID, bestOrganism[1], bestOrganism[2], bestOrganism[3], sTime))
+            println("Iter: {} AN:{:.2f} AF:{:.2f} - MF: {:.2f} MSP: {:.2f} MP: {:.2f} MN: {} -  BO: {} BF: {:.2f} BN: {} BP: {:.2f} Time: {}"
+                    .format(iterations, meanNodes, meanFitness, maxScore, maxScoreP, maxPenalty, maxNodes, bestOrganism[0].ID, bestOrganism[1], bestOrganism[2], bestOrganism[3], sTime), RESULT_BASE_PATH_DIR + OUTPUT_FILENAME)
             if(changedBestScore):
                 filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0].ID)
                 exportOrganism(bestOrganism[0], positiveDataset, filename, organismFactory)
@@ -272,7 +274,7 @@ def main():
     finally:
         print()
         print("-"*10)
-        print("Best Organism {}: {}".format(bestOrganism[0], bestOrganism[1]))
+        print("Best Organism {}: {}".format(bestOrganism[0].ID, bestOrganism[1]))
 
 # Checks if main while loop is finished
 # methods: 'Iterations', 'minScore', 'Threshold'
@@ -428,6 +430,7 @@ def setUp():
     global POPULATION_ORIGIN
     global POPULATION_FILL_TYPE
     global INPUT_FILENAME
+    global OUTPUT_FILENAME
     global COMBINATION_PROBABILITY
     
     # Config data
@@ -439,7 +442,7 @@ def setUp():
     config = readJsonFile(JSON_CONFIG_FILENAME)
     POPULATION_LENGTH = config["main"]["POPULATION_LENGTH"]
     DATASET_BASE_PATH_DIR = config["main"]["DATASET_BASE_PATH_DIR"]
-    RESULT_BASE_PATH_DIR = config["main"]["RESULT_BASE_PATH_DIR"]
+    RESULT_BASE_PATH_DIR = config["main"]["RESULT_BASE_PATH_DIR"] + time.strftime("%Y%m%d%H%M%S") +"/"
     POSITIVE_FILENAME = config["main"]["POSITIVE_FILENAME"]
     NEGATIVE_FILENAME = config["main"]["NEGATIVE_FILENAME"]
     MAX_SEQUENCES_TO_FIT_POS = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
@@ -452,13 +455,30 @@ def setUp():
     POPULATION_ORIGIN = config["main"]["POPULATION_ORIGIN"]
     POPULATION_FILL_TYPE = config["main"]["POPULATION_FILL_TYPE"]
     INPUT_FILENAME = config["main"]["INPUT_FILENAME"]
+    OUTPUT_FILENAME = config["main"]["OUTPUT_FILENAME"]
     COMBINATION_PROBABILITY = config["main"]["COMBINATION_PROBABILITY"]
 
-
+    # Create directory where the output and results will be stored
+    os.mkdir(RESULT_BASE_PATH_DIR)
+    
+    # Store Config into variables to use later
     configOrganism = config["organism"]
     configOrganismFactory = config["organismFactory"]
     configConnector = config["connector"]
     configPssm = config["pssm"]
+
+    # Throw config on a file
+    parametersPath = RESULT_BASE_PATH_DIR + "parameters.txt"
+    println("-"*50, parametersPath)
+    println(" "*20+"PARAMETERS", parametersPath)
+    println("-"*50, parametersPath)
+    printConfigJSON(config["main"], "Main Config", parametersPath)
+    printConfigJSON(configOrganism, "Organism Config", parametersPath)
+    printConfigJSON(configOrganismFactory, "Organism Factory Config", parametersPath)
+    printConfigJSON(configConnector, "Connector Config", parametersPath)
+    printConfigJSON(configPssm, "PSSM Config", parametersPath)
+    println("-"*50, parametersPath)
+
 
 
 # Reads a fasta file and returns an array of DNA sequences (strings)
@@ -481,10 +501,21 @@ def readJsonFile(filename):
         return json.load(json_content)
 
 
-def printConfigJSON(config, name):
-    print("{}:".format(name))
+def printConfigJSON(config, name, path):
+    println("{}:".format(name), path)
     for key in config.keys():
-        print("{}: {}".format(key, config[key]))
+        println("{}: {}".format(key, config[key]), path)
+    println("\n", path)
+
+# Shows the string on stdout and write it to a file
+def println(string, nameFile):
+
+    print(string)
+    
+    # Here we are sure file exists
+    f = open(nameFile, "a+")
+    f.write(string + "\n")
+    f.close()
 
 # Entry point to app execution
 # It calculates the time, but could include other app stats
@@ -493,20 +524,9 @@ if __name__ == '__main__':
     setUp()
     main()
 
-
-    print("\n")
-    print("-"*50)
-    print(" "*20+"STATS")
-    print("-"*50)
-    print("Iterations: {}".format(MIN_ITERATIONS))
-    print("Population length: {}".format(POPULATION_LENGTH))
-    print("Complexity Factor: {}".format(COMPLEXITY_FACTOR))
-    printConfigJSON(configOrganism, "OrganismConfig")
-    print("-"*50)
     m, s = divmod((time.time()-initial), 60)
     h, m = divmod(m, 60)
-    print("Time: {}h:{}m:{:.2f}s".format(int(h),int(m),s))
-    print("-"*50)
+    println("Time: {}h:{}m:{:.2f}s".format(int(h),int(m),s), RESULT_BASE_PATH_DIR + "parameters.txt")
 
 
 
