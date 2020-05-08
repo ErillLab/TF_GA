@@ -29,7 +29,7 @@ MAX_SEQUENCES_TO_FIT_NEG = 0
 MIN_ITERATIONS = 0
 MIN_SCORE = 0
 
-COMBINATION_PROBABILITY = 0.0
+RECOMBINATION_PROBABILITY = 0.0
 
 organismPopulation = []
 # meanNodes are the mean nodes of the population organisms lately
@@ -315,7 +315,7 @@ def combineOrganisms(organism1, organism2, organismFactory):
     
     # Combine parents with a probability p
     
-    if random.random() < COMBINATION_PROBABILITY:
+    if random.random() < RECOMBINATION_PROBABILITY:
 
     
         # Select random nodes from each child
@@ -428,7 +428,7 @@ def setUp():
     global POPULATION_ORIGIN
     global POPULATION_FILL_TYPE
     global INPUT_FILENAME
-    global COMBINATION_PROBABILITY
+    global RECOMBINATION_PROBABILITY
     
     # Config data
     global configOrganism
@@ -452,7 +452,7 @@ def setUp():
     POPULATION_ORIGIN = config["main"]["POPULATION_ORIGIN"]
     POPULATION_FILL_TYPE = config["main"]["POPULATION_FILL_TYPE"]
     INPUT_FILENAME = config["main"]["INPUT_FILENAME"]
-    COMBINATION_PROBABILITY = config["main"]["COMBINATION_PROBABILITY"]
+    RECOMBINATION_PROBABILITY = config["main"]["RECOMBINATION_PROBABILITY"]
 
 
     configOrganism = config["organism"]
