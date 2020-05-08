@@ -279,7 +279,7 @@ def main():
 def isFinished(method, iterations, maxScore, lastMaxScore):
 
     if method.lower() == 'iterations':
-        return iterations >= MAX_ITERATIONS
+        return iterations >= MIN_ITERATIONS
 
     elif method.lower() == 'fitness':
         return maxScore >= MIN_FITNESS
