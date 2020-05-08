@@ -75,7 +75,7 @@ def main():
                 newOrganism = organismFactory.getOrganism()
                 fillOrganismPopulation.append(newOrganism)
 
-        elif POPULATION_FILL_TYPE.lower() == "same":
+        elif POPULATION_FILL_TYPE.lower() == "uniform":
             ## FILL WITH SAME
             for i in range(remainingOrganisms):
                 newOrganism = copy.deepcopy(fileOrganisms[i%len(fileOrganisms)])
