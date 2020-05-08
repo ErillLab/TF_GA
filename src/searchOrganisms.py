@@ -29,9 +29,9 @@ configPssm = {}
 MAX_SEQUENCES_TO_FIT_POS = 0
 MAX_SEQUENCES_TO_FIT_NEG = 0
 MIN_ITERATIONS = 0
-MIN_SCORE = 0
+MIN_FITNESS = 0
 
-COMBINATION_PROBABILITY = 0.0
+RECOMBINATION_PROBABILITY = 0.0
 
 organismPopulation = []
 # meanNodes are the mean nodes of the population organisms lately
@@ -77,7 +77,7 @@ def main():
                 newOrganism = organismFactory.getOrganism()
                 fillOrganismPopulation.append(newOrganism)
 
-        elif POPULATION_FILL_TYPE.lower() == "same":
+        elif POPULATION_FILL_TYPE.lower() == "uniform":
             ## FILL WITH SAME
             for i in range(remainingOrganisms):
                 newOrganism = copy.deepcopy(fileOrganisms[i%len(fileOrganisms)])
@@ -283,8 +283,8 @@ def isFinished(method, iterations, maxScore, lastMaxScore):
     if method.lower() == 'iterations':
         return iterations >= MIN_ITERATIONS
 
-    elif method.lower() == 'minscore':
-        return maxScore >= MIN_SCORE
+    elif method.lower() == 'fitness':
+        return maxScore >= MIN_FITNESS
 
     elif method.lower() == 'threshold':
         return abs(lastMaxScore - maxScore) <= THRESHOLD
@@ -317,7 +317,7 @@ def combineOrganisms(organism1, organism2, organismFactory):
     
     # Combine parents with a probability p
     
-    if random.random() < COMBINATION_PROBABILITY:
+    if random.random() < RECOMBINATION_PROBABILITY:
 
     
         # Select random nodes from each child
@@ -424,14 +424,14 @@ def setUp():
     global MAX_SEQUENCES_TO_FIT_POS
     global MAX_SEQUENCES_TO_FIT_NEG
     global MIN_ITERATIONS
-    global MIN_SCORE
+    global MIN_FITNESS
     global THRESHOLD
     global COMPLEXITY_FACTOR
     global POPULATION_ORIGIN
     global POPULATION_FILL_TYPE
     global INPUT_FILENAME
     global OUTPUT_FILENAME
-    global COMBINATION_PROBABILITY
+    global RECOMBINATION_PROBABILITY
     
     # Config data
     global configOrganism
@@ -448,7 +448,7 @@ def setUp():
     MAX_SEQUENCES_TO_FIT_POS = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
     MAX_SEQUENCES_TO_FIT_NEG = config["main"]["MAX_SEQUENCES_TO_FIT_NEG"]
     MIN_ITERATIONS = config["main"]["MIN_ITERATIONS"]
-    MIN_SCORE = config["main"]["MIN_SCORE"]
+    MIN_FITNESS = config["main"]["MIN_FITNESS"]
     THRESHOLD = config["main"]["THRESHOLD"]
     END_WHILE_METHOD = config["main"]["END_WHILE_METHOD"]
     COMPLEXITY_FACTOR = config["main"]["COMPLEXITY_FACTOR"]
@@ -456,7 +456,7 @@ def setUp():
     POPULATION_FILL_TYPE = config["main"]["POPULATION_FILL_TYPE"]
     INPUT_FILENAME = config["main"]["INPUT_FILENAME"]
     OUTPUT_FILENAME = config["main"]["OUTPUT_FILENAME"]
-    COMBINATION_PROBABILITY = config["main"]["COMBINATION_PROBABILITY"]
+    RECOMBINATION_PROBABILITY = config["main"]["RECOMBINATION_PROBABILITY"]
 
     # Create directory where the output and results will be stored
     os.mkdir(RESULT_BASE_PATH_DIR)
