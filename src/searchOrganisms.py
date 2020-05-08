@@ -27,7 +27,7 @@ configPssm = {}
 MAX_SEQUENCES_TO_FIT_POS = 0
 MAX_SEQUENCES_TO_FIT_NEG = 0
 MIN_ITERATIONS = 0
-MIN_SCORE = 0
+MIN_FITNESS = 0
 
 RECOMBINATION_PROBABILITY = 0.0
 
@@ -279,10 +279,10 @@ def main():
 def isFinished(method, iterations, maxScore, lastMaxScore):
 
     if method.lower() == 'iterations':
-        return iterations >= MIN_ITERATIONS
+        return iterations >= MAX_ITERATIONS
 
-    elif method.lower() == 'minscore':
-        return maxScore >= MIN_SCORE
+    elif method.lower() == 'fitness':
+        return maxScore >= MIN_FITNESS
 
     elif method.lower() == 'threshold':
         return abs(lastMaxScore - maxScore) <= THRESHOLD
@@ -422,7 +422,7 @@ def setUp():
     global MAX_SEQUENCES_TO_FIT_POS
     global MAX_SEQUENCES_TO_FIT_NEG
     global MIN_ITERATIONS
-    global MIN_SCORE
+    global MIN_FITNESS
     global THRESHOLD
     global COMPLEXITY_FACTOR
     global POPULATION_ORIGIN
@@ -445,7 +445,7 @@ def setUp():
     MAX_SEQUENCES_TO_FIT_POS = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
     MAX_SEQUENCES_TO_FIT_NEG = config["main"]["MAX_SEQUENCES_TO_FIT_NEG"]
     MIN_ITERATIONS = config["main"]["MIN_ITERATIONS"]
-    MIN_SCORE = config["main"]["MIN_SCORE"]
+    MIN_FITNESS = config["main"]["MIN_FITNESS"]
     THRESHOLD = config["main"]["THRESHOLD"]
     END_WHILE_METHOD = config["main"]["END_WHILE_METHOD"]
     COMPLEXITY_FACTOR = config["main"]["COMPLEXITY_FACTOR"]
