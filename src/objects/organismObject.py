@@ -2,33 +2,34 @@
 # It allocates the full data structure
 import numpy as np
 import random
-class OrganismObject():
+
+
+class OrganismObject:
 
     # Organism constructor
-    def __init__(self, ID, conf, rootNode = None):
+    def __init__(self, ID, conf, rootNode=None):
         self.ID = ID
         self.rootNode = rootNode
-        self.meanFitnessScore = 0 # Mean fitness score on all datasets computed
-        self.numSequencesScored = 0 # Number of datasets computed
-        self.numNodes = 0 # Number of nodes of the oranism
+        self.meanFitnessScore = 0  # Mean fitness score on all datasets computed
+        self.numSequencesScored = 0  # Number of datasets computed
+        self.numNodes = 0  # Number of nodes of the oranism
         self.CUMULATIVE_FIT_METHOD = conf["CUMULATIVE_FIT_METHOD"]
-        self.MUTATE_PROBABILITY_SUBSTITUTE_PSSM = conf["MUTATE_PROBABILITY_SUBSTITUTE_PSSM"]
+        self.MUTATE_PROBABILITY_SUBSTITUTE_PSSM = conf[
+            "MUTATE_PROBABILITY_SUBSTITUTE_PSSM"
+        ]
         self.MUTATE_PROBABILITY_RISE_CHILD = conf["MUTATE_PROBABILITY_RISE_CHILD"]
         self.MUTATE_PROBABILITY_NODE_MUTATION = conf["MUTATE_PROBABILITY_NODE_MUTATION"]
         self.isTracked = False
 
-
-        
     # Setters an getters
     def setRootNode(self, rootNode):
         self.rootNode = rootNode
         # Compute nodes on the organism
         self.numNodes = 0
-         
 
     def getID(self):
         return self.ID
-    
+
     def setID(self, iD):
 
         self.ID = iD
@@ -38,18 +39,17 @@ class OrganismObject():
 
     # Mutates a part of the organism
     def mutate(self, orgFactory):
-   
 
         # Substitute a random node by a random PSSM
         if random.random() < self.MUTATE_PROBABILITY_SUBSTITUTE_PSSM:
-            
+
             nNodes = self.countNodes()
             randomNode = random.randint(0, nNodes - 1)
             substitutedNode = self.getNode(randomNode)
             parentNode = self.getParent(substitutedNode.ID)
             # It can be improved so you can not pass the length by parameter jsjs
             newNode = orgFactory.createPSSM(orgFactory.PWM_LENGTH)
-            
+
             if parentNode["isRootNode"]:
 
                 self.rootNode = newNode
@@ -71,10 +71,9 @@ class OrganismObject():
             randomNode = random.randint(0, nNodes - 1)
             risedNode = self.getNode(randomNode)
             parentNode = self.getParent(risedNode.ID)
-            
-            # 
-            if not risedNode.ID == self.rootNode.ID:
 
+            #
+            if not risedNode.ID == self.rootNode.ID:
 
                 parent1 = self.getParent(risedNode.ID)
                 parent2 = self.getParent(parent1["self"].ID)
@@ -95,41 +94,41 @@ class OrganismObject():
             randomNode = random.randint(0, nNodes - 1)
             mutatedNode = self.getNode(randomNode)
             mutatedNode.mutate(orgFactory)
-   
 
     # Returns the complexity of the organism
     def getComplexity(self, meanNodes, meanFitness):
         # Complexity is calculed as:
         # meanFitnessScore * # nodes / meanNodes
-        
+
         return meanFitness * self.numNodes / meanNodes
 
     # Return the fitness of the organism for a given DNA sequence
     def getBestAllFitness(self, sDNA):
-        
+
         sequenceLength = len(sDNA)
 
         # get all PSSM recognizers
         aPssmObjects = self.rootNode.getAllPssm([])
 
-        #check position where it fits (position)
+        # check position where it fits (position)
         pssmPositionScoreTable = []
 
         # Go through all PSSM objects to check where it fits
         for pssm in aPssmObjects:
             pssmLength = pssm.length
-            maxScore = float("-inf")    
+            maxScore = float("-inf")
             position = 0
 
             # Check every position possible on the sequence
             for pos in range(sequenceLength - pssmLength):
-                score = pssm.getScore(sDNA[pos:pos+pssmLength])
+                score = pssm.getScore(sDNA[pos: pos + pssmLength])
 
                 # Update max score if the actual score is acctually better
                 # Also check that the position is not overlapping other pssm object
-                if score > maxScore and not self.isOverlapping(pos, pssmLength,
-                        pssmPositionScoreTable):
-                    
+                if score > maxScore and not self.isOverlapping(
+                    pos, pssmLength, pssmPositionScoreTable
+                ):
+
                     maxScore = score
                     position = pos
 
@@ -137,29 +136,30 @@ class OrganismObject():
             pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
 
         # This is to see how its going... not definitive
-        ''' 
+        """
+        # show on STDOUT a single line of how its binding...
         verbose = random.random()<0.001
         if verbose:
             print("\n{}".format(sDNA))
             mapPositions = " "*len(sDNA)
-            
+
             for ids, sc, pos, length in pssmPositionScoreTable:
                 strId = str(ids)
                 while len(strId) < length:
                     strId += "*"
                 mapPositions = mapPositions[0:pos] + strId + mapPositions[pos+length:]
-                
+
             print(mapPositions + "\n")
-        '''
+        """
         # call recursively to get the total fitness of the organism
-        finalScore, distance = self.rootNode.getBestAll(pssmPositionScoreTable)           
-       
+        finalScore, distance = self.rootNode.getBestAll(pssmPositionScoreTable)
+
         # return score in that dataset
         return finalScore
-    
+
     # Given a table of positioned pssms, check that new pssm is not overlapping
     def isOverlapping(self, positionN, lengthN, table):
-        
+
         for idP, scoreP, positionP, lengthP in table:
 
             # On the left side
@@ -176,15 +176,12 @@ class OrganismObject():
             else:
                 return True
 
-
-
-
         return False
 
     # Return the total Fitness for an array of DNA sequences and the fitness method
     # It also updates mean sequences score
     def getScore(self, aDNA):
-        
+
         score = 0
         aDNALength = len(aDNA)
 
@@ -198,12 +195,14 @@ class OrganismObject():
             if self.numSequencesScored == 0:
 
                 self.numSequencesScored = aDNALength
-                self.meanFitnessScore = score/aDNALength
+                self.meanFitnessScore = score / aDNALength
             # Calculate new values else
             else:
-                self.meanFitnessScore = (self.meanFitnessScore * self.numSequencesScored + score)/(aDNALength + self.numSequencesScored)
+                self.meanFitnessScore = (
+                    self.meanFitnessScore * self.numSequencesScored + score
+                ) / (aDNALength + self.numSequencesScored)
                 self.numSequencesScored += aDNALength
-                
+
         # mean method returns the mean of all fitness to SNA sequences
         elif self.CUMULATIVE_FIT_METHOD == "mean":
 
@@ -219,7 +218,9 @@ class OrganismObject():
                 self.meanFitnessScore = score
             # Calculate new values else
             else:
-                self.meanFitnessScore = (self.meanFitnessScore * self.numSequencesScored + np.sum(scores))/(aDNALength + self.numSequencesScored)
+                self.meanFitnessScore = (
+                    self.meanFitnessScore * self.numSequencesScored + np.sum(scores)
+                ) / (aDNALength + self.numSequencesScored)
                 self.numSequencesScored += aDNALength
 
         return score
@@ -231,7 +232,7 @@ class OrganismObject():
 
     # Set positions a given a node and ID where is has to be
     def setNode(self, node, ID):
-        
+
         print("node.ID = {} ID to change {}".format(node.ID, ID))
         if self.rootNode.ID == ID:
             self.rootNode = node
@@ -240,13 +241,13 @@ class OrganismObject():
 
     # Get the parent node of a given ID and if it is the left child
     def getParent(self, ID):
-        
+
         if self.rootNode.ID == ID:
             return {"isRootNode": True}
 
         return self.rootNode.getParent(ID)
 
-        '''
+        """
         if node1.ID == ID:
             # Return itself and specify child is on left side
             return [self, True]
@@ -258,23 +259,22 @@ class OrganismObject():
         if checkNode == None:
             checkNode = node2.getParent(ID)
         return checkNode
-        '''
+        """
 
     # Returns the number of nodes of the organism
     def countNodes(self):
         self.numNodes = self.rootNode.countNodes()
-        
-        return self.numNodes
 
+        return self.numNodes
 
     # Reset IDs of the full organism
     def resetIDs(self):
         firstID = 0
         self.rootNode.resetID(firstID)
 
-    #Reset mean sequences scores and mean sequences scored
+    # Reset mean sequences scores and mean sequences scored
     def resetScores(self):
-        self.meanFitnessScore = 0 
+        self.meanFitnessScore = 0
         self.numSequencesScored = 0
 
     # Prints the whole tree data structure
@@ -295,55 +295,55 @@ class OrganismObject():
     # Exports all DNA sequences organism binding to a file
     def exportResults(self, aDNA, filename):
 
-        #Sort the array, so its always shown in the same order
+        # Sort the array, so its always shown in the same order
         aDNA.sort()
 
         resultsFile = open(filename, "w+")
 
         for sDNA in aDNA:
-            
+
             sDNA = sDNA.lower()
             sequenceLength = len(sDNA)
 
             # get all PSSM recognizers
             aPssmObjects = self.rootNode.getAllPssm([])
 
-            #check position where it fits (position)
+            # check position where it fits (position)
             pssmPositionScoreTable = []
 
             # Go through all PSSM objects to check where it fits
             for pssm in aPssmObjects:
                 pssmLength = pssm.length
-                maxScore = float("-inf")    
+                maxScore = float("-inf")
                 position = 0
 
                 # Check every position possible on the sequence
                 for pos in range(sequenceLength - pssmLength):
-                    score = pssm.getScore(sDNA[pos:pos+pssmLength])
+                    score = pssm.getScore(sDNA[pos: pos + pssmLength])
 
                     # Update max score if the actual score is acctually better
                     # Also check that the position is not overlapping other pssm object
-                    if score > maxScore and not self.isOverlapping(pos, pssmLength,
-                        pssmPositionScoreTable):
-                    
+                    if score > maxScore and not self.isOverlapping(
+                        pos, pssmLength, pssmPositionScoreTable
+                    ):
+
                         maxScore = score
                         position = pos
 
                 # Add to a table the ID, maxScore and position of a pssm object
                 pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
-            
+
             resultsFile.write("\n{}\n".format(sDNA))
-            mapPositions = " "*len(sDNA)
-            
+            mapPositions = " " * len(sDNA)
+
             for ids, sc, pos, length in pssmPositionScoreTable:
                 strId = str(ids)
                 while len(strId) < length:
                     strId += "*"
-                mapPositions = mapPositions[0:pos] + strId + mapPositions[pos+length:]
-                
+                mapPositions = (
+                    mapPositions[0:pos] + strId + mapPositions[pos + length:]
+                )
+
             resultsFile.write(mapPositions + "\n")
 
         resultsFile.close()
-                
-
-
