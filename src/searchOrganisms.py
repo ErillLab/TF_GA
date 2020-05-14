@@ -120,7 +120,7 @@ def main():
             # Shuffle population & datasets
             random.shuffle(organismPopulation)
             random.shuffle(negativeDataset)
-            # random.shuffle(positiveDataset) (HAS no effect)
+            random.shuffle(positiveDataset)
 
             # Reset maxScore
             lastMaxScore = maxScore
@@ -315,7 +315,11 @@ def main():
                 RESULT_BASE_PATH_DIR + OUTPUT_FILENAME,
             )
 
-            if changedBestScore:
+            # Print agains a random positive secuence
+            random.shuffle(positiveDataset)
+            print(bestOrganism[0].printResult(positiveDataset[0]))
+
+            if changedBestScore or iterations % PERIODIC_EXPORT == 0:
                 filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0].ID)
                 exportOrganism(
                     bestOrganism[0], positiveDataset, filename, organismFactory
@@ -487,6 +491,7 @@ def setUp():
     global INPUT_FILENAME
     global OUTPUT_FILENAME
     global RECOMBINATION_PROBABILITY
+    global PERIODIC_EXPORT
 
     # Config data
     global configOrganism
@@ -514,6 +519,7 @@ def setUp():
     INPUT_FILENAME = config["main"]["INPUT_FILENAME"]
     OUTPUT_FILENAME = config["main"]["OUTPUT_FILENAME"]
     RECOMBINATION_PROBABILITY = config["main"]["RECOMBINATION_PROBABILITY"]
+    PERIODIC_EXPORT = config["main"]["PERIODIC_EXPORT"]
 
     # Create directory where the output and results will be stored
     os.mkdir(RESULT_BASE_PATH_DIR)

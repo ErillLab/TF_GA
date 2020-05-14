@@ -121,7 +121,7 @@ class OrganismObject:
 
             # Check every position possible on the sequence
             for pos in range(sequenceLength - pssmLength):
-                score = pssm.getScore(sDNA[pos: pos + pssmLength])
+                score = pssm.getScore(sDNA[pos : pos + pssmLength])
 
                 # Update max score if the actual score is acctually better
                 # Also check that the position is not overlapping other pssm object
@@ -319,7 +319,7 @@ class OrganismObject:
 
                 # Check every position possible on the sequence
                 for pos in range(sequenceLength - pssmLength):
-                    score = pssm.getScore(sDNA[pos: pos + pssmLength])
+                    score = pssm.getScore(sDNA[pos : pos + pssmLength])
 
                     # Update max score if the actual score is acctually better
                     # Also check that the position is not overlapping other pssm object
@@ -341,9 +341,51 @@ class OrganismObject:
                 while len(strId) < length:
                     strId += "*"
                 mapPositions = (
-                    mapPositions[0:pos] + strId + mapPositions[pos + length:]
+                    mapPositions[0:pos] + strId + mapPositions[pos + length :]
                 )
 
             resultsFile.write(mapPositions + "\n")
 
         resultsFile.close()
+
+    def printResult(self, sDNA):
+
+        sDNA = sDNA.lower()
+        sequenceLength = len(sDNA)
+
+        # get all PSSM recognizers
+        aPssmObjects = self.rootNode.getAllPssm([])
+
+        # check position where it fits (position)
+        pssmPositionScoreTable = []
+
+        # Go through all PSSM objects to check where it fits
+        for pssm in aPssmObjects:
+            pssmLength = pssm.length
+            maxScore = float("-inf")
+            position = 0
+
+            # Check every position possible on the sequence
+            for pos in range(sequenceLength - pssmLength):
+                score = pssm.getScore(sDNA[pos : pos + pssmLength])
+
+                # Update max score if the actual score is acctually better
+                # Also check that the position is not overlapping other pssm object
+                if score > maxScore and not self.isOverlapping(
+                    pos, pssmLength, pssmPositionScoreTable
+                ):
+                    maxScore = score
+                    position = pos
+
+                # Add to a table the ID, maxScore and position of a pssm object
+            pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
+
+        mapPositions = " " * len(sDNA)
+
+        for ids, sc, pos, length in pssmPositionScoreTable:
+            strId = str(ids)
+            while len(strId) < length:
+                strId += "*"
+            mapPositions = mapPositions[0:pos] + strId + mapPositions[pos + length :]
+
+        return "{}\n{}".format(sDNA, mapPositions)
