@@ -119,6 +119,8 @@ class OrganismObject:
             maxScore = float("-inf")
             position = 0
 
+            # Possible max scores of the secuences are in aPositions
+            aPositions = []
             # Check every position possible on the sequence
             for pos in range(sequenceLength - pssmLength):
                 score = pssm.getScore(sDNA[pos : pos + pssmLength])
@@ -129,28 +131,22 @@ class OrganismObject:
                     pos, pssmLength, pssmPositionScoreTable
                 ):
 
-                    maxScore = score
-                    position = pos
+                    if score > maxScore:
+                        maxScore = score
+                        aPositions = [pos]
 
+                    elif score == maxScore:
+                        aPositions.append(pos)
+
+            # Here we checked the whole sequence, but now we have to select the
+            # best pssm based on pssm memory
+            position = min(aPositions, key=lambda x: abs(x - pssm.positionMemory))
+
+            # And tell th pssm to remember it for the future
+            pssm.rememberPosition(pos)
             # Add to a table the ID, maxScore and position of a pssm object
             pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
 
-        # This is to see how its going... not definitive
-        """
-        # show on STDOUT a single line of how its binding...
-        verbose = random.random()<0.001
-        if verbose:
-            print("\n{}".format(sDNA))
-            mapPositions = " "*len(sDNA)
-
-            for ids, sc, pos, length in pssmPositionScoreTable:
-                strId = str(ids)
-                while len(strId) < length:
-                    strId += "*"
-                mapPositions = mapPositions[0:pos] + strId + mapPositions[pos+length:]
-
-            print(mapPositions + "\n")
-        """
         # call recursively to get the total fitness of the organism
         finalScore, distance = self.rootNode.getBestAll(pssmPositionScoreTable)
 
@@ -184,6 +180,9 @@ class OrganismObject:
 
         score = 0
         aDNALength = len(aDNA)
+
+        # Set the pssm memory to the middle of the secuence
+        self.rootNode.setPositionMemory(len(aDNA[0]) / 2.0)
 
         # sum method returns the sum of all fitness to DNA sequences
         if self.CUMULATIVE_FIT_METHOD == "sum":

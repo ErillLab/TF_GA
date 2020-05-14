@@ -21,8 +21,12 @@ class PssmObject(Node):
         self.MUTATE_PROBABILITY_SHIFT_RIGHT = config["MUTATE_PROBABILITY_SHIFT_RIGHT"]
         self.PSEUDO_COUNT = config["PSEUDO_COUNT"]
         self.UPPER_PRINT_PROBABILITY = config["UPPER_PRINT_PROBABILITY"]
+        # This two are to give memory to the pssm
+        self.POSITION_PROBABILITY_MEMORY = config["POSITION_PROBABILITY_MEMORY"]
+        self.newPositionProbability = 1.0 - self.POSITION_PROBABILITY_MEMORY
         # It first calculates PSSM Matrix based on  pwm
         self.recalculatePSSM()
+        self.positionMemory = 0
 
     # returns itself as a node
     def countNodes(self):
@@ -89,14 +93,10 @@ class PssmObject(Node):
             decimals = 2
             tmpBases = []
             # cast to float so round function does not become crazy
-            tmpBases.append(float(np.log2(4.0 * column["c"] +
-                                  self.PSEUDO_COUNT)))
-            tmpBases.append(float(np.log2(4.0 * column["t"] +
-                                  self.PSEUDO_COUNT)))
-            tmpBases.append(float(np.log2(4.0 * column["g"] +
-                                  self.PSEUDO_COUNT)))
-            tmpBases.append(float(np.log2(4.0 * column["a"] +
-                                  self.PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["c"] + self.PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["t"] + self.PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["g"] + self.PSEUDO_COUNT)))
+            tmpBases.append(float(np.log2(4.0 * column["a"] + self.PSEUDO_COUNT)))
 
             tmpPSSM.append(
                 {
@@ -144,6 +144,15 @@ class PssmObject(Node):
     # Nodes cannot be setted from recognizer objects
     def setNode(self, node, ID):
         return 0
+
+    def setPositionMemory(self, pos):
+        self.positionMemory = pos
+
+    def rememberPosition(self, pos):
+        self.positionMemory = (
+            self.positionMemory * self.POSITION_PROBABILITY_MEMORY
+            + float(pos) * self.newPositionProbability
+        )
 
     def resetID(self, newID):
         self.ID = newID

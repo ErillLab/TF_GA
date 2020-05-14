@@ -36,6 +36,10 @@ class ConnectorObject(Node):
     def setNode2(self, node2):
         self.node2 = node2
 
+    def setPositionMemory(self, pos):
+        self.node1.setPositionMemory(pos)
+        self.node2.setPositionMemory(pos)
+
     # Counts the number of nodes below the node (including itself)
     def countNodes(self):
         return self.node1.countNodes() + self.node2.countNodes() + 1
