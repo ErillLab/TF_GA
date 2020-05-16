@@ -18,6 +18,7 @@ class OrganismObject:
             "MUTATE_PROBABILITY_SUBSTITUTE_PSSM"
         ]
         self.MUTATE_PROBABILITY_RISE_CHILD = conf["MUTATE_PROBABILITY_RISE_CHILD"]
+        self.MUTATE_PROBABILITY_SUNK_CHILD = conf["MUTATE_PROBABILITY_SUNK_CHILD"]
         self.MUTATE_PROBABILITY_NODE_MUTATION = conf["MUTATE_PROBABILITY_NODE_MUTATION"]
         self.isTracked = False
 
@@ -87,6 +88,30 @@ class OrganismObject:
                         parent2["self"].setNode2(risedNode)
                 self.resetIDs()
 
+        # Add complexity to the organism
+        if random.random() < self.MUTATE_PROBABILITY_SUNK_CHILD:
+            nNodes = self.countNodes()
+            randomNode = random.randint(0, nNodes - 1)
+            sukenNode = self.getNode(randomNode)
+            parentNode = self.getParent(sukenNode.ID)
+
+            newNode = orgFactory.createConnection(0)
+
+            if parentNode["isRootNode"]:
+                self.rootNode = newNode
+            else:
+                if parentNode["isLeftSide"]:
+
+                    parentNode["self"].setNode1(newNode)
+                else:
+                    parentNode["self"].setNode1(newNode)
+
+            if random.random() < 0.5:
+                newNode.setNode1(sukenNode)
+            else:
+                newNode.setNode2(sukenNode)
+            self.resetIDs()
+
         # Mutate a random node
         if random.random() < self.MUTATE_PROBABILITY_NODE_MUTATION:
 
@@ -127,15 +152,15 @@ class OrganismObject:
 
                 # Update max score if the actual score is acctually better
                 # Also check that the position is not overlapping other pssm object
-                if score > maxScore and not self.isOverlapping(
-                    pos, pssmLength, pssmPositionScoreTable
-                ):
+                if not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
 
-                    if score > maxScore:
+                    if score > maxScore:  # First ocurrence of the max score
                         maxScore = score
                         aPositions = [pos]
 
-                    elif score == maxScore:
+                    elif (
+                        score == maxScore
+                    ):  # Another ocurrence of the max score and possible binding site
                         aPositions.append(pos)
 
             # Here we checked the whole sequence, but now we have to select the
@@ -155,7 +180,7 @@ class OrganismObject:
 
     # Given a table of positioned pssms, check that new pssm is not overlapping
     def isOverlapping(self, positionN, lengthN, table):
-
+        # Compare the new position with already positioned pssms
         for idP, scoreP, positionP, lengthP in table:
 
             # On the left side
@@ -316,18 +341,25 @@ class OrganismObject:
                 maxScore = float("-inf")
                 position = 0
 
+                aPositions = []
+
                 # Check every position possible on the sequence
                 for pos in range(sequenceLength - pssmLength):
                     score = pssm.getScore(sDNA[pos : pos + pssmLength])
 
                     # Update max score if the actual score is acctually better
                     # Also check that the position is not overlapping other pssm object
-                    if score > maxScore and not self.isOverlapping(
-                        pos, pssmLength, pssmPositionScoreTable
-                    ):
+                    if not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
+                        if score > maxScore:
+                            maxScore = score
+                            aPositions = [pos]
 
-                        maxScore = score
-                        position = pos
+                        elif score == maxScore:
+                            aPositions.append(pos)
+
+                position = min(aPositions, key=lambda x: abs(x - pssm.positionMemory))
+
+                pssm.rememberPosition(position)
 
                 # Add to a table the ID, maxScore and position of a pssm object
                 pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
@@ -364,19 +396,27 @@ class OrganismObject:
             maxScore = float("-inf")
             position = 0
 
+            aPositions = []
+            # Update max score if the actual score is acctually better
+            # Also check that the position is not overlapping other pssm object
+
             # Check every position possible on the sequence
             for pos in range(sequenceLength - pssmLength):
                 score = pssm.getScore(sDNA[pos : pos + pssmLength])
 
-                # Update max score if the actual score is acctually better
-                # Also check that the position is not overlapping other pssm object
-                if score > maxScore and not self.isOverlapping(
-                    pos, pssmLength, pssmPositionScoreTable
-                ):
-                    maxScore = score
-                    position = pos
+                if not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
+                    if score > maxScore:
+                        maxScore = score
+                        aPositions = [pos]
 
-                # Add to a table the ID, maxScore and position of a pssm object
+                    elif score == maxScore:
+                        aPositions.append(pos)
+
+            position = min(aPositions, key=lambda x: abs(x - pssm.positionMemory))
+
+            pssm.rememberPosition(position)
+
+            # Add to a table the ID, maxScore and position of a pssm object
             pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
 
         mapPositions = " " * len(sDNA)

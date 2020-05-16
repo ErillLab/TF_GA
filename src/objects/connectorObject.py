@@ -142,7 +142,7 @@ class ConnectorObject(Node):
     def print(self, distance):
         print(
             "   |" * distance
-            + " C"
+            + " - C"
             + str(self.ID)
             + " m: {} s: {}".format(self.mu, self.sigma)
         )
@@ -154,7 +154,7 @@ class ConnectorObject(Node):
         exportFile.write(
             "\n"
             + "   |" * level
-            + " C"
+            + " - C"
             + str(self.ID)
             + " m: {} s: {}".format(self.mu, self.sigma)
         )
