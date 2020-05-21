@@ -23,6 +23,7 @@ def main():
     mean_nodes = 3.0
     mean_fitness = 150
     positiveDataset = readFastaFile(positivePath)
+    positiveDataset.sort()
     negativeDataset = readFastaFile(negativePath)
     print("{} {}".format(len(positiveDataset), len(negativeDataset)))
 

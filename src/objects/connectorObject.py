@@ -77,30 +77,32 @@ class ConnectorObject(Node):
         return checkNode
 
     # returns an array of all pssm objects of the organism
-    def getAllPssm(self, aPssms):
-        aPssms = self.node1.getAllPssm(aPssms)
-        aPssms = self.node2.getAllPssm(aPssms)
-        return aPssms
+    def getAllPssm(self):
+        return self.node1.getAllPssm() + self.node2.getAllPssm()
 
     # calculate best all strategy for pssm position based on a table of pssm scores.
     def getBestAll(self, table):
         # This tau shows how much value we give to the connector fit
         tau = self.TAU
 
-        eNode1, distance1 = self.node1.getBestAll(table)
-        eNode2, distance2 = self.node2.getBestAll(table)
+        eNode1, pos1 = self.node1.getBestAll(table)
+        eNode2, pos2 = self.node2.getBestAll(table)
 
-        numerator = (self.mu - abs(distance1 - distance2)) ** 2
+        numerator = (self.mu - (pos2 - pos1)) ** 2
         exponent = -numerator / (1 + 2 * (self.sigma ** 2))
-        eConnector = (tau / np.log10(10 + self.sigma ** 2)) * np.exp(exponent)
+        log = np.log10(10 + self.sigma ** 2)
+        exp = np.exp(exponent)
 
-        # energy = (eNode1 + eNode2) + eConnector
+        eConnector = (tau / log) * exp
+        # print("{} {} {}".format(log, exp, eConnector))
+        # print("tau: {}d1: {} d2: {} mu:{} exp: {} econn: {}".format(tau, pos1, pos2, self.mu,  numerator, exponent, eConnector))
+        energy = (eNode1 + eNode2) + eConnector
         # print("N1:{} N2:{} C:{} SIGMA:{} MU {}\n".format(eNode1, eNode2, eConnector, self.sigma, self.mu))
         # energy = (eNode1 + eNode2) * eConnector
-        energy = max(eNode1 * eConnector + eNode2, eNode2 * eConnector + eNode1)
-        distance = (distance1 + distance2) / 2
+        # energy = max(eNode1 * eConnector + eNode2, eNode2 * eConnector + eNode1)
+        position = (pos1 + pos2) / 2
 
-        return energy, distance
+        return energy, position
 
     # Sets the node on a given ID
     def setNode(self, node, ID):

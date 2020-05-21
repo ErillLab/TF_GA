@@ -14,6 +14,7 @@ class PssmObject(Node):
         self.length = len(pwm)  # length of the numpy array
         self.pwm = pwm  # numpy array of dictionaries
         self.pssm = None
+        self.optimalCombination = []
         self.MUTATE_PROBABILITY_RANDOM_COL = config["MUTATE_PROBABILITY_RANDOM_COL"]
         self.MUTATE_PROBABILITY_FLIP_COLS = config["MUTATE_PROBABILITY_FLIP_COL"]
         self.MUTATE_PROBABILITY_FLIP_ROWS = config["MUTATE_PROBABILITY_FLIP_ROW"]
@@ -21,12 +22,8 @@ class PssmObject(Node):
         self.MUTATE_PROBABILITY_SHIFT_RIGHT = config["MUTATE_PROBABILITY_SHIFT_RIGHT"]
         self.PSEUDO_COUNT = config["PSEUDO_COUNT"]
         self.UPPER_PRINT_PROBABILITY = config["UPPER_PRINT_PROBABILITY"]
-        # This two are to give memory to the pssm
-        self.POSITION_PROBABILITY_MEMORY = config["POSITION_PROBABILITY_MEMORY"]
-        self.newPositionProbability = 1.0 - self.POSITION_PROBABILITY_MEMORY
         # It first calculates PSSM Matrix based on  pwm
         self.recalculatePSSM()
-        self.positionMemory = 0
 
     # returns itself as a node
     def countNodes(self):
@@ -107,6 +104,25 @@ class PssmObject(Node):
                 }
             )
         self.pssm = np.array(tmpPSSM)
+        # Also calculate the optimal pssm combinations
+        self.optimalCombination = [""]
+        for position in tmpPSSM:
+            maxBases = []
+            maxBaseScore = float("-inf")
+            for base in position:
+                if position[base] > maxBaseScore:
+                    maxBases = [base]
+                    maxBaseScore = position[base]
+                elif position[base] == maxBaseScore:
+                    maxBases.append(base)
+
+            tmpOptimal = []
+            for base in maxBases:
+                for comb in self.optimalCombination:
+                    tmpOptimal.append(comb+base)
+
+            self.optimalCombination = tmpOptimal
+        # print(self.optimalCombination)
 
     # Searchs himself on the table and returns position and score
     def getBestAll(self, table):
@@ -117,42 +133,28 @@ class PssmObject(Node):
         return 0, 0
 
     # Adds himself as a pssm recognizer
-    def getAllPssm(self, aPssms):
-        aPssms.append(self)
-        return aPssms
+    def getAllPssm(self):
+        return [self]
 
     # returns a score to that DNA secuence
     def getScore(self, sDNA):
 
-        complement = {"a": "t", "t": "a", "g": "c", "c": "g"}
-        revSDNA = "".join(complement[i] for i in reversed(sDNA))
+        # complement = {"a": "t", "t": "a", "g": "c", "c": "g"}
+        # revSDNA = "".join(complement[i] for i in reversed(sDNA))
         # gets a score from pssm
         score = 0
-        scoreReverse = 0
-
-        if len(sDNA) != len(self.pssm):
-            print("Not a valid length!")
-            return -3000
+        # scoreReverse = 0
 
         for i in range(len(sDNA)):
 
             score += self.pssm[i][sDNA[i]]
-            scoreReverse += self.pssm[i][revSDNA[i]]
+            # scoreReverse += self.pssm[i][revSDNA[i]]
         # Returns the max binding score
-        return score if score > scoreReverse else scoreReverse
+        return score  # if score > scoreReverse else scoreReverse
 
     # Nodes cannot be setted from recognizer objects
     def setNode(self, node, ID):
         return 0
-
-    def setPositionMemory(self, pos):
-        self.positionMemory = pos
-
-    def rememberPosition(self, pos):
-        self.positionMemory = (
-            self.positionMemory * self.POSITION_PROBABILITY_MEMORY
-            + float(pos) * self.newPositionProbability
-        )
 
     def resetID(self, newID):
         self.ID = newID

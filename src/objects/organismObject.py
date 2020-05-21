@@ -133,10 +133,12 @@ class OrganismObject:
         sequenceLength = len(sDNA)
 
         # get all PSSM recognizers
-        aPssmObjects = self.rootNode.getAllPssm([])
+        aPssmObjects = self.rootNode.getAllPssm()
 
         # check position where it fits (position)
         pssmPositionScoreTable = []
+        # for pssm in aPssmObjects:
+        #    print(pssm.ID)
 
         # Go through all PSSM objects to check where it fits
         for pssm in aPssmObjects:
@@ -145,30 +147,21 @@ class OrganismObject:
             position = 0
 
             # Possible max scores of the secuences are in aPositions
-            aPositions = []
             # Check every position possible on the sequence
             for pos in range(sequenceLength - pssmLength):
+
+                # This is where the execution takes a lot of time
                 score = pssm.getScore(sDNA[pos : pos + pssmLength])
 
                 # Update max score if the actual score is acctually better
                 # Also check that the position is not overlapping other pssm object
-                if not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
+                if score > maxScore and not self.isOverlapping(
+                    pos, pssmLength, pssmPositionScoreTable
+                ):
 
-                    if score > maxScore:  # First ocurrence of the max score
-                        maxScore = score
-                        aPositions = [pos]
+                    maxScore = score
+                    position = pos
 
-                    elif (
-                        score == maxScore
-                    ):  # Another ocurrence of the max score and possible binding site
-                        aPositions.append(pos)
-
-            # Here we checked the whole sequence, but now we have to select the
-            # best pssm based on pssm memory
-            position = min(aPositions, key=lambda x: abs(x - pssm.positionMemory))
-
-            # And tell th pssm to remember it for the future
-            pssm.rememberPosition(pos)
             # Add to a table the ID, maxScore and position of a pssm object
             pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
 
@@ -182,7 +175,6 @@ class OrganismObject:
     def isOverlapping(self, positionN, lengthN, table):
         # Compare the new position with already positioned pssms
         for idP, scoreP, positionP, lengthP in table:
-
             # On the left side
             if positionN < positionP:
                 if positionN + lengthN > positionP:
@@ -199,33 +191,18 @@ class OrganismObject:
 
         return False
 
-    # Return the total Fitness for an array of DNA sequences and the fitness method
+    # Return the total Fitness for an array of DNA sequences and the fitness
+    # method
     # It also updates mean sequences score
     def getScore(self, aDNA):
 
         score = 0
-        aDNALength = len(aDNA)
-
-        # Set the pssm memory to the middle of the secuence
-        self.rootNode.setPositionMemory(len(aDNA[0]) / 2.0)
 
         # sum method returns the sum of all fitness to DNA sequences
         if self.CUMULATIVE_FIT_METHOD == "sum":
 
             for sDNA in aDNA:
                 score += self.getBestAllFitness(sDNA.lower())
-
-            # Assign values if its the first time
-            if self.numSequencesScored == 0:
-
-                self.numSequencesScored = aDNALength
-                self.meanFitnessScore = score / aDNALength
-            # Calculate new values else
-            else:
-                self.meanFitnessScore = (
-                    self.meanFitnessScore * self.numSequencesScored + score
-                ) / (aDNALength + self.numSequencesScored)
-                self.numSequencesScored += aDNALength
 
         # mean method returns the mean of all fitness to SNA sequences
         elif self.CUMULATIVE_FIT_METHOD == "mean":
@@ -234,18 +211,6 @@ class OrganismObject:
             for sDNA in aDNA:
                 scores.append(self.getBestAllFitness(sDNA.lower()))
             score = np.mean(scores)
-
-            # Assign values if its the first time
-            if self.numSequencesScored == 0:
-
-                self.numSequencesScored = aDNALength
-                self.meanFitnessScore = score
-            # Calculate new values else
-            else:
-                self.meanFitnessScore = (
-                    self.meanFitnessScore * self.numSequencesScored + np.sum(scores)
-                ) / (aDNALength + self.numSequencesScored)
-                self.numSequencesScored += aDNALength
 
         return score
 
@@ -330,7 +295,7 @@ class OrganismObject:
             sequenceLength = len(sDNA)
 
             # get all PSSM recognizers
-            aPssmObjects = self.rootNode.getAllPssm([])
+            aPssmObjects = self.rootNode.getAllPssm()
 
             # check position where it fits (position)
             pssmPositionScoreTable = []
@@ -341,25 +306,14 @@ class OrganismObject:
                 maxScore = float("-inf")
                 position = 0
 
-                aPositions = []
-
                 # Check every position possible on the sequence
                 for pos in range(sequenceLength - pssmLength):
                     score = pssm.getScore(sDNA[pos : pos + pssmLength])
-
                     # Update max score if the actual score is acctually better
                     # Also check that the position is not overlapping other pssm object
-                    if not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
-                        if score > maxScore:
+                    if score > maxScore and not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
                             maxScore = score
-                            aPositions = [pos]
-
-                        elif score == maxScore:
-                            aPositions.append(pos)
-
-                position = min(aPositions, key=lambda x: abs(x - pssm.positionMemory))
-
-                pssm.rememberPosition(position)
+                            position = pos
 
                 # Add to a table the ID, maxScore and position of a pssm object
                 pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
@@ -385,7 +339,7 @@ class OrganismObject:
         sequenceLength = len(sDNA)
 
         # get all PSSM recognizers
-        aPssmObjects = self.rootNode.getAllPssm([])
+        aPssmObjects = self.rootNode.getAllPssm()
 
         # check position where it fits (position)
         pssmPositionScoreTable = []
@@ -396,7 +350,6 @@ class OrganismObject:
             maxScore = float("-inf")
             position = 0
 
-            aPositions = []
             # Update max score if the actual score is acctually better
             # Also check that the position is not overlapping other pssm object
 
@@ -404,17 +357,9 @@ class OrganismObject:
             for pos in range(sequenceLength - pssmLength):
                 score = pssm.getScore(sDNA[pos : pos + pssmLength])
 
-                if not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
-                    if score > maxScore:
+                if score > maxScore and not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
                         maxScore = score
-                        aPositions = [pos]
-
-                    elif score == maxScore:
-                        aPositions.append(pos)
-
-            position = min(aPositions, key=lambda x: abs(x - pssm.positionMemory))
-
-            pssm.rememberPosition(position)
+                        position = pos
 
             # Add to a table the ID, maxScore and position of a pssm object
             pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))

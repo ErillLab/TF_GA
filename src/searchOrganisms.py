@@ -8,6 +8,7 @@ import copy
 import json
 import numpy as np
 import os
+import cProfile, pstats, io
 
 
 POPULATION_LENGTH = 0
@@ -588,7 +589,19 @@ def println(string, nameFile):
 if __name__ == "__main__":
     initial = time.time()
     setUp()
+
+    # Profiling
+    pr = cProfile.Profile()
+    pr.enable()
+    # Main function
     main()
+
+    pr.disable()
+    s = io.StringIO()
+    sortby = "cumulative"
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats()
+    print(s.getvalue())
 
     m, s = divmod((time.time() - initial), 60)
     h, m = divmod(m, 60)
