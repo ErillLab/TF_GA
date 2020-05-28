@@ -125,7 +125,7 @@ class PssmObject(Node):
         # print(self.optimalCombination)
 
     # Searchs himself on the table and returns position and score
-    def getBestAll(self, table):
+    def getPlacement(self, table):
         for ID, score, position, length in table:
             if self.ID == ID:
                 # Maybe add half the length so the position is centered
