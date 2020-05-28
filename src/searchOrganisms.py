@@ -109,6 +109,7 @@ def main():
     maxScore = float("-inf")
     lastMaxScore = 0.0
     bestOrganism = (None, 0.0, 0, 0.0)
+    maxOrganism = (None, 0.0, 0, 0.0)
 
     timeformat = "%Y-%m-%d--%H-%M-%S"
     print("Starting execution...")
@@ -217,23 +218,17 @@ def main():
                         aNodes.append(firstOrganism.countNodes())
 
                         # Check if its the max score in that iteration
-
                         if effectiveFitness1 > maxScore:
-                            maxScore = effectiveFitness1
                             maxScoreP = p1
-                            maxPenalty = c1
-                            maxNodes = firstOrganism.countNodes()
+                            maxScore = effectiveFitness1 
+                            maxOrganism=(firstOrganism,effectiveFitness1,\
+                                         firstOrganism.countNodes(),c1)
 
                         # Check if its the max score in the program
 
-                        if effectiveFitness1 > bestOrganism[1]:
+                        if maxOrganism[1] > bestOrganism[1]:
                             # ID, EF, Nodes, Penalty applied
-                            bestOrganism = (
-                                firstOrganism,
-                                effectiveFitness1,
-                                firstOrganism.countNodes(),
-                                c1,
-                            )
+                            bestOrganism = maxOrganism
                             changedBestScore = True
 
                     else:  # The second organism wins
@@ -268,21 +263,16 @@ def main():
                         # Check if its the max score in that iteration
 
                         if effectiveFitness2 > maxScore:
-                            maxScore = effectiveFitness2
                             maxScoreP = p2
-                            maxPenalty = c2
-                            maxNodes = secondOrganism.countNodes()
+                            maxScore = effectiveFitness2 
+                            maxOrganism=(secondOrganism,effectiveFitness2,\
+                                         secondOrganism.countNodes(),c2)
 
                         # Check if its the max score in the program
 
                         if effectiveFitness2 > bestOrganism[1]:
                             # ID, EF, Nodes, Penalty applied
-                            bestOrganism = (
-                                secondOrganism,
-                                effectiveFitness2,
-                                secondOrganism.countNodes(),
-                                c2,
-                            )
+                            bestOrganism = maxOrganism
                             changedBestScore = True
 
                     # END FOR j
@@ -299,14 +289,15 @@ def main():
             h, m = divmod(m, 60)
             sTime = "{}h:{}m:{:.2f}s".format(int(h), int(m), s)
             println(
-                "Iter: {} AN:{:.2f} AF:{:.2f} - MF: {:.2f} MSP: {:.2f} MP: {:.2f} MN: {} -  BO: {} BF: {:.2f} BN: {} BP: {:.2f} Time: {}".format(
+                "Iter: {} AN:{:.2f} AF:{:.2f} - MO: {} MF: {:.2f} MN: {} MP: {:.2f} MSP: {:.2f} -  BO: {} BF: {:.2f} BN: {} BP: {:.2f} Time: {}".format(
                     iterations,
                     meanNodes,
                     meanFitness,
-                    maxScore,
+                    maxOrganism[0].ID,
+                    maxOrganism[1],
+                    maxOrganism[2],
+                    maxOrganism[3],                    
                     maxScoreP,
-                    maxPenalty,
-                    maxNodes,
                     bestOrganism[0].ID,
                     bestOrganism[1],
                     bestOrganism[2],
@@ -316,15 +307,22 @@ def main():
                 RESULT_BASE_PATH_DIR + OUTPUT_FILENAME,
             )
 
-            # Print agains a random positive secuence
+            # Print against a random positive secuence
             random.shuffle(positiveDataset)
-            print(bestOrganism[0].printResult(positiveDataset[0]))
+            print(maxOrganism[0].printResult(positiveDataset[0]))
 
-            if changedBestScore or iterations % PERIODIC_EXPORT == 0:
+            if changedBestScore:
                 filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0].ID)
                 exportOrganism(
                     bestOrganism[0], positiveDataset, filename, organismFactory
                 )
+                
+            if iterations % PERIODIC_EXPORT == 0:
+                filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0].ID)
+                exportOrganism(
+                    maxOrganism[0], positiveDataset, filename, organismFactory
+                )
+            
 
             # print("-"*10)
             iterations += 1
