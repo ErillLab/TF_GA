@@ -318,7 +318,7 @@ def main():
                 )
                 
             if iterations % PERIODIC_EXPORT == 0:
-                filename = "{}_{}".format(time.strftime(timeformat), bestOrganism[0].ID)
+                filename = "{}_{}".format(time.strftime(timeformat), maxOrganism[0].ID)
                 exportOrganism(
                     maxOrganism[0], positiveDataset, filename, organismFactory
                 )
