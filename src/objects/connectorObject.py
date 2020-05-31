@@ -126,7 +126,7 @@ class ConnectorObject(Node):
         # energy = (eNode1 + eNode2) * eConnector
         # energy = max(eNode1 * eConnector + eNode2, eNode2 * eConnector + eNode1)
         position = (node1['pspair']['pos'] + node2['pspair']['pos']) / 2
-        print("P1:{} E1:{} P2:{} N2:{} C {}\n".format(node1['pspair']['pos'], node1['pspair']['energy'], node2['pspair']['pos'], node2['pspair']['energy'], eConnector))
+        #print("P1:{} E1:{} P2:{} N2:{} C {}\n".format(node1['pspair']['pos'], node1['pspair']['energy'], node2['pspair']['pos'], node2['pspair']['energy'], eConnector))
 
         #determine that connector's PSSMs have blocked their positions
         blocks.append(node1['pspair']['pos'])
