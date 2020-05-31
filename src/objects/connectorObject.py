@@ -94,6 +94,10 @@ class ConnectorObject(Node):
        The connector function then propagates this up, taking the middle 
        position between both PSSMs and adding the connector energy to the 
        energies provided by the PSSMs.
+       
+       The connector determines (i.e. freezes) the PSSM locations, adding them
+       to the block list that is passed as a parameter.
+       
        Further connector objects proceed in the same manner, computing middle
        distance and adding their energy contribution, until the energy reaches
        the root node, and is returned as the fitness for the organism.
