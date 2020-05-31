@@ -124,13 +124,28 @@ class PssmObject(Node):
             self.optimalCombination = tmpOptimal
         # print(self.optimalCombination)
 
-    # Searchs himself on the table and returns position and score
-    def getPlacement(self, table):
-        for ID, score, position, length in table:
-            if self.ID == ID:
-                # Maybe add half the length so the position is centered
-                return score, float(position) + self.length / 2
-        return 0, 0
+    # Searchs sequence with PSSM ojbect returns position and score
+    def getPlacement(self, sDNA, sDNAlen,blocks):
+
+        scoresonseq=[]
+        pssmLength = self.length
+
+        # Check every position possible on the sequence
+        for pos in range(sDNAlen - pssmLength):
+            mypos=float(pos) + self.length / 2
+            #if the position has not been blocked by another PSSM
+            if mypos not in blocks:
+                # Compute the score of PSSM at position in sequence
+                #append them to list
+                scoresonseq.append({"pos" : mypos, \
+                                    "energy" : self.getScore(sDNA[pos : pos \
+                                    + pssmLength])})
+            
+            
+        #sort list and return it 
+        scoresonseq.sort(key=lambda k: k['energy'], reverse=True)
+        
+        return {'pspair': scoresonseq[0], 'blocked' : blocks}
 
     # Adds himself as a pssm recognizer
     def getAllPssm(self):

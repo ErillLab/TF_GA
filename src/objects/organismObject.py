@@ -128,73 +128,18 @@ class OrganismObject:
         return meanFitness * self.numNodes / meanNodes
 
     # Return the fitness of the organism for a given DNA sequence
-    def getBestAllFitness(self, sDNA):
-
-        sequenceLength = len(sDNA)
-
-        # get all PSSM recognizers
-        aPssmObjects = self.rootNode.getAllPssm()
-
-        # check position where it fits (position)
-        pssmPositionScoreTable = []
-        # for pssm in aPssmObjects:
-        #    print(pssm.ID)
-
-        # Go through all PSSM objects to check where it fits
-        for pssm in aPssmObjects:
-            pssmLength = pssm.length
-            maxScore = float("-inf")
-            position = 0
-
-            # Possible max scores of the secuences are in aPositions
-            # Check every position possible on the sequence
-            for pos in range(sequenceLength - pssmLength):
-
-                # This is where the execution takes a lot of time
-                score = pssm.getScore(sDNA[pos : pos + pssmLength])
-
-                # Update max score if the actual score is acctually better
-                # Also check that the position is not overlapping other pssm object
-                if score > maxScore and not self.isOverlapping(
-                    pos, pssmLength, pssmPositionScoreTable
-                ):
-
-                    maxScore = score
-                    position = pos
-
-            # Add to a table the ID, maxScore and position of a pssm object
-            pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
+    def getSeqFitness(self, sDNA):
 
         # call recursively to get the total fitness of the organism
-        finalScore, distance = self.rootNode.getPlacement(pssmPositionScoreTable)
+        noderoot = self.rootNode.getPlacement(sDNA, len(sDNA),[])
 
         # return score in that dataset
-        return finalScore
-
-    # Given a table of positioned pssms, check that new pssm is not overlapping
-    def isOverlapping(self, positionN, lengthN, table):
-        # Compare the new position with already positioned pssms
-        for idP, scoreP, positionP, lengthP in table:
-            # On the left side
-            if positionN < positionP:
-                if positionN + lengthN > positionP:
-                    return True
-
-            # On the right side
-            elif positionN > positionP:
-                if positionP + lengthP > positionN:
-                    return True
-
-            # Same position
-            else:
-                return True
-
-        return False
+        return noderoot['pspair']['energy']
 
     # Return the total Fitness for an array of DNA sequences and the fitness
     # method
     # It also updates mean sequences score
-    def getScore(self, aDNA):
+    def getSeqSetFitness(self, aDNA):
 
         score = 0
 
@@ -202,14 +147,14 @@ class OrganismObject:
         if self.CUMULATIVE_FIT_METHOD == "sum":
 
             for sDNA in aDNA:
-                score += self.getBestAllFitness(sDNA.lower())
+                score += self.getSeqFitness(sDNA.lower())
 
         # mean method returns the mean of all fitness to SNA sequences
         elif self.CUMULATIVE_FIT_METHOD == "mean":
 
             scores = []
             for sDNA in aDNA:
-                scores.append(self.getBestAllFitness(sDNA.lower()))
+                scores.append(self.getSeqFitness(sDNA.lower()))
             score = np.mean(scores)
 
         return score
@@ -311,7 +256,7 @@ class OrganismObject:
                     score = pssm.getScore(sDNA[pos : pos + pssmLength])
                     # Update max score if the actual score is acctually better
                     # Also check that the position is not overlapping other pssm object
-                    if score > maxScore and not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
+                    if score > maxScore:
                             maxScore = score
                             position = pos
 

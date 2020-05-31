@@ -177,19 +177,19 @@ def main():
 
                     firstOrganism = pairChildren[j][0]  # Parent Organism
                     secondOrganism = pairChildren[j][1]  # Chid Organism
-                    p1 = firstOrganism.getScore(
+                    p1 = firstOrganism.getSeqSetFitness(
                         positiveDataset[:MAX_SEQUENCES_TO_FIT_POS]
                     )
-                    n1 = firstOrganism.getScore(
+                    n1 = firstOrganism.getSeqSetFitness(
                         negativeDataset[:MAX_SEQUENCES_TO_FIT_NEG]
                     )
                     # Compute complexity after gettig the score
                     c1 = firstOrganism.getComplexity(meanNodes, meanFitness)
 
-                    p2 = secondOrganism.getScore(
+                    p2 = secondOrganism.getSeqSetFitness(
                         positiveDataset[:MAX_SEQUENCES_TO_FIT_POS]
                     )
-                    n2 = secondOrganism.getScore(
+                    n2 = secondOrganism.getSeqSetFitness(
                         negativeDataset[:MAX_SEQUENCES_TO_FIT_NEG]
                     )
                     # Compute complexity after gettig the score

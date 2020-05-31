@@ -42,8 +42,8 @@ def main():
         # org.print()
         nodes = org.countNodes()
 
-        p1 = org.getScore(positiveDataset[:MAX_SEQUENCES_TO_FIT_POS])
-        n1 = org.getScore(negativeDataset[:MAX_SEQUENCES_TO_FIT_NEG])
+        p1 = org.getSeqSetFitness(positiveDataset[:MAX_SEQUENCES_TO_FIT_POS])
+        n1 = org.getSeqSetFitness(negativeDataset[:MAX_SEQUENCES_TO_FIT_NEG])
         c1 = org.getComplexity(mean_nodes, mean_fitness)
 
         # Score
