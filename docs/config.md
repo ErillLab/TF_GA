@@ -9,7 +9,7 @@
 	- Default: `100`. 
 	- Range: `>0 [int]`
 - POPULATION_ORIGIN
-	- determines whether initial popilation is read from file or initizalized randomly. 
+	- determines whether initial population is read from file or initizalized randomly. 
 	- Default: `random`.
 	- Options: `random`, `file`
 - POPULATION_FILL_TYPE
