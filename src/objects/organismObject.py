@@ -248,32 +248,42 @@ class OrganismObject:
     def exportResults(self, aDNA, filename):
 
         # Sort the array, so its always shown in the same order
+        #sorting is done by sequence, so first sequences start with "AAA.."
         aDNA.sort()
-        
+        #get the length of the PSSMs used
         length = self.rootNode.getAllPssm()[0].length
-
+        
         resultsFile = open(filename, "w+")
 
+        #for every DNA sequence
         for sDNA in aDNA:
             #call fitness evaluation for sequence
             sfit = self.getSeqFitness(sDNA.lower())
-
+            
+            #write out the sequence
             resultsFile.write("\n{}\n".format(sDNA))
+            
+            #create an empy positions map
             mapPositions = " " * len(sDNA)
 
+            #positions for PSSMs are in blocked and blocked lists, returned by
+            #getSeqFitness. we zip them and then iterate over the zip to
+            #print the PSSMs in their locations respective to the sequence
             positions=sfit['blocked']
             nodes=sfit['blocker']
             stuff=list(zip(nodes,positions))
             for ids, pos in stuff:
+                #print ID, followed by as many stars as length of PSSM
                 strId = str(ids)
                 while len(strId) < length:
                     strId += "*"
                     
                 p=round(pos-length/2)     
-                    
+                #fil up map at correct positions    
                 mapPositions = (mapPositions[0:p] + strId \
                                 + mapPositions[p + length :])
-
+                    
+            #write map to file for this sequence
             resultsFile.write(mapPositions + "\n")
 
         resultsFile.close()
@@ -286,19 +296,25 @@ class OrganismObject:
         #call fitness evaluation for sequence
         sfit = self.getSeqFitness(sDNA.lower())
 
+        #create an empy positions map
         mapPositions = " " * len(sDNA)
 
+        #positions for PSSMs are in blocked and blocked lists, returned by
+        #getSeqFitness. we zip them and then iterate over the zip to
+        #print the PSSMs in their locations respective to the sequence
         positions=sfit['blocked']
         nodes=sfit['blocker']
         stuff=list(zip(nodes,positions))
         for ids, pos in stuff:
+            #print ID, followed by as many stars as length of PSSM
             strId = str(ids)
             while len(strId) < length:
                 strId += "*"
                 
             p=round(pos-length/2)     
-                
+            #fil up map at correct positions    
             mapPositions = (mapPositions[0:p] + strId \
                             + mapPositions[p + length :])
 
+        #return map for this sequence
         return "{}\n{}".format(sDNA, mapPositions)
