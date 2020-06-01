@@ -81,19 +81,41 @@ class ConnectorObject(Node):
         return self.node1.getAllPssm() + self.node2.getAllPssm()
 
     # calculate best all strategy for pssm position based on a table of pssm scores.
-    def getBestAll(self, table):
+    """This position/score propagation method, defined for connector objects.
+       It is invoked by the placement method in the organism, for the root
+       connector object, and calls itself recursively.
+       The function assumes that PSSMs have already been positioned, and their
+       positions are passed to the function as a table.
+       The function calls itself until reaching terminal connectors, which call
+       onto PSSM objects. The PSSM function seeks the PSSM ojbect in the table
+       and returns its position and score. The connector function then 
+       propagates this up, taking the middle position between both PSSMs and
+       adding the connector energy to the energies provided by the PSSMs.
+       Further connector objects proceed in the same manner, computing middle
+       distance and adding their energy contribution, until the energy reaches
+       the root node, and is returned as the fitness for the organism.
+
+       The energy contribution of each connector is: EN1 + EN2 + Tau * EC, 
+       where EN1 is the energy of its daugher element 1, and EN2 that of 
+       daughter element 2. The EC connector energy component is an exponential 
+       function controlled by the difference in the observed distance of the 
+       elements  of the connector with respect to an ideal mean distance (mu), 
+       and modulated by a dispersion parameter (sigma). Tau controls the 
+       "weight" of the connector contribution to energy.
+    """
+    def getPlacement(self, table):
         # This tau shows how much value we give to the connector fit
         tau = self.TAU
 
-        eNode1, pos1 = self.node1.getBestAll(table)
-        eNode2, pos2 = self.node2.getBestAll(table)
+        eNode1, pos1 = self.node1.getPlacement(table)
+        eNode2, pos2 = self.node2.getPlacement(table)
 
         numerator = (self.mu - (pos2 - pos1)) ** 2
-        exponent = -numerator / (1 + 2 * (self.sigma ** 2))
-        log = np.log10(10 + self.sigma ** 2)
-        exp = np.exp(exponent)
+        exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
+        logterm = np.log10(10 + self.sigma ** 2)
+        expterm = np.exp(exponent)
 
-        eConnector = (tau / log) * exp
+        eConnector = (tau / logterm) * expterm
         # print("{} {} {}".format(log, exp, eConnector))
         # print("tau: {}d1: {} d2: {} mu:{} exp: {} econn: {}".format(tau, pos1, pos2, self.mu,  numerator, exponent, eConnector))
         energy = (eNode1 + eNode2) + eConnector

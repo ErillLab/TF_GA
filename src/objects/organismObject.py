@@ -182,7 +182,7 @@ class OrganismObject:
             pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
 
         # call recursively to get the total fitness of the organism
-        finalScore, distance = self.rootNode.getBestAll(pssmPositionScoreTable)
+        finalScore, distance = self.rootNode.getPlacement(pssmPositionScoreTable)
 
         # return score in that dataset
         return finalScore
