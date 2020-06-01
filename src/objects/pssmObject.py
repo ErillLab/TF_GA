@@ -125,7 +125,7 @@ class PssmObject(Node):
         # print(self.optimalCombination)
 
     # Searchs sequence with PSSM ojbect returns position and score
-    def getPlacement(self, sDNA, sDNAlen,blocks):
+    def getPlacement(self, sDNA, sDNAlen,blocks,blockers):
 
         scoresonseq=[]
         pssmLength = self.length
@@ -145,7 +145,7 @@ class PssmObject(Node):
         #sort list and return it 
         scoresonseq.sort(key=lambda k: k['energy'], reverse=True)
         
-        return {'pspair': scoresonseq[0], 'blocked' : blocks}
+        return {'pspair': scoresonseq[0], 'blocked' : blocks, 'blocker': blockers}
 
     # Adds himself as a pssm recognizer
     def getAllPssm(self):

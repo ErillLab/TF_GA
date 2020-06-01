@@ -110,12 +110,12 @@ class ConnectorObject(Node):
        and modulated by a dispersion parameter (sigma). Tau controls the 
        "weight" of the connector contribution to energy.
     """
-    def getPlacement(self, sDNA, sDNAlen, blocks):
+    def getPlacement(self, sDNA, sDNAlen, blocks, blockers):
         # This tau shows how much value we give to the connector fit
         tau = self.TAU
 
-        node1 = self.node1.getPlacement(sDNA, sDNAlen, blocks)
-        node2 = self.node2.getPlacement(sDNA, sDNAlen, blocks)
+        node1 = self.node1.getPlacement(sDNA, sDNAlen, blocks, blockers)
+        node2 = self.node2.getPlacement(sDNA, sDNAlen, blocks, blockers)
 
         numerator = (self.mu - (node2['pspair']['pos'] - node1['pspair']['pos'])) ** 2
         exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
@@ -133,11 +133,15 @@ class ConnectorObject(Node):
         #print("P1:{} E1:{} P2:{} N2:{} C {}\n".format(node1['pspair']['pos'], node1['pspair']['energy'], node2['pspair']['pos'], node2['pspair']['energy'], eConnector))
 
         #determine that connector's PSSMs have blocked their positions
-        blocks.append(node1['pspair']['pos'])
-        blocks.append(node2['pspair']['pos'])
+        if self.node1.isPSSM():
+            blocks.append(node1['pspair']['pos'])
+            blockers.append(self.node1.ID)        
+        if self.node1.isPSSM():
+            blocks.append(node2['pspair']['pos'])
+            blockers.append(self.node2.ID)        
         
         pair={'pos' : position, 'energy' : energy}
-        return {'pspair': pair, 'blocked' : blocks}
+        return {'pspair': pair, 'blocked' : blocks, 'blocker' : blockers}
 
     # Sets the node on a given ID
     def setNode(self, node, ID):
