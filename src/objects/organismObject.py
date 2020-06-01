@@ -281,40 +281,24 @@ class OrganismObject:
     def printResult(self, sDNA):
 
         sDNA = sDNA.lower()
-        sequenceLength = len(sDNA)
+        length = self.rootNode.getAllPssm()[0].length
 
-        # get all PSSM recognizers
-        aPssmObjects = self.rootNode.getAllPssm()
-
-        # check position where it fits (position)
-        pssmPositionScoreTable = []
-
-        # Go through all PSSM objects to check where it fits
-        for pssm in aPssmObjects:
-            pssmLength = pssm.length
-            maxScore = float("-inf")
-            position = 0
-
-            # Update max score if the actual score is acctually better
-            # Also check that the position is not overlapping other pssm object
-
-            # Check every position possible on the sequence
-            for pos in range(sequenceLength - pssmLength):
-                score = pssm.getScore(sDNA[pos : pos + pssmLength])
-
-                if score > maxScore and not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
-                        maxScore = score
-                        position = pos
-
-            # Add to a table the ID, maxScore and position of a pssm object
-            pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
+        #call fitness evaluation for sequence
+        sfit = self.getSeqFitness(sDNA.lower())
 
         mapPositions = " " * len(sDNA)
 
-        for ids, sc, pos, length in pssmPositionScoreTable:
+        positions=sfit['blocked']
+        nodes=sfit['blocker']
+        stuff=list(zip(nodes,positions))
+        for ids, pos in stuff:
             strId = str(ids)
             while len(strId) < length:
                 strId += "*"
-            mapPositions = mapPositions[0:pos] + strId + mapPositions[pos + length :]
+                
+            p=round(pos-length/2)     
+                
+            mapPositions = (mapPositions[0:p] + strId \
+                            + mapPositions[p + length :])
 
         return "{}\n{}".format(sDNA, mapPositions)
