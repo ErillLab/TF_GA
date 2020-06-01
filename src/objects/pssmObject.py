@@ -22,6 +22,7 @@ class PssmObject(Node):
         self.MUTATE_PROBABILITY_SHIFT_RIGHT = config["MUTATE_PROBABILITY_SHIFT_RIGHT"]
         self.PSEUDO_COUNT = config["PSEUDO_COUNT"]
         self.UPPER_PRINT_PROBABILITY = config["UPPER_PRINT_PROBABILITY"]
+        self.SCAN_REVERSE_COMPLEMENT = config["SCAN_REVERSE_COMPLEMENT"]
         # It first calculates PSSM Matrix based on  pwm
         self.recalculatePSSM()
 
@@ -154,18 +155,17 @@ class PssmObject(Node):
     # returns a score to that DNA secuence
     def getScore(self, sDNA):
 
-        # complement = {"a": "t", "t": "a", "g": "c", "c": "g"}
-        # revSDNA = "".join(complement[i] for i in reversed(sDNA))
+        complement = {"a": "t", "t": "a", "g": "c", "c": "g"}
         # gets a score from pssm
         score = 0
-        # scoreReverse = 0
-
-        for i in range(len(sDNA)):
+        scoreReverse = 0
+        strLength = len(sDNA)
+        for i in range(strLength):
 
             score += self.pssm[i][sDNA[i]]
-            # scoreReverse += self.pssm[i][revSDNA[i]]
+            scoreReverse += self.pssm[strLength - i - 1][complement[sDNA[strLength - i - 1]]]
         # Returns the max binding score
-        return score  # if score > scoreReverse else scoreReverse
+        return score if score > scoreReverse or not self.SCAN_REVERSE_COMPLEMENT else scoreReverse
 
     # Nodes cannot be setted from recognizer objects
     def setNode(self, node, ID):
