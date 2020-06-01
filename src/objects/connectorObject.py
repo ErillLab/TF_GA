@@ -117,31 +117,66 @@ class ConnectorObject(Node):
         node1 = self.node1.getPlacement(sDNA, sDNAlen, blocks, blockers)
         node2 = self.node2.getPlacement(sDNA, sDNAlen, blocks, blockers)
 
-        numerator = (self.mu - (node2['pspair']['pos'] - node1['pspair']['pos'])) ** 2
-        exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
+        #precompute connector energy term (not dependent on PSSM placement)
         logterm = np.log10(10 + self.sigma ** 2)
-        expterm = np.exp(exponent)
 
-        eConnector = (tau / logterm) * expterm
+        maxenergy=-np.inf
+        maxposition=0
+        max1=0
+        max2=0
+        #iterate over all possible configurations of sub-node placements
+        #and determine the optimal one
+        for n1count in range(len(node1['pspairs'])):
+            for n2count in range(len(node2['pspairs'])):
+                #compute connector energy terms that depend on PSSM placement
+                numerator = (self.mu - (node2['pspairs'][n2count]['pos'] - node1['pspairs'][n1count]['pos'])) ** 2
+                exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
+                expterm = np.exp(exponent)
+                #connector energy
+                eConnector = (tau / logterm) * expterm
+                #submodel energy
+                energy = (node1['pspairs'][n1count]['energy'] \
+                          + node2['pspairs'][n2count]['energy']) \
+                          + eConnector
+                position = (node1['pspairs'][n1count]['pos'] \
+                            + node2['pspairs'][n2count]['pos']) / 2
+                
+                #if this energy is the best so far, annotate it
+                if energy > maxenergy:
+                    maxenergy = energy
+                    maxposition = position
+                    max1 = n1count
+                    max2 = n2count
+                    
+                
+
+        # numerator = (self.mu - (node2['pspairs']['pos'] - node1['pspairs']['pos'])) ** 2
+        # exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
+        # logterm = np.log10(10 + self.sigma ** 2)
+        # expterm = np.exp(exponent)
+
+        #eConnector = (tau / logterm) * expterm
         # print("{} {} {}".format(log, exp, eConnector))
         # print("tau: {}d1: {} d2: {} mu:{} exp: {} econn: {}".format(tau, pos1, pos2, self.mu,  numerator, exponent, eConnector))
-        energy = (node1['pspair']['energy'] + node2['pspair']['energy']) + eConnector
+        #energy = (node1['pspair']['energy'] + node2['pspair']['energy']) + eConnector
         # print("N1:{} N2:{} C:{} SIGMA:{} MU {}\n".format(eNode1, eNode2, eConnector, self.sigma, self.mu))
         # energy = (eNode1 + eNode2) * eConnector
         # energy = max(eNode1 * eConnector + eNode2, eNode2 * eConnector + eNode1)
-        position = (node1['pspair']['pos'] + node2['pspair']['pos']) / 2
+        #position = (node1['pspair']['pos'] + node2['pspair']['pos']) / 2
         #print("P1:{} E1:{} P2:{} N2:{} C {}\n".format(node1['pspair']['pos'], node1['pspair']['energy'], node2['pspair']['pos'], node2['pspair']['energy'], eConnector))
+
+
 
         #determine that connector's PSSMs have blocked their positions
         if self.node1.isPSSM():
-            blocks.append(node1['pspair']['pos'])
+            blocks.append(node1['pspairs'][max1]['pos'])
             blockers.append(self.node1.ID)        
         if self.node1.isPSSM():
-            blocks.append(node2['pspair']['pos'])
+            blocks.append(node2['pspairs'][max2]['pos'])
             blockers.append(self.node2.ID)        
         
-        pair={'pos' : position, 'energy' : energy}
-        return {'pspair': pair, 'blocked' : blocks, 'blocker' : blockers}
+        pair={'pos' : maxposition, 'energy' : maxenergy}
+        return {'pspairs': [pair], 'blocked' : blocks, 'blocker' : blockers}
 
     # Sets the node on a given ID
     def setNode(self, node, ID):

@@ -1,17 +1,17 @@
 {
   "main": {
-    "POPULATION_LENGTH":250,
+    "POPULATION_LENGTH":50,
     "POPULATION_ORIGIN":"file",
-    "POPULATION_FILL_TYPE":"random",
+    "POPULATION_FILL_TYPE":"uniform",
     "DATASET_BASE_PATH_DIR":"datasets/",
     "RESULT_BASE_PATH_DIR":"results/",
     "RESULT_TEST_BASE_PATH_DIR": "resultsTEST/",
     "POSITIVE_FILENAME":"positive_dataset3.fas",
     "NEGATIVE_FILENAME":"negative_dataset.fas",
-    "INPUT_FILENAME":"inputOrganisms_dataset3_3.json",
+    "INPUT_FILENAME":"inputOrganisms_dataset3_4.json",
     "OUTPUT_FILENAME":"output.txt",
     "MAX_SEQUENCES_TO_FIT_POS":50,
-    "MAX_SEQUENCES_TO_FIT_NEG":50,
+    "MAX_SEQUENCES_TO_FIT_NEG":100,
     "END_WHILE_METHOD":"iterations",
     "MIN_ITERATIONS":50,
     "MIN_FITNESS":10,
@@ -27,8 +27,8 @@
     "MUTATE_PROBABILITY_RISE_CHILD":0.2,
     "MUTATE_PROBABILITY_NODE_MUTATION":0.2,
     "MUTATE_PROBABILITY_SUNK_CHILD":0.05,
-    "MIN_NODES":3,
-    "MAX_NODES":3
+    "MIN_NODES":0,
+    "MAX_NODES":10000
   },
   "organismFactory": {
     "INITIAL_CONNECTOR_PROBABILITY":0.9,

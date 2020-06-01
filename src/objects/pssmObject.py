@@ -146,7 +146,10 @@ class PssmObject(Node):
         #sort list and return it 
         scoresonseq.sort(key=lambda k: k['energy'], reverse=True)
         
-        return {'pspair': scoresonseq[0], 'blocked' : blocks, 'blocker': blockers}
+        #list to return; best 5 positions to bind for PSSM
+        return_list=scoresonseq[0:6]
+        
+        return {'pspairs': return_list, 'blocked' : blocks, 'blocker': blockers}
 
     # Adds himself as a pssm recognizer
     def getAllPssm(self):

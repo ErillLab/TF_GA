@@ -164,7 +164,7 @@ class OrganismObject:
 
             for sDNA in aDNA:
                 sfit = self.getSeqFitness(sDNA.lower())
-                score += sfit['pspair']['energy']
+                score += sfit['pspairs'][0]['energy']
 
         # mean method returns the mean of all fitness to SNA sequences
         elif self.CUMULATIVE_FIT_METHOD == "mean":
@@ -172,7 +172,7 @@ class OrganismObject:
             scores = []
             for sDNA in aDNA:
                 sfit = self.getSeqFitness(sDNA.lower())
-                scores.append(sfit['pspair']['energy'])
+                scores.append(sfit['pspairs'][0]['energy'])
             score = np.mean(scores)
 
         return score
