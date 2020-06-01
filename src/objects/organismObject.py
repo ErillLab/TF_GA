@@ -20,6 +20,8 @@ class OrganismObject:
         self.MUTATE_PROBABILITY_RISE_CHILD = conf["MUTATE_PROBABILITY_RISE_CHILD"]
         self.MUTATE_PROBABILITY_SUNK_CHILD = conf["MUTATE_PROBABILITY_SUNK_CHILD"]
         self.MUTATE_PROBABILITY_NODE_MUTATION = conf["MUTATE_PROBABILITY_NODE_MUTATION"]
+        self.MIN_NODES = conf["MIN_NODES"]
+        self.MAX_NODES = conf["MAX_NODES"]
         self.isTracked = False
 
     # Setters an getters
@@ -125,7 +127,21 @@ class OrganismObject:
         # Complexity is calculed as:
         # meanFitnessScore * # nodes / meanNodes
 
-        return meanFitness * self.numNodes / meanNodes
+        # Check complexity of the organism
+        # If its over/under organism MAX/MIN apply an extra complexity penalty
+        extraPenalty = 0.0
+        extraPenaltyFactor = 300
+        basePenalty = 0.0
+        nodes = self.countNodes()
+
+        basePenalty = meanFitness * self.numNodes / meanNodes
+
+        if nodes < self.MIN_NODES:
+            extraPenalty = (self.MIN_NODES - nodes) * extraPenaltyFactor
+        if nodes > self.MAX_NODES:
+            extraPenalty = (nodes - self.MAX_NODES) * extraPenaltyFactor
+
+        return basePenalty + extraPenalty
 
     # Return the fitness of the organism for a given DNA sequence
     def getBestAllFitness(self, sDNA):
