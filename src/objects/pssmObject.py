@@ -37,6 +37,10 @@ class PssmObject(Node):
     #  pssm objects cannot be parents
     def getParent(self, ID):
         return None
+    
+    # return pssm length
+    def getLength(self):
+        return (self.length)
 
     # Mutate PSSM object
     def mutate(self, orgFactory):

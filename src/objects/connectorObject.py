@@ -169,11 +169,15 @@ class ConnectorObject(Node):
 
         #determine that connector's PSSMs have blocked their positions
         if self.node1.isPSSM():
-            blocks.append(node1['pspairs'][max1]['pos'])
-            blockers.append(self.node1.ID)        
-        if self.node1.isPSSM():
-            blocks.append(node2['pspairs'][max2]['pos'])
-            blockers.append(self.node2.ID)        
+            n1length=self.node1.getLength()
+            for blockade in range(n1length):
+                blocks.append(node1['pspairs'][max1]['pos']+blockade-n1length/2)
+                blockers.append(self.node1.ID)        
+        if self.node2.isPSSM():
+            n2length=self.node2.getLength()
+            for blockade in range(n2length):
+                blocks.append(node2['pspairs'][max2]['pos']+blockade-n2length/2)
+                blockers.append(self.node2.ID)        
         
         pair={'pos' : maxposition, 'energy' : maxenergy}
         return {'pspairs': [pair], 'blocked' : blocks, 'blocker' : blockers}

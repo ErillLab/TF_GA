@@ -1,8 +1,8 @@
 {
   "main": {
-    "POPULATION_LENGTH":50,
-    "POPULATION_ORIGIN":"file",
-    "POPULATION_FILL_TYPE":"uniform",
+    "POPULATION_LENGTH":250,
+    "POPULATION_ORIGIN":"random",
+    "POPULATION_FILL_TYPE":"random",
     "DATASET_BASE_PATH_DIR":"datasets/",
     "RESULT_BASE_PATH_DIR":"results/",
     "RESULT_TEST_BASE_PATH_DIR": "resultsTEST/",
@@ -11,9 +11,9 @@
     "INPUT_FILENAME":"inputOrganisms_dataset3_4.json",
     "OUTPUT_FILENAME":"output.txt",
     "MAX_SEQUENCES_TO_FIT_POS":50,
-    "MAX_SEQUENCES_TO_FIT_NEG":100,
+    "MAX_SEQUENCES_TO_FIT_NEG":150,
     "END_WHILE_METHOD":"iterations",
-    "MIN_ITERATIONS":50,
+    "MIN_ITERATIONS":250,
     "MIN_FITNESS":10,
     "THRESHOLD":0.05,
     "COMPLEXITY_FACTOR":1.0,

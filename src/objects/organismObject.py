@@ -275,8 +275,8 @@ class OrganismObject:
             for ids, pos in stuff:
                 #print ID, followed by as many stars as length of PSSM
                 strId = str(ids)
-                while len(strId) < length:
-                    strId += "*"
+                # while len(strId) < length:
+                #     strId += "*"
                     
                 p=round(pos-length/2)     
                 #fil up map at correct positions    
@@ -308,8 +308,8 @@ class OrganismObject:
         for ids, pos in stuff:
             #print ID, followed by as many stars as length of PSSM
             strId = str(ids)
-            while len(strId) < length:
-                strId += "*"
+            # while len(strId) < length:
+            #     strId += "*"
                 
             p=round(pos-length/2)     
             #fil up map at correct positions    
