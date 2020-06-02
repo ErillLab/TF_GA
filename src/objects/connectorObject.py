@@ -171,7 +171,7 @@ class ConnectorObject(Node):
         if self.node1.isPSSM():
             blocks.append(node1['pspairs'][max1]['pos'])
             blockers.append(self.node1.ID)        
-        if self.node1.isPSSM():
+        if self.node2.isPSSM():
             blocks.append(node2['pspairs'][max2]['pos'])
             blockers.append(self.node2.ID)        
         
