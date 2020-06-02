@@ -23,6 +23,7 @@ class PssmObject(Node):
         self.PSEUDO_COUNT = config["PSEUDO_COUNT"]
         self.UPPER_PRINT_PROBABILITY = config["UPPER_PRINT_PROBABILITY"]
         self.SCAN_REVERSE_COMPLEMENT = config["SCAN_REVERSE_COMPLEMENT"]
+        self.PLACEMENT_OPTIONS = config["PLACEMENT_OPTIONS"]
         # It first calculates PSSM Matrix based on  pwm
         self.recalculatePSSM()
 
@@ -137,9 +138,10 @@ class PssmObject(Node):
 
         # Check every position possible on the sequence
         for pos in range(sDNAlen - pssmLength):
-            mypos=float(pos) + self.length / 2
+            mypos=float(pos) + pssmLength / 2
             #if the position has not been blocked by another PSSM
-            if mypos not in blocks:
+            if (pos not in blocks) and (mypos not in blocks) \
+                and (pos+pssmLength/2 not in blocks):
                 # Compute the score of PSSM at position in sequence
                 #append them to list
                 scoresonseq.append({"pos" : mypos, \
@@ -151,7 +153,7 @@ class PssmObject(Node):
         scoresonseq.sort(key=lambda k: k['energy'], reverse=True)
         
         #list to return; best 5 positions to bind for PSSM
-        return_list=scoresonseq[0:6]
+        return_list=scoresonseq[0:self.PLACEMENT_OPTIONS]
         
         return {'pspairs': return_list, 'blocked' : blocks, 'blocker': blockers}
 

@@ -278,7 +278,8 @@ class OrganismObject:
                 # while len(strId) < length:
                 #     strId += "*"
                     
-                p=round(pos-length/2)     
+                #p=round(pos-length/2)  
+                p=round(pos)
                 #fil up map at correct positions    
                 mapPositions = (mapPositions[0:p] + strId \
                                 + mapPositions[p + length :])
