@@ -22,8 +22,6 @@ class PssmObject(Node):
         self.MUTATE_PROBABILITY_SHIFT_RIGHT = config["MUTATE_PROBABILITY_SHIFT_RIGHT"]
         self.PSEUDO_COUNT = config["PSEUDO_COUNT"]
         self.UPPER_PRINT_PROBABILITY = config["UPPER_PRINT_PROBABILITY"]
-        self.SCAN_REVERSE_COMPLEMENT = config["SCAN_REVERSE_COMPLEMENT"]
-        self.PLACEMENT_OPTIONS = config["PLACEMENT_OPTIONS"]
         # It first calculates PSSM Matrix based on  pwm
         self.recalculatePSSM()
 
@@ -38,10 +36,6 @@ class PssmObject(Node):
     #  pssm objects cannot be parents
     def getParent(self, ID):
         return None
-    
-    # return pssm length
-    def getLength(self):
-        return (self.length)
 
     # Mutate PSSM object
     def mutate(self, orgFactory):
@@ -130,35 +124,13 @@ class PssmObject(Node):
             self.optimalCombination = tmpOptimal
         # print(self.optimalCombination)
 
-    # Searchs sequence with PSSM ojbect returns position and score
-    def getPlacement(self, sDNA, sDNAlen,blocks,blockers):
-
-        scoresonseq=[]
-        pssmLength = self.length
-
-        # Check every position possible on the sequence
-        for pos in range(sDNAlen - pssmLength):
-            mypos=float(pos) + pssmLength / 2
-            blocked=False
-            for jpos in range(pos,pssmLength):
-                if jpos in blocks:
-                    blocked=True
-            #if the position has not been blocked by another PSSM
-            if not blocked:
-                # Compute the score of PSSM at position in sequence
-                #append them to list
-                scoresonseq.append({"pos" : mypos, \
-                                    "energy" : self.getScore(sDNA[pos : pos \
-                                    + pssmLength])})
-            
-            
-        #sort list and return it 
-        scoresonseq.sort(key=lambda k: k['energy'], reverse=True)
-        
-        #list to return; best 5 positions to bind for PSSM
-        return_list=scoresonseq[0:self.PLACEMENT_OPTIONS]
-        
-        return {'pspairs': return_list, 'blocked' : blocks, 'blocker': blockers}
+    # Searchs himself on the table and returns position and score
+    def getPlacement(self, table):
+        for ID, score, position, length in table:
+            if self.ID == ID:
+                # Maybe add half the length so the position is centered
+                return score, float(position) + self.length / 2
+        return 0, 0
 
     # Adds himself as a pssm recognizer
     def getAllPssm(self):
@@ -167,17 +139,18 @@ class PssmObject(Node):
     # returns a score to that DNA secuence
     def getScore(self, sDNA):
 
-        complement = {"a": "t", "t": "a", "g": "c", "c": "g"}
+        # complement = {"a": "t", "t": "a", "g": "c", "c": "g"}
+        # revSDNA = "".join(complement[i] for i in reversed(sDNA))
         # gets a score from pssm
         score = 0
-        scoreReverse = 0
-        strLength = len(sDNA)
-        for i in range(strLength):
+        # scoreReverse = 0
+
+        for i in range(len(sDNA)):
 
             score += self.pssm[i][sDNA[i]]
-            scoreReverse += self.pssm[strLength - i - 1][complement[sDNA[strLength - i - 1]]]
+            # scoreReverse += self.pssm[i][revSDNA[i]]
         # Returns the max binding score
-        return score if score > scoreReverse or not self.SCAN_REVERSE_COMPLEMENT else scoreReverse
+        return score  # if score > scoreReverse else scoreReverse
 
     # Nodes cannot be setted from recognizer objects
     def setNode(self, node, ID):

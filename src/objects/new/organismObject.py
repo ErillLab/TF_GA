@@ -20,8 +20,6 @@ class OrganismObject:
         self.MUTATE_PROBABILITY_RISE_CHILD = conf["MUTATE_PROBABILITY_RISE_CHILD"]
         self.MUTATE_PROBABILITY_SUNK_CHILD = conf["MUTATE_PROBABILITY_SUNK_CHILD"]
         self.MUTATE_PROBABILITY_NODE_MUTATION = conf["MUTATE_PROBABILITY_NODE_MUTATION"]
-        self.MIN_NODES = conf["MIN_NODES"]
-        self.MAX_NODES = conf["MAX_NODES"]
         self.isTracked = False
 
     # Setters an getters
@@ -127,30 +125,16 @@ class OrganismObject:
         # Complexity is calculed as:
         # meanFitnessScore * # nodes / meanNodes
 
-        # Check complexity of the organism
-        # If its over/under organism MAX/MIN apply an extra complexity penalty
-        extraPenalty = 0.0
-        extraPenaltyFactor = 300
-        basePenalty = 0.0
-        nodes = self.countNodes()
-
-        basePenalty = meanFitness * self.numNodes / meanNodes
-
-        if nodes < self.MIN_NODES:
-            extraPenalty = (self.MIN_NODES - nodes) * extraPenaltyFactor
-        if nodes > self.MAX_NODES:
-            extraPenalty = (nodes - self.MAX_NODES) * extraPenaltyFactor
-
-        return basePenalty + extraPenalty
+        return meanFitness * self.numNodes / meanNodes
 
     # Return the fitness of the organism for a given DNA sequence
     def getSeqFitness(self, sDNA):
 
         # call recursively to get the total fitness of the organism
-        noderoot = self.rootNode.getPlacement(sDNA, len(sDNA), [], [])
+        noderoot = self.rootNode.getPlacement(sDNA, len(sDNA),[])
 
-        # return score, blocks and blokcers in that sequence
-        return noderoot
+        # return score in that dataset
+        return noderoot['pspair']['energy']
 
     # Return the total Fitness for an array of DNA sequences and the fitness
     # method
@@ -163,16 +147,14 @@ class OrganismObject:
         if self.CUMULATIVE_FIT_METHOD == "sum":
 
             for sDNA in aDNA:
-                sfit = self.getSeqFitness(sDNA.lower())
-                score += sfit['pspairs'][0]['energy']
+                score += self.getSeqFitness(sDNA.lower())
 
         # mean method returns the mean of all fitness to SNA sequences
         elif self.CUMULATIVE_FIT_METHOD == "mean":
 
             scores = []
             for sDNA in aDNA:
-                sfit = self.getSeqFitness(sDNA.lower())
-                scores.append(sfit['pspairs'][0]['energy'])
+                scores.append(self.getSeqFitness(sDNA.lower()))
             score = np.mean(scores)
 
         return score
@@ -248,43 +230,50 @@ class OrganismObject:
     def exportResults(self, aDNA, filename):
 
         # Sort the array, so its always shown in the same order
-        #sorting is done by sequence, so first sequences start with "AAA.."
         aDNA.sort()
-        #get the length of the PSSMs used
-        length = self.rootNode.getAllPssm()[0].length
-        
+
         resultsFile = open(filename, "w+")
 
-        #for every DNA sequence
         for sDNA in aDNA:
-            #call fitness evaluation for sequence
-            sfit = self.getSeqFitness(sDNA.lower())
-            
-            #write out the sequence
+
+            sDNA = sDNA.lower()
+            sequenceLength = len(sDNA)
+
+            # get all PSSM recognizers
+            aPssmObjects = self.rootNode.getAllPssm()
+
+            # check position where it fits (position)
+            pssmPositionScoreTable = []
+
+            # Go through all PSSM objects to check where it fits
+            for pssm in aPssmObjects:
+                pssmLength = pssm.length
+                maxScore = float("-inf")
+                position = 0
+
+                # Check every position possible on the sequence
+                for pos in range(sequenceLength - pssmLength):
+                    score = pssm.getScore(sDNA[pos : pos + pssmLength])
+                    # Update max score if the actual score is acctually better
+                    # Also check that the position is not overlapping other pssm object
+                    if score > maxScore:
+                            maxScore = score
+                            position = pos
+
+                # Add to a table the ID, maxScore and position of a pssm object
+                pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
+
             resultsFile.write("\n{}\n".format(sDNA))
-            
-            #create an empy positions map
             mapPositions = " " * len(sDNA)
 
-            #positions for PSSMs are in blocked and blocked lists, returned by
-            #getSeqFitness. we zip them and then iterate over the zip to
-            #print the PSSMs in their locations respective to the sequence
-            positions=sfit['blocked']
-            nodes=sfit['blocker']
-            stuff=list(zip(nodes,positions))
-            for ids, pos in stuff:
-                #print ID, followed by as many stars as length of PSSM
+            for ids, sc, pos, length in pssmPositionScoreTable:
                 strId = str(ids)
-                # while len(strId) < length:
-                #     strId += "*"
-                    
-                #p=round(pos-length/2)  
-                p=round(pos)
-                #fil up map at correct positions    
-                mapPositions = (mapPositions[0:p] + strId \
-                                + mapPositions[p + length :])
-                    
-            #write map to file for this sequence
+                while len(strId) < length:
+                    strId += "*"
+                mapPositions = (
+                    mapPositions[0:pos] + strId + mapPositions[pos + length :]
+                )
+
             resultsFile.write(mapPositions + "\n")
 
         resultsFile.close()
@@ -292,31 +281,40 @@ class OrganismObject:
     def printResult(self, sDNA):
 
         sDNA = sDNA.lower()
-        length = self.rootNode.getAllPssm()[0].length
+        sequenceLength = len(sDNA)
 
-        #call fitness evaluation for sequence
-        sfit = self.getSeqFitness(sDNA.lower())
+        # get all PSSM recognizers
+        aPssmObjects = self.rootNode.getAllPssm()
 
-        #create an empy positions map
+        # check position where it fits (position)
+        pssmPositionScoreTable = []
+
+        # Go through all PSSM objects to check where it fits
+        for pssm in aPssmObjects:
+            pssmLength = pssm.length
+            maxScore = float("-inf")
+            position = 0
+
+            # Update max score if the actual score is acctually better
+            # Also check that the position is not overlapping other pssm object
+
+            # Check every position possible on the sequence
+            for pos in range(sequenceLength - pssmLength):
+                score = pssm.getScore(sDNA[pos : pos + pssmLength])
+
+                if score > maxScore and not self.isOverlapping(pos, pssmLength, pssmPositionScoreTable):
+                        maxScore = score
+                        position = pos
+
+            # Add to a table the ID, maxScore and position of a pssm object
+            pssmPositionScoreTable.append((pssm.ID, maxScore, position, pssmLength))
+
         mapPositions = " " * len(sDNA)
 
-        #positions for PSSMs are in blocked and blocked lists, returned by
-        #getSeqFitness. we zip them and then iterate over the zip to
-        #print the PSSMs in their locations respective to the sequence
-        positions=sfit['blocked']
-        nodes=sfit['blocker']
-        stuff=list(zip(nodes,positions))
-        for ids, pos in stuff:
-            #print ID, followed by as many stars as length of PSSM
+        for ids, sc, pos, length in pssmPositionScoreTable:
             strId = str(ids)
-            # while len(strId) < length:
-            #     strId += "*"
-                
-            # p=round(pos-length/2)     
-            p=round(pos)
-            #fil up map at correct positions    
-            mapPositions = (mapPositions[0:p] + strId \
-                            + mapPositions[p + length :])
+            while len(strId) < length:
+                strId += "*"
+            mapPositions = mapPositions[0:pos] + strId + mapPositions[pos + length :]
 
-        #return map for this sequence
         return "{}\n{}".format(sDNA, mapPositions)

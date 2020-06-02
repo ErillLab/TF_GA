@@ -80,24 +80,17 @@ class ConnectorObject(Node):
     def getAllPssm(self):
         return self.node1.getAllPssm() + self.node2.getAllPssm()
 
-    # calculate organism pacement on a sequence 
-    """This is a position/score propagation method, defined for connector 
-       objects.
+    # calculate best all strategy for pssm position based on a table of pssm scores.
+    """This position/score propagation method, defined for connector objects.
        It is invoked by the placement method in the organism, for the root
        connector object, and calls itself recursively.
+       The function assumes that PSSMs have already been positioned, and their
+       positions are passed to the function as a table.
        The function calls itself until reaching terminal connectors, which call
-       onto PSSM objects. 
-       At that point, the call to the getPlacement function in PSSM nodes leads
-       to the evaluation of the PSSM node across all the sequence, and it
-       returns the score/position pairs, sorted by descending score.
-       
-       The connector function then propagates this up, taking the middle 
-       position between both PSSMs and adding the connector energy to the 
-       energies provided by the PSSMs.
-       
-       The connector determines (i.e. freezes) the PSSM locations, adding them
-       to the block list that is passed as a parameter.
-       
+       onto PSSM objects. The PSSM function seeks the PSSM ojbect in the table
+       and returns its position and score. The connector function then 
+       propagates this up, taking the middle position between both PSSMs and
+       adding the connector energy to the energies provided by the PSSMs.
        Further connector objects proceed in the same manner, computing middle
        distance and adding their energy contribution, until the energy reaches
        the root node, and is returned as the fitness for the organism.
@@ -110,79 +103,30 @@ class ConnectorObject(Node):
        and modulated by a dispersion parameter (sigma). Tau controls the 
        "weight" of the connector contribution to energy.
     """
-    def getPlacement(self, sDNA, sDNAlen, blocks, blockers):
+    def getPlacement(self, table):
         # This tau shows how much value we give to the connector fit
         tau = self.TAU
 
-        node1 = self.node1.getPlacement(sDNA, sDNAlen, blocks, blockers)
-        node2 = self.node2.getPlacement(sDNA, sDNAlen, blocks, blockers)
+        eNode1, pos1 = self.node1.getPlacement(table)
+        eNode2, pos2 = self.node2.getPlacement(table)
 
-        #precompute connector energy term (not dependent on PSSM placement)
+        numerator = (self.mu - (pos2 - pos1)) ** 2
+        exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
         logterm = np.log10(10 + self.sigma ** 2)
+        expterm = np.exp(exponent)
 
-        maxenergy=-np.inf
-        maxposition=0
-        max1=0
-        max2=0
-        #iterate over all possible configurations of sub-node placements
-        #and determine the optimal one
-        for n1count in range(len(node1['pspairs'])):
-            for n2count in range(len(node2['pspairs'])):
-                #compute connector energy terms that depend on PSSM placement
-                numerator = (self.mu - (node2['pspairs'][n2count]['pos'] - node1['pspairs'][n1count]['pos'])) ** 2
-                exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
-                expterm = np.exp(exponent)
-                #connector energy
-                eConnector = (tau / logterm) * expterm
-                #submodel energy
-                energy = (node1['pspairs'][n1count]['energy'] \
-                          + node2['pspairs'][n2count]['energy']) \
-                          + eConnector
-                position = (node1['pspairs'][n1count]['pos'] \
-                            + node2['pspairs'][n2count]['pos']) / 2
-                
-                #if this energy is the best so far, annotate it
-                if energy > maxenergy:
-                    maxenergy = energy
-                    maxposition = position
-                    max1 = n1count
-                    max2 = n2count
-                    
-                
-
-        # numerator = (self.mu - (node2['pspairs']['pos'] - node1['pspairs']['pos'])) ** 2
-        # exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
-        # logterm = np.log10(10 + self.sigma ** 2)
-        # expterm = np.exp(exponent)
-
-        #eConnector = (tau / logterm) * expterm
+        eConnector = (tau / logterm) * expterm
         # print("{} {} {}".format(log, exp, eConnector))
         # print("tau: {}d1: {} d2: {} mu:{} exp: {} econn: {}".format(tau, pos1, pos2, self.mu,  numerator, exponent, eConnector))
-        #energy = (node1['pspair']['energy'] + node2['pspair']['energy']) + eConnector
+        energy = (eNode1 + eNode2) + eConnector
         # print("N1:{} N2:{} C:{} SIGMA:{} MU {}\n".format(eNode1, eNode2, eConnector, self.sigma, self.mu))
         # energy = (eNode1 + eNode2) * eConnector
         # energy = max(eNode1 * eConnector + eNode2, eNode2 * eConnector + eNode1)
-        #position = (node1['pspair']['pos'] + node2['pspair']['pos']) / 2
-        #print("P1:{} E1:{} P2:{} N2:{} C {}\n".format(node1['pspair']['pos'], node1['pspair']['energy'], node2['pspair']['pos'], node2['pspair']['energy'], eConnector))
-
-
-
-        #determine that connector's PSSMs have blocked their positions
-        if self.node1.isPSSM():
-            n1length=self.node1.getLength()
-            blockstartpos1=node1['pspairs'][max1]['pos']-n1length/2
-            for blockade in range(n1length):
-                blocks.append(blockstartpos1+blockade)
-                blockers.append(self.node1.ID)        
-        if self.node2.isPSSM():
-            n2length=self.node2.getLength()
-            blockstartpos2=node2['pspairs'][max2]['pos']-n2length/2
-            for blockade in range(n2length):
-                blocks.append(blockstartpos2+blockade)
-                blockers.append(self.node2.ID)        
+        position = (pos1 + pos2) / 2
         
-        pair={'pos' : maxposition, 'energy' : maxenergy}
-        return {'pspairs': [pair], 'blocked' : blocks, 'blocker' : blockers}
+        print("P1:{} E1:{} P2:{} N2:{} C {}\n".format(pos1, eNode1, pos2, eNode2, eConnector))        
+
+        return energy, position
 
     # Sets the node on a given ID
     def setNode(self, node, ID):
