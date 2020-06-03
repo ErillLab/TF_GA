@@ -140,9 +140,10 @@ class PssmObject(Node):
         for pos in range(sDNAlen - pssmLength):
             mypos=float(pos) + pssmLength / 2
             blocked=False
-            for jpos in range(pos,pssmLength):
+            for jpos in range(pos,pos+pssmLength):
                 if jpos in blocks:
                     blocked=True
+                    break
             #if the position has not been blocked by another PSSM
             if not blocked:
                 # Compute the score of PSSM at position in sequence
@@ -150,12 +151,17 @@ class PssmObject(Node):
                 scoresonseq.append({"pos" : mypos, \
                                     "energy" : self.getScore(sDNA[pos : pos \
                                     + pssmLength])})
-            
-            
+            #otherwise just add large negative
+            else:
+                scoresonseq.append({"pos" : mypos, \
+                                    "energy" : -10000.0})
+        
+        # print (blocks)
+        # print(scoresonseq,'\n')
         #sort list and return it 
         scoresonseq.sort(key=lambda k: k['energy'], reverse=True)
         
-        #list to return; best 5 positions to bind for PSSM
+        #list to return; best X positions to bind for PSSM
         return_list=scoresonseq[0:self.PLACEMENT_OPTIONS]
         
         return {'pspairs': return_list, 'blocked' : blocks, 'blocker': blockers}

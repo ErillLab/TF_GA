@@ -250,13 +250,12 @@ class OrganismObject:
         # Sort the array, so its always shown in the same order
         #sorting is done by sequence, so first sequences start with "AAA.."
         aDNA.sort()
-        #get the length of the PSSMs used
-        length = self.rootNode.getAllPssm()[0].length
         
         resultsFile = open(filename, "w+")
 
         #for every DNA sequence
         for sDNA in aDNA:
+
             #call fitness evaluation for sequence
             sfit = self.getSeqFitness(sDNA.lower())
             
@@ -272,27 +271,28 @@ class OrganismObject:
             positions=sfit['blocked']
             nodes=sfit['blocker']
             stuff=list(zip(nodes,positions))
+            
             for ids, pos in stuff:
-                #print ID, followed by as many stars as length of PSSM
+                #print ID, capped to the length of PSSM
                 strId = str(ids)
                 # while len(strId) < length:
                 #     strId += "*"
                     
                 #p=round(pos-length/2)  
                 p=round(pos)
-                #fil up map at correct positions    
+                #fill up map at correct positions    
                 mapPositions = (mapPositions[0:p] + strId \
-                                + mapPositions[p + length :])
+                                + mapPositions[p + 1 :])
                     
             #write map to file for this sequence
             resultsFile.write(mapPositions + "\n")
+            # resultsFile.write(str(stuff) + "\n")
 
         resultsFile.close()
 
     def printResult(self, sDNA):
 
         sDNA = sDNA.lower()
-        length = self.rootNode.getAllPssm()[0].length
 
         #call fitness evaluation for sequence
         sfit = self.getSeqFitness(sDNA.lower())
@@ -307,16 +307,16 @@ class OrganismObject:
         nodes=sfit['blocker']
         stuff=list(zip(nodes,positions))
         for ids, pos in stuff:
-            #print ID, followed by as many stars as length of PSSM
+            #print ID, capped to the length of PSSM
             strId = str(ids)
             # while len(strId) < length:
             #     strId += "*"
                 
             # p=round(pos-length/2)     
             p=round(pos)
-            #fil up map at correct positions    
+            #fill up map at correct positions    
             mapPositions = (mapPositions[0:p] + strId \
-                            + mapPositions[p + length :])
+                            + mapPositions[p + 1 :])
 
         #return map for this sequence
         return "{}\n{}".format(sDNA, mapPositions)

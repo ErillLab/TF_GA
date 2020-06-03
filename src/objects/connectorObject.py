@@ -140,7 +140,43 @@ class ConnectorObject(Node):
                           + eConnector
                 position = (node1['pspairs'][n1count]['pos'] \
                             + node2['pspairs'][n2count]['pos']) / 2
+                    
                 
+               #if BOTH nodes are pssms, avoid pssm overlapping 
+                if self.node1.isPSSM() and self.node2.isPSSM():
+                    #determine largest PSSM
+                    p_len = self.node1.getLength() \
+                        if self.node1.getLength() > self.node2.getLength() \
+                            else self.node2.getLength() 
+                    #determine if there is overlap, skip this combo if there is
+                    if abs(node2['pspairs'][n2count]['pos'] \
+                           - node1['pspairs'][n1count]['pos']) <= p_len:
+                        continue
+                
+                #if ONE of the nodes is a PSSM, make sure its position does
+                #not overlap with blocked positions
+                if self.node1.isPSSM():
+                    p_len = self.node1.getLength()
+                    startpos1=round(node1['pspairs'][n1count]['pos']-p_len/2)
+                    blocked=False
+                    for jpos in range(startpos1,startpos1+p_len):
+                        if jpos in blocks:
+                            blocked=True
+                            break
+                    #if position has been blocked, skip it
+                    if blocked:
+                        continue
+                if self.node2.isPSSM():
+                    p_len = self.node2.getLength()
+                    startpos2=round(node2['pspairs'][n2count]['pos']-p_len/2)
+                    blocked=False
+                    for jpos in range(startpos2,startpos2+p_len):
+                        if jpos in blocks:
+                            blocked=True
+                            break
+                    #if position has been blocked, skip it
+                    if blocked:
+                        continue                
                 #if this energy is the best so far, annotate it
                 if energy > maxenergy:
                     maxenergy = energy
@@ -148,8 +184,9 @@ class ConnectorObject(Node):
                     max1 = n1count
                     max2 = n2count
                     
-                
-
+        # print('Max1: ',node1['pspairs'][max1]['pos'])        
+        # print('Max2: ',node2['pspairs'][max2]['pos'])        
+        
         # numerator = (self.mu - (node2['pspairs']['pos'] - node1['pspairs']['pos'])) ** 2
         # exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
         # logterm = np.log10(10 + self.sigma ** 2)
@@ -170,13 +207,13 @@ class ConnectorObject(Node):
         #determine that connector's PSSMs have blocked their positions
         if self.node1.isPSSM():
             n1length=self.node1.getLength()
-            blockstartpos1=node1['pspairs'][max1]['pos']-n1length/2
+            blockstartpos1=round(node1['pspairs'][max1]['pos']-n1length/2)
             for blockade in range(n1length):
                 blocks.append(blockstartpos1+blockade)
                 blockers.append(self.node1.ID)        
         if self.node2.isPSSM():
             n2length=self.node2.getLength()
-            blockstartpos2=node2['pspairs'][max2]['pos']-n2length/2
+            blockstartpos2=round(node2['pspairs'][max2]['pos']-n2length/2)
             for blockade in range(n2length):
                 blocks.append(blockstartpos2+blockade)
                 blockers.append(self.node2.ID)        
