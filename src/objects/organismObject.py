@@ -135,7 +135,9 @@ class OrganismObject:
         nodes = self.countNodes()
 
         basePenalty = meanFitness * self.numNodes / meanNodes
-
+        
+        #introduce bound for number of nodes
+        #organisms containing more nodes get an additional penalty factor
         if nodes < self.MIN_NODES:
             extraPenalty = (self.MIN_NODES - nodes) * extraPenaltyFactor
         if nodes > self.MAX_NODES:
