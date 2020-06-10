@@ -316,8 +316,9 @@ class OrganismObject:
             #fill up map at correct positions    
             mapPositions = (mapPositions[0:p] + strId[alter] \
                             + mapPositions[p + 1 :])
+            #handle two-digit positions, by alterning between digits
             if len(strId)>1:
                 alter=0 if alter==1 else 1
-
+        print(mapPositions)
         #return map for this sequence
         return "{}\n{}".format(sDNA, mapPositions)

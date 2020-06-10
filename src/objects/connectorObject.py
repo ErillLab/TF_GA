@@ -182,8 +182,8 @@ class ConnectorObject(Node):
                             if self.node1.getLength() > self.node2.getLength() \
                                 else self.node2.getLength() 
                         #determine if overlap exists, skip combo if there is
-                        if abs(node2['pspairs'][n2count]['pos'] \
-                               - node1['pspairs'][n1count]['pos']+1) <= p_len:
+                        if abs(round(node2['pspairs'][n2count]['pos']) \
+                               - round(node1['pspairs'][n1count]['pos'])) < p_len:
                             continue
                     
                     #if ONE of the nodes is a PSSM, make sure its position does
@@ -191,7 +191,7 @@ class ConnectorObject(Node):
                     if self.node1.isPSSM():
                         p_len = self.node1.getLength()
                         startpos1=round(node1['pspairs'][n1count]['pos'])\
-                                  - round(p_len/2) + 1
+                                  - round(p_len/2)
                         blocked=False
                         for jpos in range(startpos1,startpos1+p_len):
                             if jpos in blocks:
@@ -203,7 +203,7 @@ class ConnectorObject(Node):
                     if self.node2.isPSSM():
                         p_len = self.node2.getLength()
                         startpos2=round(node2['pspairs'][n2count]['pos'])\
-                                  - round(p_len/2) + 1
+                                  - round(p_len/2)
                         blocked=False
                         for jpos in range(startpos2,startpos2+p_len):
                             if jpos in blocks:
@@ -232,14 +232,14 @@ class ConnectorObject(Node):
         if self.node1.isPSSM():
             n1length=self.node1.getLength()
             blockstartpos1=round(node1['pspairs'][max1]['pos'])\
-                           - round(n1length/2) + 1
+                           - round(n1length/2)
             for blockade in range(n1length):
                 blocks.append(blockstartpos1+blockade)
                 blockers.append(self.node1.ID)        
         if self.node2.isPSSM():
             n2length=self.node2.getLength()
             blockstartpos2=round(node2['pspairs'][max2]['pos'])\
-                           - round(n2length/2) + 1
+                           - round(n2length/2)
             for blockade in range(n2length):
                 blocks.append(blockstartpos2+blockade)
                 blockers.append(self.node2.ID)        
