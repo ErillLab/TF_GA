@@ -299,7 +299,7 @@ class OrganismObject:
         sfit = self.getSeqFitness(sDNA.lower())
 
         #create an empy positions map
-        mapPositions = " " * len(sDNA)
+        mapPositions = "-" * len(sDNA)
 
         #positions for PSSMs are in blocked and blocked lists, returned by
         #getSeqFitness. we zip them and then iterate over the zip to
@@ -319,6 +319,6 @@ class OrganismObject:
             #handle two-digit positions, by alterning between digits
             if len(strId)>1:
                 alter=0 if alter==1 else 1
-        print(mapPositions)
+
         #return map for this sequence
         return "{}\n{}".format(sDNA, mapPositions)
