@@ -19,6 +19,7 @@ class ConnectorObject(Node):
         self.TAU = config["TAU"]
         self.MUTATE_VARIANCE_SIGMA = config["MUTATE_VARIANCE_SIGMA"]
         self.MUTATE_VARIANCE_MU = config["MUTATE_VARIANCE_MU"]
+        self.PLACEMENT_OPTIONS = config["PLACEMENT_OPTIONS"]
 
         self.node1 = node1
         self.node2 = node2
@@ -113,7 +114,11 @@ class ConnectorObject(Node):
     def getPlacement(self, sDNA, sDNAlen, blocks, blockers):
         # This tau shows how much value we give to the connector fit
         tau = self.TAU
-
+        
+        #ask daughter nodes what their placement is
+        #placement call will return a vector of positions (for PSSMs) and their
+        #scores (sorted descending by score) , as well as an udpated 
+        #block/blocker vector
         node1 = self.node1.getPlacement(sDNA, sDNAlen, blocks, blockers)
         node2 = self.node2.getPlacement(sDNA, sDNAlen, blocks, blockers)
 
@@ -124,101 +129,123 @@ class ConnectorObject(Node):
         maxposition=0
         max1=0
         max2=0
+        placecnt = 0
+        placeopt = self.PLACEMENT_OPTIONS
+        confset=False
         #iterate over all possible configurations of sub-node placements
-        #and determine the optimal one
-        for n1count in range(len(node1['pspairs'])):
-            for n2count in range(len(node2['pspairs'])):
-                #compute connector energy terms that depend on PSSM placement
-                numerator = (self.mu - (node2['pspairs'][n2count]['pos'] - node1['pspairs'][n1count]['pos'])) ** 2
-                exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
-                expterm = np.exp(exponent)
-                #connector energy
-                eConnector = (tau / logterm) * expterm
-                #submodel energy
-                energy = (node1['pspairs'][n1count]['energy'] \
-                          + node2['pspairs'][n2count]['energy']) \
-                          + eConnector
-                position = (node1['pspairs'][n1count]['pos'] \
-                            + node2['pspairs'][n2count]['pos']) / 2
-                    
+        #and determine the optimal one. this goes on for a _minimum_ number of 
+        #iterations (user-defined), but continues if a satisfactory 
+        #configuration has not been found (for instance, because
+        #all tried configurations generated conflicts with blocked positions)
+        #the two for loops iterate over possible subset of configurations
+        #if a valid solution is not found, they iterate over next subset
+        #this will take place when at least one of the nodes is a PSSM and has
+        #returned more than one possible position (although in theory
+        #connectors could also return more than one position)
+        while not confset:
+            #set range according to availability of positions
+            if len(node1['pspairs']) > placeopt:
+                range1st=placecnt
+                range1nd=placecnt+placeopt
+            else:
+                range1st=0
+                range1nd=1
+            if len(node2['pspairs']) > placeopt:
+                range2st=placecnt
+                range2nd=placecnt+placeopt
+            else:
+                range2st=0
+                range2nd=1
                 
-               #if BOTH nodes are pssms, avoid pssm overlapping 
-                if self.node1.isPSSM() and self.node2.isPSSM():
-                    #determine largest PSSM
-                    p_len = self.node1.getLength() \
-                        if self.node1.getLength() > self.node2.getLength() \
-                            else self.node2.getLength() 
-                    #determine if there is overlap, skip this combo if there is
-                    if abs(node2['pspairs'][n2count]['pos'] \
-                           - node1['pspairs'][n1count]['pos']) <= p_len:
-                        continue
-                
-                #if ONE of the nodes is a PSSM, make sure its position does
-                #not overlap with blocked positions
-                if self.node1.isPSSM():
-                    p_len = self.node1.getLength()
-                    startpos1=round(node1['pspairs'][n1count]['pos']-p_len/2)
-                    blocked=False
-                    for jpos in range(startpos1,startpos1+p_len):
-                        if jpos in blocks:
-                            blocked=True
-                            break
-                    #if position has been blocked, skip it
-                    if blocked:
-                        continue
-                if self.node2.isPSSM():
-                    p_len = self.node2.getLength()
-                    startpos2=round(node2['pspairs'][n2count]['pos']-p_len/2)
-                    blocked=False
-                    for jpos in range(startpos2,startpos2+p_len):
-                        if jpos in blocks:
-                            blocked=True
-                            break
-                    #if position has been blocked, skip it
-                    if blocked:
-                        continue                
-                #if this energy is the best so far, annotate it
-                if energy > maxenergy:
-                    maxenergy = energy
-                    maxposition = position
-                    max1 = n1count
-                    max2 = n2count
+            for n1count in range(range1st,range1nd):
+                for n2count in range(range2st,range2nd):
+                    #compute connector energy terms that depend on PSSM placement
+                    numerator = (self.mu - (node2['pspairs'][n2count]['pos'] \
+                                 - node1['pspairs'][n1count]['pos'])) ** 2
+                    exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
+                    expterm = np.exp(exponent)
+                    #compute additive connector energy term
+                    eConnector = (tau / logterm) * expterm
+                    #submodel energy: additive
+                    energy = (node1['pspairs'][n1count]['energy'] \
+                              + node2['pspairs'][n2count]['energy']) \
+                              + eConnector
+                    #submodel position: average of daughter positions
+                    position = (node1['pspairs'][n1count]['pos'] \
+                                + node2['pspairs'][n2count]['pos']) / 2
+                        
                     
-        # print('Max1: ',node1['pspairs'][max1]['pos'])        
-        # print('Max2: ',node2['pspairs'][max2]['pos'])        
+                    #if BOTH nodes are pssms, avoid pssm overlapping 
+                    if self.node1.isPSSM() and self.node2.isPSSM():
+                        #determine largest PSSM
+                        p_len = self.node1.getLength() \
+                            if self.node1.getLength() > self.node2.getLength() \
+                                else self.node2.getLength() 
+                        #determine if overlap exists, skip combo if there is
+                        if abs(node2['pspairs'][n2count]['pos'] \
+                               - node1['pspairs'][n1count]['pos']+1) <= p_len:
+                            continue
+                    
+                    #if ONE of the nodes is a PSSM, make sure its position does
+                    #not overlap with blocked positions
+                    if self.node1.isPSSM():
+                        p_len = self.node1.getLength()
+                        startpos1=round(node1['pspairs'][n1count]['pos'])\
+                                  - round(p_len/2) + 1
+                        blocked=False
+                        for jpos in range(startpos1,startpos1+p_len):
+                            if jpos in blocks:
+                                blocked=True
+                                break
+                        #if position has been blocked, skip this combo
+                        if blocked:
+                            continue
+                    if self.node2.isPSSM():
+                        p_len = self.node2.getLength()
+                        startpos2=round(node2['pspairs'][n2count]['pos'])\
+                                  - round(p_len/2) + 1
+                        blocked=False
+                        for jpos in range(startpos2,startpos2+p_len):
+                            if jpos in blocks:
+                                blocked=True
+                                break
+                        #if position has been blocked, skip this combo
+                        if blocked:
+                            continue                
+                    #if this energy is the best so far, annotate it
+                    #set confset to true, since we have obtained a valid
+                    #configuration
+                    if energy > maxenergy:
+                        maxenergy = energy
+                        maxposition = position
+                        max1 = n1count
+                        max2 = n2count
+                        confset=True
+            
+                #increase base configuration counter
+                placecnt=placecnt+1        
+            
+            # print('Max1: ',node1['pspairs'][max1]['pos'])        
+            # print('Max2: ',node2['pspairs'][max2]['pos'])        
         
-        # numerator = (self.mu - (node2['pspairs']['pos'] - node1['pspairs']['pos'])) ** 2
-        # exponent = -1.0 * numerator / (1 + 2 * (self.sigma ** 2))
-        # logterm = np.log10(10 + self.sigma ** 2)
-        # expterm = np.exp(exponent)
-
-        #eConnector = (tau / logterm) * expterm
-        # print("{} {} {}".format(log, exp, eConnector))
-        # print("tau: {}d1: {} d2: {} mu:{} exp: {} econn: {}".format(tau, pos1, pos2, self.mu,  numerator, exponent, eConnector))
-        #energy = (node1['pspair']['energy'] + node2['pspair']['energy']) + eConnector
-        # print("N1:{} N2:{} C:{} SIGMA:{} MU {}\n".format(eNode1, eNode2, eConnector, self.sigma, self.mu))
-        # energy = (eNode1 + eNode2) * eConnector
-        # energy = max(eNode1 * eConnector + eNode2, eNode2 * eConnector + eNode1)
-        #position = (node1['pspair']['pos'] + node2['pspair']['pos']) / 2
-        #print("P1:{} E1:{} P2:{} N2:{} C {}\n".format(node1['pspair']['pos'], node1['pspair']['energy'], node2['pspair']['pos'], node2['pspair']['energy'], eConnector))
-
-
-
-        #determine that connector's PSSMs have blocked their positions
+        #block the positions of this connector's PSSMs
         if self.node1.isPSSM():
             n1length=self.node1.getLength()
-            blockstartpos1=round(node1['pspairs'][max1]['pos']-n1length/2)
+            blockstartpos1=round(node1['pspairs'][max1]['pos'])\
+                           - round(n1length/2) + 1
             for blockade in range(n1length):
                 blocks.append(blockstartpos1+blockade)
                 blockers.append(self.node1.ID)        
         if self.node2.isPSSM():
             n2length=self.node2.getLength()
-            blockstartpos2=round(node2['pspairs'][max2]['pos']-n2length/2)
+            blockstartpos2=round(node2['pspairs'][max2]['pos'])\
+                           - round(n2length/2) + 1
             for blockade in range(n2length):
                 blocks.append(blockstartpos2+blockade)
                 blockers.append(self.node2.ID)        
         
         pair={'pos' : maxposition, 'energy' : maxenergy}
+
         return {'pspairs': [pair], 'blocked' : blocks, 'blocker' : blockers}
 
     # Sets the node on a given ID

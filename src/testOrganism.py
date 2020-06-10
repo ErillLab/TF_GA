@@ -44,8 +44,10 @@ def main():
 
         p1 = org.getSeqSetFitness(positiveDataset[:MAX_SEQUENCES_TO_FIT_POS])
         n1 = org.getSeqSetFitness(negativeDataset[:MAX_SEQUENCES_TO_FIT_NEG])
+        # p1 = 20
+        # n1 = org.getSeqSetFitness(negativeDataset[31:32])
         c1 = org.getComplexity(mean_nodes, mean_fitness)
-
+        
         # Score
         fitness = p1 - n1
         effectiveFitness = fitness - complexityFactor * c1
@@ -61,6 +63,13 @@ def main():
             "{}positive_{}".format(config["main"]["RESULT_TEST_BASE_PATH_DIR"], org.ID),
             organismFactory,
         )
+        # exportOrganism(
+        #     org,
+        #     negativeDataset[31:32],
+        #     "{}negative_{}".format(config["main"]["RESULT_TEST_BASE_PATH_DIR"], org.ID),
+        #     organismFactory,
+        # )
+        
         exportOrganism(
             org,
             negativeDataset[:50],

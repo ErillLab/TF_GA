@@ -246,10 +246,10 @@ class OrganismObject:
         organismFile.write("\n")
         organismFile.close()
 
-    # Exports all DNA sequences organism binding to a file
+    #Exports all DNA sequences organism binding to a file
     def exportResults(self, aDNA, filename):
 
-        # Sort the array, so its always shown in the same order
+        #Sort the array, so its always shown in the same order
         #sorting is done by sequence, so first sequences start with "AAA.."
         aDNA.sort()
         
@@ -265,26 +265,25 @@ class OrganismObject:
             resultsFile.write("\n{}\n".format(sDNA))
             
             #create an empy positions map
-            mapPositions = " " * len(sDNA)
+            mapPositions = "-" * len(sDNA)
 
-            #positions for PSSMs are in blocked and blocked lists, returned by
+            #positions for PSSMs are in blocks and blocked lists, returned by
             #getSeqFitness. we zip them and then iterate over the zip to
             #print the PSSMs in their locations respective to the sequence
             positions=sfit['blocked']
             nodes=sfit['blocker']
             stuff=list(zip(nodes,positions))
-            
+            stuff.sort(key=lambda k: k[1])
+            alter=0
             for ids, pos in stuff:
                 #print ID, capped to the length of PSSM
                 strId = str(ids)
-                # while len(strId) < length:
-                #     strId += "*"
-                    
-                #p=round(pos-length/2)  
                 p=round(pos)
                 #fill up map at correct positions    
-                mapPositions = (mapPositions[0:p] + strId \
+                mapPositions = (mapPositions[0:p] + strId[alter] \
                                 + mapPositions[p + 1 :])
+                if len(strId)>1:
+                    alter=0 if alter==1 else 1
                     
             #write map to file for this sequence
             resultsFile.write(mapPositions + "\n")
@@ -308,17 +307,17 @@ class OrganismObject:
         positions=sfit['blocked']
         nodes=sfit['blocker']
         stuff=list(zip(nodes,positions))
+        stuff.sort(key=lambda k: k[1])
+        alter=0
         for ids, pos in stuff:
             #print ID, capped to the length of PSSM
             strId = str(ids)
-            # while len(strId) < length:
-            #     strId += "*"
-                
-            # p=round(pos-length/2)     
             p=round(pos)
             #fill up map at correct positions    
-            mapPositions = (mapPositions[0:p] + strId \
+            mapPositions = (mapPositions[0:p] + strId[alter] \
                             + mapPositions[p + 1 :])
+            if len(strId)>1:
+                alter=0 if alter==1 else 1
 
         #return map for this sequence
         return "{}\n{}".format(sDNA, mapPositions)
