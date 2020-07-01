@@ -1,6 +1,6 @@
 {
   "main": {
-    "POPULATION_LENGTH":250,
+    "POPULATION_LENGTH":50,
     "POPULATION_ORIGIN":"random",
     "POPULATION_FILL_TYPE":"random",
     "DATASET_BASE_PATH_DIR":"datasets/",
@@ -8,12 +8,12 @@
     "RESULT_TEST_BASE_PATH_DIR": "resultsTEST/",
     "POSITIVE_FILENAME":"positive_dataset3.fas",
     "NEGATIVE_FILENAME":"negative_dataset.fas",
-    "INPUT_FILENAME":"inputOrganisms_dataset3_7.json",
+    "INPUT_FILENAME":"inputOrganisms_dataset3_3.json",
     "OUTPUT_FILENAME":"output.txt",
     "MAX_SEQUENCES_TO_FIT_POS":50,
-    "MAX_SEQUENCES_TO_FIT_NEG":150,
+    "MAX_SEQUENCES_TO_FIT_NEG":50,
     "END_WHILE_METHOD":"iterations",
-    "MIN_ITERATIONS":250,
+    "MIN_ITERATIONS":50,
     "MIN_FITNESS":10,
     "THRESHOLD":0.05,
     "COMPLEXITY_FACTOR":1.0,
@@ -48,7 +48,8 @@
     "MUTATE_PROBABILITY_SWAP":0.34,
     "TAU":281.76,
     "MUTATE_VARIANCE_SIGMA":10,
-    "MUTATE_VARIANCE_MU":10
+    "MUTATE_VARIANCE_MU":10,
+    "PLACEMENT_OPTIONS":3
   },
   "pssm": {
     "MUTATE_PROBABILITY_RANDOM_COL":0.20,
@@ -58,7 +59,7 @@
     "MUTATE_PROBABILITY_SHIFT_RIGHT":0.20,
     "UPPER_PRINT_PROBABILITY":0.8,
     "PSEUDO_COUNT":1e-10,
-    "PLACEMENT_OPTIONS":6,
+    "PLACEMENT_OPTIONS":1,
     "SCAN_REVERSE_COMPLEMENT":false
   }
 }

@@ -1,6 +1,6 @@
-from objects.organismObject import OrganismObject
-from objects.connectorObject import ConnectorObject
-from objects.pssmObject import PssmObject
+from .organismObject import OrganismObject
+from .connectorObject import ConnectorObject
+from .pssmObject import PssmObject
 
 import random
 import numpy
@@ -39,7 +39,7 @@ class OrganismFactory:
         self.ID += 1
         return self.ID
 
-    # It returns a full organism datastructure
+    # It creates and returns a full organism datastructure
     def getOrganism(self):
 
         newOrganism = OrganismObject(self.getID(), self.confOrg)

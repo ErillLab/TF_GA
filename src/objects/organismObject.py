@@ -135,7 +135,7 @@ class OrganismObject:
         nodes = self.countNodes()
 
         basePenalty = meanFitness * self.numNodes / meanNodes
-        
+
         #introduce bound for number of nodes
         #organisms containing more nodes get an additional penalty factor
         if nodes < self.MIN_NODES:
@@ -252,7 +252,7 @@ class OrganismObject:
         #Sort the array, so its always shown in the same order
         #sorting is done by sequence, so first sequences start with "AAA.."
         aDNA.sort()
-        
+
         resultsFile = open(filename, "w+")
 
         #for every DNA sequence
@@ -260,10 +260,10 @@ class OrganismObject:
 
             #call fitness evaluation for sequence
             sfit = self.getSeqFitness(sDNA.lower())
-            
+
             #write out the sequence
             resultsFile.write("\n{}\n".format(sDNA))
-            
+
             #create an empy positions map
             mapPositions = "-" * len(sDNA)
 
@@ -279,12 +279,12 @@ class OrganismObject:
                 #print ID, capped to the length of PSSM
                 strId = str(ids)
                 p=round(pos)
-                #fill up map at correct positions    
+                #fill up map at correct positions
                 mapPositions = (mapPositions[0:p] + strId[alter] \
                                 + mapPositions[p + 1 :])
                 if len(strId)>1:
                     alter=0 if alter==1 else 1
-                    
+
             #write map to file for this sequence
             resultsFile.write(mapPositions + "\n")
             # resultsFile.write(str(stuff) + "\n")
@@ -313,7 +313,7 @@ class OrganismObject:
             #print ID, capped to the length of PSSM
             strId = str(ids)
             p=round(pos)
-            #fill up map at correct positions    
+            #fill up map at correct positions
             mapPositions = (mapPositions[0:p] + strId[alter] \
                             + mapPositions[p + 1 :])
             #handle two-digit positions, by alterning between digits
