@@ -6,7 +6,7 @@ Connects two nodes at a specific distance
 # pylint: disable=E0402
 # type: ignore
 import random
-from .nodeObject import Node
+from .node_object import Node
 import numpy as np
 
 

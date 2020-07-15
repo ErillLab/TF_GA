@@ -4,9 +4,9 @@
 import random
 import json
 import numpy
-from .organismObject import OrganismObject
-from .connectorObject import ConnectorObject
-from .pssmObject import PssmObject
+from .organism_object import OrganismObject
+from .connector_object import ConnectorObject
+from .pssm_object import PssmObject
 
 
 class OrganismFactory:

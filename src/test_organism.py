@@ -1,8 +1,8 @@
 """Tests an organism Fitness
 """
 
-from searchOrganisms import read_fasta_file, read_json_file, export_organism
-from objects.organismFactory import OrganismFactory
+from search_organisms import read_fasta_file, read_json_file, export_organism
+from objects.organism_factory import OrganismFactory
 
 CONFIG_FILE = "config.json"
 

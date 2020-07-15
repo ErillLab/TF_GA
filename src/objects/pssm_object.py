@@ -2,7 +2,7 @@
 Saves al specific PSSM data structure
 """
 import random
-from objects.nodeObject import Node
+from objects.node_object import Node
 import numpy as np
 
 

@@ -13,7 +13,7 @@ import cProfile
 import pstats
 import io
 import numpy as np
-from objects.organismFactory import OrganismFactory
+from objects.organism_factory import OrganismFactory
 from Bio import SeqIO
 
 """
