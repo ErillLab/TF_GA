@@ -1,324 +1,417 @@
-# Oragnism object
-# It allocates the full data structure
-import numpy as np
+"""
+Oragnism object
+It allocates the full data structure
+"""
+
 import random
+import numpy as np
 
 
 class OrganismObject:
+    """Organism object
+    """
 
-    # Organism constructor
-    def __init__(self, ID, conf, rootNode=None):
-        self.ID = ID
-        self.rootNode = rootNode
-        self.meanFitnessScore = 0  # Mean fitness score on all datasets computed
-        self.numSequencesScored = 0  # Number of datasets computed
-        self.numNodes = 0  # Number of nodes of the oranism
-        self.CUMULATIVE_FIT_METHOD = conf["CUMULATIVE_FIT_METHOD"]
-        self.MUTATE_PROBABILITY_SUBSTITUTE_PSSM = conf[
+    def __init__(self, _id: int, conf: dict, root_node=None) -> None:
+        """Organism constructor
+
+        Args:
+            _id: Organism identifier
+            conf: Configuration from JSON file
+            root_node (Node): Top-level node for the tree data structure
+        """
+        self._id = _id
+        self.root_node = root_node
+        self.num_nodes = 0
+
+        self.cumulative_fit_method = conf["CUMULATIVE_FIT_METHOD"]
+        self.mutate_probability_substitute_pssm = conf[
             "MUTATE_PROBABILITY_SUBSTITUTE_PSSM"
         ]
-        self.MUTATE_PROBABILITY_RISE_CHILD = conf["MUTATE_PROBABILITY_RISE_CHILD"]
-        self.MUTATE_PROBABILITY_SUNK_CHILD = conf["MUTATE_PROBABILITY_SUNK_CHILD"]
-        self.MUTATE_PROBABILITY_NODE_MUTATION = conf["MUTATE_PROBABILITY_NODE_MUTATION"]
-        self.MIN_NODES = conf["MIN_NODES"]
-        self.MAX_NODES = conf["MAX_NODES"]
-        self.isTracked = False
+        self.mutate_probability_rise_child = conf[
+            "MUTATE_PROBABILITY_RISE_CHILD"
+        ]
+        self.mutate_probability_sunk_child = conf[
+            "MUTATE_PROBABILITY_SUNK_CHILD"
+        ]
+        self.mutate_probability_node_mutation = conf[
+            "MUTATE_PROBABILITY_NODE_MUTATION"
+        ]
+        self.min_nodes = conf["MIN_NODES"]
+        self.max_nodes = conf["MAX_NODES"]
+        self.is_tracked = False
 
     # Setters an getters
-    def setRootNode(self, rootNode):
-        self.rootNode = rootNode
-        # Compute nodes on the organism
-        self.numNodes = 0
+    def set_root_node(self, root_node) -> None:
+        """Setter root_node
 
-    def getID(self):
-        return self.ID
+        Args:
+            root_node (Node): Top-level node for the tree data structure
+        """
+        self.root_node = root_node
 
-    def setID(self, iD):
+    def get_id(self) -> int:
+        """Getter _id
 
-        self.ID = iD
+        Returns:
+            _id of the organism
+        """
+        return self._id
 
-    def setIsTracked(self, newTracked):
-        self.isTracked = newTracked
+    def set_id(self, _id: int) -> None:
+        """Setter _id
 
-    # Mutates a part of the organism
-    def mutate(self, orgFactory):
+        Args:
+            _id: ID to to set in the organism
+        """
+        self._id = _id
+
+    def set_is_tracked(self, new_tracked: bool):
+        """Setter is_tracked
+
+        Args:
+            new_tracked: True if the organism should be tracked.
+                         False otherwise.
+        """
+        self.is_tracked = new_tracked
+
+    def mutate(self, org_factory) -> None:
+        """Mutates an organism based on JSON configured probabilities
+
+        Args:
+            org_factory (OrganismFactory): Factory of organisms and node
+                                           components
+        """
 
         # Substitute a random node by a random PSSM
-        if random.random() < self.MUTATE_PROBABILITY_SUBSTITUTE_PSSM:
+        if random.random() < self.mutate_probability_substitute_pssm:
 
-            nNodes = self.countNodes()
-            randomNode = random.randint(0, nNodes - 1)
-            substitutedNode = self.getNode(randomNode)
-            parentNode = self.getParent(substitutedNode.ID)
-            # It can be improved so you can not pass the length by parameter jsjs
-            newNode = orgFactory.createPSSM(orgFactory.PWM_LENGTH)
+            n_nodes = self.count_nodes()
+            random_node = random.randint(0, n_nodes - 1)
+            substituted_node = self.get_node(random_node)
+            parent_node = self.get_parent(substituted_node._id)
+            # TODO: Set the length in the PSSM config
+            new_node = org_factory.createPSSM(org_factory.PWM_LENGTH)
 
-            if parentNode["isRootNode"]:
+            if parent_node["is_root_node"]:
 
-                self.rootNode = newNode
+                self.root_node = new_node
             else:
 
-                if parentNode["isLeftSide"]:
+                if parent_node["is_left_side"]:
 
-                    parentNode["self"].setNode1(newNode)
+                    parent_node["self"].set_node1(new_node)
                 else:
 
-                    parentNode["self"].setNode2(newNode)
+                    parent_node["self"].set_node2(new_node)
 
-            self.resetIDs()
+            self.reset_ids()
 
         # Rise the level of a child
-        if random.random() < self.MUTATE_PROBABILITY_RISE_CHILD:
+        if random.random() < self.mutate_probability_rise_child:
 
-            nNodes = self.countNodes()
-            randomNode = random.randint(0, nNodes - 1)
-            risedNode = self.getNode(randomNode)
-            parentNode = self.getParent(risedNode.ID)
+            n_nodes = self.count_nodes()
+            random_node = random.randint(0, n_nodes - 1)
+            rised_node = self.get_node(random_node)
+            parent_node = self.get_parent(rised_node._id)
 
             #
-            if not risedNode.ID == self.rootNode.ID:
+            if not rised_node._id == self.root_node._id:
 
-                parent1 = self.getParent(risedNode.ID)
-                parent2 = self.getParent(parent1["self"].ID)
+                parent1 = self.get_parent(rised_node._id)
+                parent2 = self.get_parent(parent1["self"]._id)
 
-                if parent2["isRootNode"]:
-                    self.rootNode = risedNode
+                if parent2["is_root_node"]:
+                    self.root_node = rised_node
                 else:
-                    if parent2["isLeftSide"]:
-                        parent2["self"].setNode1(risedNode)
+                    if parent2["is_left_side"]:
+                        parent2["self"].set_node1(rised_node)
                     else:
-                        parent2["self"].setNode2(risedNode)
-                self.resetIDs()
+                        parent2["self"].set_node2(rised_node)
+                self.reset_ids()
 
         # Add complexity to the organism
-        if random.random() < self.MUTATE_PROBABILITY_SUNK_CHILD:
-            nNodes = self.countNodes()
-            randomNode = random.randint(0, nNodes - 1)
-            sukenNode = self.getNode(randomNode)
-            parentNode = self.getParent(sukenNode.ID)
+        if random.random() < self.mutate_probability_sunk_child:
+            n_nodes = self.count_nodes()
+            random_node = random.randint(0, n_nodes - 1)
+            suken_node = self.get_node(random_node)
+            parent_node = self.get_parent(suken_node._id)
 
-            newNode = orgFactory.createConnection(0)
+            new_node = org_factory.create_connection(0)
 
-            if parentNode["isRootNode"]:
-                self.rootNode = newNode
+            if parent_node["is_root_node"]:
+                self.root_node = new_node
             else:
-                if parentNode["isLeftSide"]:
+                if parent_node["is_left_side"]:
 
-                    parentNode["self"].setNode1(newNode)
+                    parent_node["self"].set_node1(new_node)
                 else:
-                    parentNode["self"].setNode1(newNode)
+                    parent_node["self"].set_node2(new_node)
 
             if random.random() < 0.5:
-                newNode.setNode1(sukenNode)
+                new_node.set_node1(suken_node)
             else:
-                newNode.setNode2(sukenNode)
-            self.resetIDs()
+                new_node.set_node2(suken_node)
+            self.reset_ids()
 
         # Mutate a random node
-        if random.random() < self.MUTATE_PROBABILITY_NODE_MUTATION:
+        if random.random() < self.mutate_probability_node_mutation:
 
-            nNodes = self.countNodes()
-            randomNode = random.randint(0, nNodes - 1)
-            mutatedNode = self.getNode(randomNode)
-            mutatedNode.mutate(orgFactory)
+            n_nodes = self.count_nodes()
+            random_node = random.randint(0, n_nodes - 1)
+            mutated_node = self.get_node(random_node)
+            mutated_node.mutate(org_factory)
 
-    # Returns the complexity of the organism
-    def getComplexity(self, meanNodes, meanFitness):
+    def get_complexity(self, mean_nodes: float, mean_fitness: float) -> float:
+        """Returns the implicit complexity assiciated to the  current organism
+
+        Args:
+            mean_nodes: Average number of nodes of the population
+            mean_fitness: Average fitness of the population
+
+        Returns:
+            Complexity penalty assiciated to the organism
+
+        """
         # Complexity is calculed as:
-        # meanFitnessScore * # nodes / meanNodes
+        # meanFitnessScore * # nodes / mean_nodes
 
         # Check complexity of the organism
         # If its over/under organism MAX/MIN apply an extra complexity penalty
-        extraPenalty = 0.0
-        extraPenaltyFactor = 300
-        basePenalty = 0.0
-        nodes = self.countNodes()
+        extra_penalty = 0.0
+        extra_penalty_factor = 300
+        base_penalty = 0.0
+        nodes = self.count_nodes()
 
-        basePenalty = meanFitness * self.numNodes / meanNodes
+        base_penalty = mean_fitness * self.num_nodes / mean_nodes
 
-        #introduce bound for number of nodes
-        #organisms containing more nodes get an additional penalty factor
-        if nodes < self.MIN_NODES:
-            extraPenalty = (self.MIN_NODES - nodes) * extraPenaltyFactor
-        if nodes > self.MAX_NODES:
-            extraPenalty = (nodes - self.MAX_NODES) * extraPenaltyFactor
+        # introduce bound for number of nodes
+        # organisms containing more nodes get an additional penalty factor
+        if nodes < self.min_nodes:
+            extra_penalty = (self.min_nodes - nodes) * extra_penalty_factor
+        if nodes > self.max_nodes:
+            extra_penalty = (nodes - self.max_nodes) * extra_penalty_factor
 
-        return basePenalty + extraPenalty
+        return base_penalty + extra_penalty
 
-    # Return the fitness of the organism for a given DNA sequence
-    def getSeqFitness(self, sDNA):
+    def get_seq_fitness(self, s_dna: str) -> dict:
+        """Return the fitness of the organism for a given DNA sequence
+
+        Args:
+            s_dna: DNA sequence to analize
+
+        Returns:
+           score, blocked and blockers
+        """
 
         # call recursively to get the total fitness of the organism
-        noderoot = self.rootNode.getPlacement(sDNA, len(sDNA), [], [])
+        node_root = self.root_node.get_placement(s_dna, len(s_dna), [], [])
 
         # return score, blocks and blokcers in that sequence
-        return noderoot
+        return node_root
 
-    # Return the total Fitness for an array of DNA sequences and the fitness
-    # method
-    # It also updates mean sequences score
-    def getSeqSetFitness(self, aDNA):
+    def get_seq_set_fitness(self, a_dna: list) -> float:
+        """Return the total Fitness for an array of DNA sequences and the
+        fitness method
+
+        Args:
+            a_dna: list of dna sequences
+
+        Returns:
+            score assigned to the organism
+        """
 
         score = 0
 
         # sum method returns the sum of all fitness to DNA sequences
-        if self.CUMULATIVE_FIT_METHOD == "sum":
+        if self.cumulative_fit_method == "sum":
 
-            for sDNA in aDNA:
-                sfit = self.getSeqFitness(sDNA.lower())
-                score += sfit['pspairs'][0]['energy']
+            for s_dna in a_dna:
+                sfit = self.get_seq_fitness(s_dna.lower())
+                score += sfit["pspairs"][0]["energy"]
 
         # mean method returns the mean of all fitness to SNA sequences
-        elif self.CUMULATIVE_FIT_METHOD == "mean":
+        elif self.cumulative_fit_method == "mean":
 
             scores = []
-            for sDNA in aDNA:
-                sfit = self.getSeqFitness(sDNA.lower())
-                scores.append(sfit['pspairs'][0]['energy'])
+            for s_dna in a_dna:
+                sfit = self.get_seq_fitness(s_dna.lower())
+                scores.append(sfit["pspairs"][0]["energy"])
             score = np.mean(scores)
 
         return score
 
-    # Returns a node Number N based on in-order search. [0-N)
-    def getNode(self, objective):
-        nodeCount = 0
-        return self.rootNode.getNode(objective, nodeCount)
+    def get_node(self, objective: int):
+        """Returns a node Number N based on in-order search. [0-N)
 
-    # Set positions a given a node and ID where is has to be
-    def setNode(self, node, ID):
+        Args:
+            objective: _id of the objective
 
-        print("node.ID = {} ID to change {}".format(node.ID, ID))
-        if self.rootNode.ID == ID:
-            self.rootNode = node
+        Returns:
+            Node with specified _id if found. None otherwise
+        """
+        node_count = 0
+        return self.root_node.get_node(objective, node_count)
+
+    def set_node(self, node, _id: int) -> None:
+        """Set the node in the _id node position
+
+        Args:
+            node (Node): Node to set in the tree
+            _id: ID of the position to set the node
+        """
+
+        print("node._id = {} ID to change {}".format(node._id, _id))
+        if self.root_node._id == _id:
+            self.root_node = node
         else:
-            self.rootNode.setNode(node, ID)
+            self.root_node.setNode(node, _id)
 
-    # Get the parent node of a given ID and if it is the left child
-    def getParent(self, ID):
+    def get_parent(self, _id: int) -> dict:
+        """Get the parent node of a given _id and if it is the left child
 
-        if self.rootNode.ID == ID:
-            return {"isRootNode": True}
+        Args:
+            _id: ID of the child
 
-        return self.rootNode.getParent(ID)
-
-        """
-        if node1.ID == ID:
-            # Return itself and specify child is on left side
-            return [self, True]
-        elif node2.ID == ID:
-            # Return itself and specify child is on right side
-            return [self, False]
-        checkNode = None
-        checkNode = node1.getParent(ID)
-        if checkNode == None:
-            checkNode = node2.getParent(ID)
-        return checkNode
+        Returns:
+            dictionary with the keys:
+            "is_root_node": True if its root of the organism. False ortherwise.
+            "self":  Parent node of the _id child
+            "is_left_side": True if ID is from left side of the parent
         """
 
-    # Returns the number of nodes of the organism
-    def countNodes(self):
-        self.numNodes = self.rootNode.countNodes()
+        if self.root_node._id == _id:
+            return {"is_root_node": True}
 
-        return self.numNodes
+        return self.root_node.get_parent(_id)
 
-    # Reset IDs of the full organism
-    def resetIDs(self):
-        firstID = 0
-        self.rootNode.resetID(firstID)
+    def count_nodes(self) -> int:
+        """Returns the number of nodes of the organism
 
-    # Reset mean sequences scores and mean sequences scored
-    def resetScores(self):
-        self.meanFitnessScore = 0
-        self.numSequencesScored = 0
+        Returns:
+            Number of nodes of hte organism
+        """
 
-    # Prints the whole tree data structure
-    def print(self):
+        self.num_nodes = self.root_node.count_nodes()
+
+        return self.num_nodes
+
+    def reset_ids(self) -> None:
+        """Reset _ids of the full organism
+        """
+        first_id = 0
+        self.root_node.reset_id(first_id)
+
+    def print(self) -> None:
+        """Prints the whole tree data structure
+        """
         print()
-        print("***** Organism {} *****".format(self.ID))
-        self.rootNode.print(1)
+        print("***** Organism {} *****".format(self._id))
+        self.root_node.print(1)
 
-    # Exports the whole tree data structure
-    def export(self, filename):
-        organismFile = open(filename, "w+")
-        organismFile.write("***** Organism {} *****".format(self.ID))
+    def export(self, filename: str) -> None:
+        """Exports the whole tree data structure
 
-        self.rootNode.export(organismFile, 0)
-        organismFile.write("\n")
-        organismFile.close()
+        Args:
+            filename: Name of the file to export the organism
+        """
+        organism_file = open(filename, "w+")
+        organism_file.write("***** Organism {} *****".format(self._id))
 
-    #Exports all DNA sequences organism binding to a file
-    def exportResults(self, aDNA, filename):
+        self.root_node.export(organism_file, 0)
+        organism_file.write("\n")
+        organism_file.close()
 
-        #Sort the array, so its always shown in the same order
-        #sorting is done by sequence, so first sequences start with "AAA.."
-        aDNA.sort()
+    def export_results(self, a_dna: list, filename: str) -> None:
+        """Exports all DNA sequences organism binding to a file
 
-        resultsFile = open(filename, "w+")
+        Args:
+            filename: Name of the file to export sequences
+            a_dna: list fo sequences to export
 
-        #for every DNA sequence
-        for sDNA in aDNA:
+        """
 
-            #call fitness evaluation for sequence
-            sfit = self.getSeqFitness(sDNA.lower())
+        # Sort the array, so its always shown in the same order
+        # sorting is done by sequence, so first sequences start with "AAA.."
+        a_dna.sort()
 
-            #write out the sequence
-            resultsFile.write("\n{}\n".format(sDNA))
+        results_file = open(filename, "w+")
 
-            #create an empy positions map
-            mapPositions = "-" * len(sDNA)
+        # for every DNA sequence
+        for s_dna in a_dna:
 
-            #positions for PSSMs are in blocks and blocked lists, returned by
-            #getSeqFitness. we zip them and then iterate over the zip to
-            #print the PSSMs in their locations respective to the sequence
-            positions=sfit['blocked']
-            nodes=sfit['blocker']
-            stuff=list(zip(nodes,positions))
+            # call fitness evaluation for sequence
+            sfit = self.get_seq_fitness(s_dna.lower())
+
+            # write out the sequence
+            results_file.write("\n{}\n".format(s_dna))
+
+            # create an empy positions map
+            map_positions = "-" * len(s_dna)
+
+            # positions for PSSMs are in blocks and blocked lists, returned by
+            # getSeqFitness. we zip them and then iterate over the zip to
+            # print the PSSMs in their locations respective to the sequence
+            positions = sfit["blocked"]
+            nodes = sfit["blocker"]
+            stuff = list(zip(nodes, positions))
             stuff.sort(key=lambda k: k[1])
-            alter=0
+            alter = 0
             for ids, pos in stuff:
-                #print ID, capped to the length of PSSM
-                strId = str(ids)
-                p=round(pos)
-                #fill up map at correct positions
-                mapPositions = (mapPositions[0:p] + strId[alter] \
-                                + mapPositions[p + 1 :])
-                if len(strId)>1:
-                    alter=0 if alter==1 else 1
+                # print _id, capped to the length of PSSM
+                str_id = str(ids)
+                _p = round(pos)
+                # fill up map at correct positions
+                map_positions = (
+                    map_positions[0:_p]
+                    + str_id[alter]
+                    + map_positions[_p + 1:]
+                )
+                if len(str_id) > 1:
+                    alter = 0 if alter == 1 else 1
 
-            #write map to file for this sequence
-            resultsFile.write(mapPositions + "\n")
+            # write map to file for this sequence
+            results_file.write(map_positions + "\n")
             # resultsFile.write(str(stuff) + "\n")
 
-        resultsFile.close()
+        results_file.close()
 
-    def printResult(self, sDNA):
+    def print_result(self, s_dna: str) -> str:
+        """Prints the results of s_dna binding sites to stdout
 
-        sDNA = sDNA.lower()
+        Args:
+            s_dna: DNA sequence to export
 
-        #call fitness evaluation for sequence
-        sfit = self.getSeqFitness(sDNA.lower())
+        Returns:
+            DNA sequence and binding sites of the organisms recognizer
+        """
 
-        #create an empy positions map
-        mapPositions = "-" * len(sDNA)
+        s_dna = s_dna.lower()
 
-        #positions for PSSMs are in blocked and blocked lists, returned by
-        #getSeqFitness. we zip them and then iterate over the zip to
-        #print the PSSMs in their locations respective to the sequence
-        positions=sfit['blocked']
-        nodes=sfit['blocker']
-        stuff=list(zip(nodes,positions))
+        # call fitness evaluation for sequence
+        sfit = self.get_seq_fitness(s_dna.lower())
+
+        # create an empy positions map
+        map_positions = "-" * len(s_dna)
+
+        # positions for PSSMs are in blocked and blocked lists, returned by
+        # getSeqFitness. we zip them and then iterate over the zip to
+        # print the PSSMs in their locations respective to the sequence
+        positions = sfit["blocked"]
+        nodes = sfit["blocker"]
+        stuff = list(zip(nodes, positions))
         stuff.sort(key=lambda k: k[1])
-        alter=0
+        alter = 0
         for ids, pos in stuff:
-            #print ID, capped to the length of PSSM
-            strId = str(ids)
-            p=round(pos)
-            #fill up map at correct positions
-            mapPositions = (mapPositions[0:p] + strId[alter] \
-                            + mapPositions[p + 1 :])
-            #handle two-digit positions, by alterning between digits
-            if len(strId)>1:
-                alter=0 if alter==1 else 1
+            # print _id, capped to the length of PSSM
+            str_id = str(ids)
+            _p = round(pos)
+            # fill up map at correct positions
+            map_positions = (
+                map_positions[0:_p] + str_id[alter] + map_positions[_p + 1:]
+            )
+            # handle two-digit positions, by alterning between digits
+            if len(str_id) > 1:
+                alter = 0 if alter == 1 else 1
 
-        #return map for this sequence
-        return "{}\n{}".format(sDNA, mapPositions)
+        # return map for this sequence
+        return "{}\n{}".format(s_dna, map_positions)

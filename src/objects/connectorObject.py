@@ -34,7 +34,7 @@ class ConnectorObject(Node):
             node_2: Conceptual right node
 
         """
-        super().__init__(self)
+        super().__init__()
         self._mu = _mu  # Mean discance
         self._sigma = _sigma  # Variance between elements
         self._id = 0
@@ -110,10 +110,10 @@ class ConnectorObject(Node):
             returned_node = self
         elif node_number < objective:
             # The node is on the right side
-            returned_node = self.node2.getNode(objective, node_number + 1)
+            returned_node = self.node2.get_node(objective, node_number + 1)
         elif node_number > objective:
             # The node is on the left side
-            returned_node = self.node1.getNode(objective, node_count)
+            returned_node = self.node1.get_node(objective, node_count)
 
         return returned_node
 
@@ -134,18 +134,18 @@ class ConnectorObject(Node):
             if the parent does not exist, returns None
         """
 
-        if self.node1.ID == _id:
+        if self.node1._id == _id:
             # Return itself and specify child is on left side
-            return {"isRootNode": False, "self": self, "isLeftSide": True}
+            return {"is_root_node": False, "self": self, "is_left_side": True}
 
-        if self.node2.ID == _id:
+        if self.node2._id == _id:
             # Return itself and specify child is on right side
-            return {"isRootNode": False, "self": self, "isLeftSide": False}
+            return {"is_root_node": False, "self": self, "is_left_side": False}
 
         check_node = None
-        check_node = self.node1.getParent(_id)
+        check_node = self.node1.get_parent(_id)
         if check_node is None:
-            check_node = self.node2.getParent(_id)
+            check_node = self.node2.get_parent(_id)
         return check_node
 
     def get_all_pssm(self) -> list:
@@ -158,7 +158,9 @@ class ConnectorObject(Node):
 
     # pylint: disable=R1702
     # pylint: disable=R0915
-    def get_placement(self, sDNA: str, sDNAlen: int, blocks: list, blockers: list) -> dict:
+    def get_placement(
+        self, sDNA: str, sDNAlen: int, blocks: list, blockers: list
+    ) -> dict:
         """This is a position/score propagation method, defined for connector
            objects.
            It is invoked by the placement method in the organism, for the root
@@ -204,14 +206,14 @@ class ConnectorObject(Node):
         """
 
         # This tau shows how much value we give to the connector fit
-        tau = self.TAU
+        tau = self.tau
 
         # ask daughter nodes what their placement is
         # placement call will return a vector of positions (for PSSMs) and
         # their scores (sorted descending by score) , as well as an udpated
         # block/blocker vector
-        node1 = self.node1.getPlacement(sDNA, sDNAlen, blocks, blockers)
-        node2 = self.node2.getPlacement(sDNA, sDNAlen, blocks, blockers)
+        node1 = self.node1.get_placement(sDNA, sDNAlen, blocks, blockers)
+        node2 = self.node2.get_placement(sDNA, sDNAlen, blocks, blockers)
 
         # precompute connector energy term (not dependent on PSSM placement)
         logterm = np.log10(10 + self._sigma ** 2)
@@ -221,7 +223,7 @@ class ConnectorObject(Node):
         max1 = 0
         max2 = 0
         placecnt = 0
-        placeopt = self.PLACEMENT_OPTIONS
+        placeopt = self.placement_options
         confset = False
         # iterate over all possible configurations of sub-node placements
         # and determine the optimal one. this goes on for a _minimum_ number of
@@ -276,12 +278,13 @@ class ConnectorObject(Node):
                     ) / 2
 
                     # if BOTH nodes are pssms, avoid pssm overlapping
-                    if self.node1.isPSSM() and self.node2.isPSSM():
+                    if self.node1.is_pssm() and self.node2.is_pssm():
                         # determine largest PSSM
                         p_len = (
-                            self.node1.getLength()
-                            if self.node1.getLength() > self.node2.getLength()
-                            else self.node2.getLength()
+                            self.node1.get_length()
+                            if self.node1.get_length()
+                            > self.node2.get_length()
+                            else self.node2.get_length()
                         )
                         # determine if overlap exists, skip combo if there is
                         if (
@@ -294,8 +297,8 @@ class ConnectorObject(Node):
 
                     # if ONE of the nodes is a PSSM, make sure its position
                     # does not overlap with blocked positions
-                    if self.node1.isPSSM():
-                        p_len = self.node1.getLength()
+                    if self.node1.is_pssm():
+                        p_len = self.node1.get_length()
                         startpos1 = round(
                             node1["pspairs"][n1count]["pos"]
                         ) - round(p_len / 2)
@@ -307,8 +310,8 @@ class ConnectorObject(Node):
                         # if position has been blocked, skip this combo
                         if blocked:
                             continue
-                    if self.node2.isPSSM():
-                        p_len = self.node2.getLength()
+                    if self.node2.is_pssm():
+                        p_len = self.node2.get_length()
                         startpos2 = round(
                             node2["pspairs"][n2count]["pos"]
                         ) - round(p_len / 2)
@@ -337,26 +340,27 @@ class ConnectorObject(Node):
             # print('Max2: ',node2['pspairs'][max2]['pos'])
 
         # block the positions of this connector's PSSMs
-        if self.node1.isPSSM():
-            n1length = self.node1.getLength()
+        if self.node1.is_pssm():
+            n1length = self.node1.get_length()
             blockstartpos1 = round(node1["pspairs"][max1]["pos"]) - round(
                 n1length / 2
             )
             for blockade in range(n1length):
                 blocks.append(blockstartpos1 + blockade)
-                blockers.append(self.node1.ID)
-        if self.node2.isPSSM():
-            n2length = self.node2.getLength()
+                blockers.append(self.node1._id)
+        if self.node2.is_pssm():
+            n2length = self.node2.get_length()
             blockstartpos2 = round(node2["pspairs"][max2]["pos"]) - round(
                 n2length / 2
             )
             for blockade in range(n2length):
                 blocks.append(blockstartpos2 + blockade)
-                blockers.append(self.node2.ID)
+                blockers.append(self.node2._id)
 
         pair = {"pos": maxposition, "energy": maxenergy}
 
         return {"pspairs": [pair], "blocked": blocks, "blocker": blockers}
+
     # pylint: enable=R1702
     # pylint: enable=R0915
 
@@ -369,9 +373,9 @@ class ConnectorObject(Node):
 
         """
 
-        if self.node1.ID == _id:
+        if self.node1._id == _id:
             self.node1 = node
-        elif self.node2 == _id:
+        elif self.node2._id == _id:
             self.node2 = node
         else:
             self.node1.set_node(node, _id)
@@ -389,7 +393,7 @@ class ConnectorObject(Node):
         """
         new_id = self.node1.reset_id(new_id)
         self._id = new_id
-        new_id = self.node2.reset_ID(new_id + 1)
+        new_id = self.node2.reset_id(new_id + 1)
         return new_id
 
     # pylint: disable=W0613
@@ -403,13 +407,13 @@ class ConnectorObject(Node):
         if random.random() < self.mutate_probability_sigma:
             # Alter sigma
             self._sigma += random.randint(
-                -self.MUTATE_VARIANCE_SIGMA, self.MUTATE_VARIANCE_SIGMA
+                -self.mutate_variance_sigma, self.mutate_variance_sigma
             )
 
         if random.random() < self.mutate_probability_mu:
             # Alter mu
             self._mu += random.randint(
-                -self.MUTATE_VARIANCE_MU, self.MUTATE_VARIANCE_MU
+                -self.mutate_variance_mu, self.mutate_variance_mu
             )
 
         if random.random() < self.mutate_probability_swap:
@@ -436,7 +440,7 @@ class ConnectorObject(Node):
         self.node1.print(distance + 1)
         self.node2.print(distance + 1)
 
-    def export(self, export_file, level: int):
+    def export(self, export_file, level: int) -> None:
         """Exports Connector data to the given file
 
         Args:
@@ -448,14 +452,14 @@ class ConnectorObject(Node):
             "\n"
             + "   |" * level
             + " - C"
-            + str(self.ID)
-            + " m: {} s: {}".format(self.mu, self.sigma)
+            + str(self._id)
+            + " m: {} s: {}".format(self._mu, self._sigma)
         )
         self.node1.export(export_file, level + 1)
         self.node2.export(export_file, level + 1)
 
     # pylint: disable=R0201
-    def is_connector(self):
+    def is_connector(self) -> bool:
         """node is connector
 
         Returns:
@@ -463,7 +467,7 @@ class ConnectorObject(Node):
         """
         return True
 
-    def is_pssm(self):
+    def is_pssm(self) -> bool:
         """node is not a pssm
 
         Returns:

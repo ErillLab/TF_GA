@@ -1,67 +1,80 @@
-# Tests an organism Fitness
+"""Tests an organism Fitness
+"""
 
-from searchOrganisms import readFastaFile, readJsonFile, exportOrganism
+from searchOrganisms import read_fasta_file, read_json_file, export_organism
 from objects.organismFactory import OrganismFactory
 
 CONFIG_FILE = "config.json"
 
 
 def main():
+    """Main execution for the test organisms
 
-    config = readJsonFile(CONFIG_FILE)
-    positivePath = (
-        config["main"]["DATASET_BASE_PATH_DIR"] + config["main"]["POSITIVE_FILENAME"]
-    )
-    negativePath = (
-        config["main"]["DATASET_BASE_PATH_DIR"] + config["main"]["NEGATIVE_FILENAME"]
-    )
-    complexityFactor = config["main"]["COMPLEXITY_FACTOR"]
-    MAX_SEQUENCES_TO_FIT_POS = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
-    MAX_SEQUENCES_TO_FIT_NEG = config["main"]["MAX_SEQUENCES_TO_FIT_NEG"]
+    """
 
-    inputOrganismsPath = config["main"]["INPUT_FILENAME"]
+    config = read_json_file(CONFIG_FILE)
+    posititve_path = (
+        config["main"]["DATASET_BASE_PATH_DIR"]
+        + config["main"]["POSITIVE_FILENAME"]
+    )
+    negative_path = (
+        config["main"]["DATASET_BASE_PATH_DIR"]
+        + config["main"]["NEGATIVE_FILENAME"]
+    )
+    complexity_factor = config["main"]["COMPLEXITY_FACTOR"]
+    max_sequences_to_fit_pos = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
+    max_sequences_to_fit_neg = config["main"]["MAX_SEQUENCES_TO_FIT_NEG"]
+
+    input_organisms_path = config["main"]["INPUT_FILENAME"]
     mean_nodes = 3.0
     mean_fitness = 150
-    positiveDataset = readFastaFile(positivePath)
-    positiveDataset.sort()
-    negativeDataset = readFastaFile(negativePath)
-    print("{} {}".format(len(positiveDataset), len(negativeDataset)))
+    positive_dataset = read_fasta_file(posititve_path)
+    positive_dataset.sort()
+    negative_dataset = read_fasta_file(negative_path)
+    print("{} {}".format(len(positive_dataset), len(negative_dataset)))
 
-    organismFactory = OrganismFactory(
+    organism_factory = OrganismFactory(
         config["organism"],
         config["organismFactory"],
         config["connector"],
         config["pssm"],
     )
 
-    aOrganisms = organismFactory.importOrganisms(inputOrganismsPath)
+    a_organisms = organism_factory.import_organisms(input_organisms_path)
     # random.shuffle(negativeDataset)
 
-    for org in aOrganisms:
+    for org in a_organisms:
 
         # org.print()
-        nodes = org.countNodes()
+        nodes = org.count_nodes()
 
-        p1 = org.getSeqSetFitness(positiveDataset[:MAX_SEQUENCES_TO_FIT_POS])
-        n1 = org.getSeqSetFitness(negativeDataset[:MAX_SEQUENCES_TO_FIT_NEG])
+        p_1 = org.get_seq_set_fitness(
+            positive_dataset[:max_sequences_to_fit_pos]
+        )
+        n_1 = org.get_seq_set_fitness(
+            negative_dataset[:max_sequences_to_fit_neg]
+        )
         # p1 = 20
         # n1 = org.getSeqSetFitness(negativeDataset[31:32])
-        c1 = org.getComplexity(mean_nodes, mean_fitness)
-        
+        c_1 = org.get_complexity(mean_nodes, mean_fitness)
+
         # Score
-        fitness = p1 - n1
-        effectiveFitness = fitness - complexityFactor * c1
+        fitness = p_1 - n_1
+        effective_fitness = fitness - complexity_factor * c_1
         print(
-            "ORG {} N: {:.2f} P: {:.2f} N: {:.2f} C: {:.2f} F: {:.2f} EF: {:.2f}\n".format(
-                org.ID, nodes, p1, n1, c1, fitness, effectiveFitness
-            )
+            (
+                "ORG {} N: {:.2f} P: {:.2f} N: {:.2f} C: {:.2f} F: {:.2f}"
+                + " EF: {:.2f}\n"
+            ).format(org._id, nodes, p_1, n_1, c_1, fitness, effective_fitness)
         )
 
-        exportOrganism(
+        export_organism(
             org,
-            positiveDataset,
-            "{}positive_{}".format(config["main"]["RESULT_TEST_BASE_PATH_DIR"], org.ID),
-            organismFactory,
+            positive_dataset,
+            "{}positive_{}".format(
+                config["main"]["RESULT_TEST_BASE_PATH_DIR"], org._id
+            ),
+            organism_factory,
         )
         # exportOrganism(
         #     org,
@@ -69,14 +82,18 @@ def main():
         #     "{}negative_{}".format(config["main"]["RESULT_TEST_BASE_PATH_DIR"], org.ID),
         #     organismFactory,
         # )
-        
-        exportOrganism(
+
+        export_organism(
             org,
-            negativeDataset[:50],
-            "{}negative_{}".format(config["main"]["RESULT_TEST_BASE_PATH_DIR"], org.ID),
-            organismFactory,
+            negative_dataset[:50],
+            "{}negative_{}".format(
+                config["main"]["RESULT_TEST_BASE_PATH_DIR"], org._id
+            ),
+            organism_factory,
         )
 
 
 if __name__ == "__main__":
+
+    # TODO: Add the profiler here to improve the fitness calculation performance
     main()
