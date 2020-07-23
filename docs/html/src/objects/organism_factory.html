@@ -1,0 +1,1277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>src.objects.organism_factory API documentation</title>
+<meta name="description" content="Organism Factory creates organisms, connectors and pssms" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.objects.organism_factory</code></h1>
+</header>
+<section id="section-intro">
+<p>Organism Factory creates organisms, connectors and pssms</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Organism Factory creates organisms, connectors and pssms
+&#34;&#34;&#34;
+
+import random
+import json
+import numpy
+from .organism_object import OrganismObject
+from .connector_object import ConnectorObject
+from .pssm_object import PssmObject
+
+
+class OrganismFactory:
+    &#34;&#34;&#34;Factory
+    &#34;&#34;&#34;
+
+    def __init__(self, conf_org, conf_org_fac, conf_con, conf_pssm) -&gt; None:
+
+        self._id = 0
+        self.initial_connector_probability = conf_org_fac[
+            &#34;INITIAL_CONNECTOR_PROBABILITY&#34;
+        ]
+        self.reducer_probability_factor = conf_org_fac[
+            &#34;REDUCER_PROBABILITY_FACTOR&#34;
+        ]
+
+        self.min_mu = conf_org_fac[&#34;MIN_MU&#34;]
+        self.max_mu = conf_org_fac[&#34;MAX_MU&#34;]
+
+        self.min_sigma = conf_org_fac[&#34;MIN_SIGMA&#34;]
+        self.max_sigma = conf_org_fac[&#34;MAX_SIGMA&#34;]
+        # The number of positions, PSSM object can recognize
+
+        self.pwm_length = conf_org_fac[&#34;PWM_LENGTH&#34;]
+
+        self.pwm_probability_step = conf_org_fac[
+            &#34;PWM_PROBABILITY_STEP&#34;
+        ]  # It should be a BASE_PROBABILITY divisor Ex: 1, 2, 4, 5, 10, 25...
+        self.pwm_probability_base = conf_org_fac[&#34;PWM_PROBABILITY_BASE&#34;]
+        self.pwm_probability_decimals = conf_org_fac[
+            &#34;PWM_PROBABILITY_DECIMALS&#34;
+        ]
+
+        self.conf_org = conf_org
+        self.conf_con = conf_con
+        self.conf_pssm = conf_pssm
+
+    def get_id(self) -&gt; int:
+        &#34;&#34;&#34;Gives a new ID for an organism
+        TODO: This should be a function so all the count of IDs, including
+        assigned outside the class, keep consistency between all organisms
+
+        Returns:
+           a new non-repeated ID
+        &#34;&#34;&#34;
+        self._id += 1
+        return self._id
+
+    def get_organism(self) -&gt; OrganismObject:
+        &#34;&#34;&#34;It creates and returns a full organism datastructure
+
+        Returns:
+            A new organism based on JSON config file
+        &#34;&#34;&#34;
+
+        new_organism = OrganismObject(self.get_id(), self.conf_org)
+        root_node = None
+
+        # Based on a random probability, we assign a connector or a PSSM object
+        # to the root Node
+        if random.random() &lt; self.initial_connector_probability:
+            root_node = self.create_connection(
+                self.initial_connector_probability
+                * self.reducer_probability_factor
+            )
+        else:
+            root_node = self.create_pssm(self.pwm_length)
+
+        new_organism.set_root_node(root_node)
+        new_organism.reset_ids()
+
+        return new_organism
+
+    def create_connection(
+            self, connection_probability: float
+    ) -&gt; ConnectorObject:
+        &#34;&#34;&#34;It returns a connector object with its nodes assigned depending on
+        connectionProbability
+
+        Args:
+            connection_probability: Probability to generate a connector instead
+                                    of a recognizer
+
+        Returns:
+            A new Connection with recognizers included
+        &#34;&#34;&#34;
+
+        # Assign a random value to mu and sigma
+        _mu = random.randint(self.min_mu, self.max_mu)
+        _sigma = random.randint(self.min_sigma, self.max_sigma)
+
+        # Create the new connection
+        new_connection = ConnectorObject(_mu, _sigma, self.conf_con)
+
+        # Set the connection node to a connector or PSSM object, based on a
+        # random probability. If connector object is selected, probability of
+        # getting another connector is reduced by PROBABILITY_REDUCED_FACTOR
+        node1 = None
+        if random.random() &lt; connection_probability:
+            node1 = self.create_connection(
+                connection_probability * self.reducer_probability_factor
+            )
+        else:
+            node1 = self.create_pssm(self.pwm_length)
+
+        new_connection.set_node1(node1)
+
+        node2 = None
+        if random.random() &lt; connection_probability:
+            node2 = self.create_connection(
+                connection_probability * self.reducer_probability_factor
+            )
+        else:
+            node2 = self.create_pssm(self.pwm_length)
+
+        new_connection.set_node2(node2)
+
+        return new_connection
+
+    def create_pssm(self, length: int) -&gt; PssmObject:
+        &#34;&#34;&#34;It return a PSSM object with a specific length
+
+        Args:
+            length: positions a recognizer can recognize
+
+        Returns:
+            A pssm with an initializated PWM
+        &#34;&#34;&#34;
+
+        pwm = []
+        # Generate as much as needed
+        for _ in range(length):
+            pwm.append(self.get_pwm_column())
+
+        return PssmObject(numpy.array(pwm), self.conf_pssm)
+
+    def get_pwm_column(self) -&gt; dict:
+        &#34;&#34;&#34;Generates a single column of the pwm
+
+        Returns:
+            a random probability for each base [a, c, g, t]
+        &#34;&#34;&#34;
+
+        initial_probability = (
+            self.pwm_probability_base / self.pwm_probability_step
+        )
+        probabilities: list = []
+        # Left probability is
+        left_probability = initial_probability
+        # Minimum and maximum number of probabilities to be generated
+        min_probability = 0
+        max_probability = 4
+        # Number of decimals on the probability
+        decimals = 2
+        # Generate 4 random probabilities out of initial_probability, one for
+        # each base
+
+        # Add a probability while we have less than 3 and and total probability
+        # is not 1
+        while (
+                left_probability &gt; min_probability
+                and len(probabilities) &lt; max_probability - 1
+        ):
+            new_probability = random.randint(0, left_probability)
+            probabilities.append(float(new_probability))
+            left_probability -= new_probability
+        # Add the last probability or fill with 0 probability
+        if left_probability &gt; 0:
+            probabilities.append(initial_probability - sum(probabilities))
+        else:
+            while len(probabilities) &lt; max_probability:
+                probabilities.append(0.0)
+
+        # Shuffle the array is needed so high probability is not always on
+        # first positions
+        random.shuffle(probabilities)
+
+        # Transform probabilities array from integer
+        # [0-(BASE_PROBABILITY / STEP)] to complementary float
+        # probabilities [0.0-1.0]
+        numpy_probabilities = (
+            numpy.array(probabilities)
+            * self.pwm_probability_step
+            * (1 / self.pwm_probability_base)
+        )
+        probabilities = numpy_probabilities.tolist()
+
+        # Return object with &#34;decimals&#34; decimals probability to each base
+        return {
+            &#34;a&#34;: round(probabilities[0], decimals),
+            &#34;g&#34;: round(probabilities[1], decimals),
+            &#34;c&#34;: round(probabilities[2], decimals),
+            &#34;t&#34;: round(probabilities[3], decimals),
+        }
+
+    def import_organisms(self, file_name: str) -&gt; list:
+        &#34;&#34;&#34;Import Organisms from file
+
+        Args:
+            file_name: Name of the file with the organisms to read as an input
+
+        Returns:
+            a list of organisms objects read from the file
+        &#34;&#34;&#34;
+        organism_list = []
+        organism_json = {}
+        with open(file_name) as json_file:
+            organism_json = json.load(json_file)
+
+        for organism in organism_json:
+
+            new_organism = OrganismObject(self.get_id(), self.conf_org)
+            root_node = None
+
+            if organism[&#34;rootNode&#34;][&#34;objectType&#34;] == &#34;pssm&#34;:
+                root_node = self.import_pssm(organism[&#34;rootNode&#34;])
+            else:
+                root_node = self.import_connector(organism[&#34;rootNode&#34;])
+
+            new_organism.set_root_node(root_node)
+            new_organism.reset_ids()
+
+            if &#34;isTracked&#34; in organism.keys():
+                new_organism.set_is_tracked(organism[&#34;isTracked&#34;])
+
+            organism_list.append(new_organism)
+
+        return organism_list
+
+    def import_connector(self, connector: dict) -&gt; ConnectorObject:
+        &#34;&#34;&#34;Import Connector from JSON object
+
+        Args:
+            connector: connector in dictionary format
+
+        Returns:
+            Connector object from given connector dictionary
+        &#34;&#34;&#34;
+        new_connector = ConnectorObject(
+            connector[&#34;mu&#34;], connector[&#34;sigma&#34;], self.conf_con
+        )
+
+        node1 = None
+        if connector[&#34;node1&#34;][&#34;objectType&#34;] == &#34;pssm&#34;:
+            node1 = self.import_pssm(connector[&#34;node1&#34;])
+        else:
+            node1 = self.import_connector(connector[&#34;node1&#34;])
+
+        new_connector.set_node1(node1)
+
+        node2 = None
+        if connector[&#34;node2&#34;][&#34;objectType&#34;] == &#34;pssm&#34;:
+            node2 = self.import_pssm(connector[&#34;node2&#34;])
+        else:
+            node2 = self.import_connector(connector[&#34;node2&#34;])
+
+        new_connector.set_node2(node2)
+
+        return new_connector
+
+    def import_pssm(self, pssm: dict) -&gt; PssmObject:
+        &#34;&#34;&#34;Import PSSM from JSON object
+
+        Args:
+            pssm: pssm recognizer in dictionary format
+
+        Returns:
+            PSSM Object from given  pssm dictionary
+
+        &#34;&#34;&#34;
+        return PssmObject(numpy.array(pssm[&#34;pwm&#34;]), self.conf_pssm)
+
+    def export_organisms(self, a_organisms: list, filename: str) -&gt; None:
+        &#34;&#34;&#34;Export a list of organisms to JSON format
+
+        Args:
+            a_organisms: list of organisms to export
+            filename: name of the file to export all the organisms
+        &#34;&#34;&#34;
+        list_json_organisms = []
+        for o_organism in a_organisms:
+            organism = {}
+            if o_organism.root_node.is_connector():
+                organism[&#34;rootNode&#34;] = self.export_connector(
+                    o_organism.root_node
+                )
+            else:
+                organism[&#34;rootNode&#34;] = self.export_pssm(o_organism.root_node)
+            list_json_organisms.append(organism)
+
+        with open(filename, &#34;w+&#34;) as json_file:
+            json.dump(list_json_organisms, json_file, indent=2)
+
+    def export_connector(self, o_connector: ConnectorObject) -&gt; dict:
+        &#34;&#34;&#34;Export connector object
+
+        Args:
+            o_connector: Connector to export
+
+        Returns:
+            Connector in dictionary format
+        &#34;&#34;&#34;
+        connector = {}
+        connector[&#34;objectType&#34;] = &#34;connector&#34;
+        connector[&#34;mu&#34;] = o_connector._mu
+        connector[&#34;sigma&#34;] = o_connector._sigma
+
+        # Check if its pssm
+        if o_connector.node1.is_connector():
+            connector[&#34;node1&#34;] = self.export_connector(o_connector.node1)
+        else:
+            connector[&#34;node1&#34;] = self.export_pssm(o_connector.node1)
+
+        if o_connector.node2.is_connector():
+            connector[&#34;node2&#34;] = self.export_connector(o_connector.node2)
+        else:
+            connector[&#34;node2&#34;] = self.export_pssm(o_connector.node2)
+
+        return connector
+
+    def export_pssm(self, o_pssm: PssmObject) -&gt; dict:
+        &#34;&#34;&#34;Export PSSM object
+
+        Args:
+            o_pssm: PSSM object to export
+
+        Returns:
+            pssm in dictionary format
+
+        &#34;&#34;&#34;
+        pssm = {}
+        pssm[&#34;objectType&#34;] = &#34;pssm&#34;
+        pssm[&#34;pwm&#34;] = o_pssm.pwm.tolist()
+        return pssm</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.objects.organism_factory.OrganismFactory"><code class="flex name class">
+<span>class <span class="ident">OrganismFactory</span></span>
+<span>(</span><span>conf_org, conf_org_fac, conf_con, conf_pssm)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Factory</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class OrganismFactory:
+    &#34;&#34;&#34;Factory
+    &#34;&#34;&#34;
+
+    def __init__(self, conf_org, conf_org_fac, conf_con, conf_pssm) -&gt; None:
+
+        self._id = 0
+        self.initial_connector_probability = conf_org_fac[
+            &#34;INITIAL_CONNECTOR_PROBABILITY&#34;
+        ]
+        self.reducer_probability_factor = conf_org_fac[
+            &#34;REDUCER_PROBABILITY_FACTOR&#34;
+        ]
+
+        self.min_mu = conf_org_fac[&#34;MIN_MU&#34;]
+        self.max_mu = conf_org_fac[&#34;MAX_MU&#34;]
+
+        self.min_sigma = conf_org_fac[&#34;MIN_SIGMA&#34;]
+        self.max_sigma = conf_org_fac[&#34;MAX_SIGMA&#34;]
+        # The number of positions, PSSM object can recognize
+
+        self.pwm_length = conf_org_fac[&#34;PWM_LENGTH&#34;]
+
+        self.pwm_probability_step = conf_org_fac[
+            &#34;PWM_PROBABILITY_STEP&#34;
+        ]  # It should be a BASE_PROBABILITY divisor Ex: 1, 2, 4, 5, 10, 25...
+        self.pwm_probability_base = conf_org_fac[&#34;PWM_PROBABILITY_BASE&#34;]
+        self.pwm_probability_decimals = conf_org_fac[
+            &#34;PWM_PROBABILITY_DECIMALS&#34;
+        ]
+
+        self.conf_org = conf_org
+        self.conf_con = conf_con
+        self.conf_pssm = conf_pssm
+
+    def get_id(self) -&gt; int:
+        &#34;&#34;&#34;Gives a new ID for an organism
+        TODO: This should be a function so all the count of IDs, including
+        assigned outside the class, keep consistency between all organisms
+
+        Returns:
+           a new non-repeated ID
+        &#34;&#34;&#34;
+        self._id += 1
+        return self._id
+
+    def get_organism(self) -&gt; OrganismObject:
+        &#34;&#34;&#34;It creates and returns a full organism datastructure
+
+        Returns:
+            A new organism based on JSON config file
+        &#34;&#34;&#34;
+
+        new_organism = OrganismObject(self.get_id(), self.conf_org)
+        root_node = None
+
+        # Based on a random probability, we assign a connector or a PSSM object
+        # to the root Node
+        if random.random() &lt; self.initial_connector_probability:
+            root_node = self.create_connection(
+                self.initial_connector_probability
+                * self.reducer_probability_factor
+            )
+        else:
+            root_node = self.create_pssm(self.pwm_length)
+
+        new_organism.set_root_node(root_node)
+        new_organism.reset_ids()
+
+        return new_organism
+
+    def create_connection(
+            self, connection_probability: float
+    ) -&gt; ConnectorObject:
+        &#34;&#34;&#34;It returns a connector object with its nodes assigned depending on
+        connectionProbability
+
+        Args:
+            connection_probability: Probability to generate a connector instead
+                                    of a recognizer
+
+        Returns:
+            A new Connection with recognizers included
+        &#34;&#34;&#34;
+
+        # Assign a random value to mu and sigma
+        _mu = random.randint(self.min_mu, self.max_mu)
+        _sigma = random.randint(self.min_sigma, self.max_sigma)
+
+        # Create the new connection
+        new_connection = ConnectorObject(_mu, _sigma, self.conf_con)
+
+        # Set the connection node to a connector or PSSM object, based on a
+        # random probability. If connector object is selected, probability of
+        # getting another connector is reduced by PROBABILITY_REDUCED_FACTOR
+        node1 = None
+        if random.random() &lt; connection_probability:
+            node1 = self.create_connection(
+                connection_probability * self.reducer_probability_factor
+            )
+        else:
+            node1 = self.create_pssm(self.pwm_length)
+
+        new_connection.set_node1(node1)
+
+        node2 = None
+        if random.random() &lt; connection_probability:
+            node2 = self.create_connection(
+                connection_probability * self.reducer_probability_factor
+            )
+        else:
+            node2 = self.create_pssm(self.pwm_length)
+
+        new_connection.set_node2(node2)
+
+        return new_connection
+
+    def create_pssm(self, length: int) -&gt; PssmObject:
+        &#34;&#34;&#34;It return a PSSM object with a specific length
+
+        Args:
+            length: positions a recognizer can recognize
+
+        Returns:
+            A pssm with an initializated PWM
+        &#34;&#34;&#34;
+
+        pwm = []
+        # Generate as much as needed
+        for _ in range(length):
+            pwm.append(self.get_pwm_column())
+
+        return PssmObject(numpy.array(pwm), self.conf_pssm)
+
+    def get_pwm_column(self) -&gt; dict:
+        &#34;&#34;&#34;Generates a single column of the pwm
+
+        Returns:
+            a random probability for each base [a, c, g, t]
+        &#34;&#34;&#34;
+
+        initial_probability = (
+            self.pwm_probability_base / self.pwm_probability_step
+        )
+        probabilities: list = []
+        # Left probability is
+        left_probability = initial_probability
+        # Minimum and maximum number of probabilities to be generated
+        min_probability = 0
+        max_probability = 4
+        # Number of decimals on the probability
+        decimals = 2
+        # Generate 4 random probabilities out of initial_probability, one for
+        # each base
+
+        # Add a probability while we have less than 3 and and total probability
+        # is not 1
+        while (
+                left_probability &gt; min_probability
+                and len(probabilities) &lt; max_probability - 1
+        ):
+            new_probability = random.randint(0, left_probability)
+            probabilities.append(float(new_probability))
+            left_probability -= new_probability
+        # Add the last probability or fill with 0 probability
+        if left_probability &gt; 0:
+            probabilities.append(initial_probability - sum(probabilities))
+        else:
+            while len(probabilities) &lt; max_probability:
+                probabilities.append(0.0)
+
+        # Shuffle the array is needed so high probability is not always on
+        # first positions
+        random.shuffle(probabilities)
+
+        # Transform probabilities array from integer
+        # [0-(BASE_PROBABILITY / STEP)] to complementary float
+        # probabilities [0.0-1.0]
+        numpy_probabilities = (
+            numpy.array(probabilities)
+            * self.pwm_probability_step
+            * (1 / self.pwm_probability_base)
+        )
+        probabilities = numpy_probabilities.tolist()
+
+        # Return object with &#34;decimals&#34; decimals probability to each base
+        return {
+            &#34;a&#34;: round(probabilities[0], decimals),
+            &#34;g&#34;: round(probabilities[1], decimals),
+            &#34;c&#34;: round(probabilities[2], decimals),
+            &#34;t&#34;: round(probabilities[3], decimals),
+        }
+
+    def import_organisms(self, file_name: str) -&gt; list:
+        &#34;&#34;&#34;Import Organisms from file
+
+        Args:
+            file_name: Name of the file with the organisms to read as an input
+
+        Returns:
+            a list of organisms objects read from the file
+        &#34;&#34;&#34;
+        organism_list = []
+        organism_json = {}
+        with open(file_name) as json_file:
+            organism_json = json.load(json_file)
+
+        for organism in organism_json:
+
+            new_organism = OrganismObject(self.get_id(), self.conf_org)
+            root_node = None
+
+            if organism[&#34;rootNode&#34;][&#34;objectType&#34;] == &#34;pssm&#34;:
+                root_node = self.import_pssm(organism[&#34;rootNode&#34;])
+            else:
+                root_node = self.import_connector(organism[&#34;rootNode&#34;])
+
+            new_organism.set_root_node(root_node)
+            new_organism.reset_ids()
+
+            if &#34;isTracked&#34; in organism.keys():
+                new_organism.set_is_tracked(organism[&#34;isTracked&#34;])
+
+            organism_list.append(new_organism)
+
+        return organism_list
+
+    def import_connector(self, connector: dict) -&gt; ConnectorObject:
+        &#34;&#34;&#34;Import Connector from JSON object
+
+        Args:
+            connector: connector in dictionary format
+
+        Returns:
+            Connector object from given connector dictionary
+        &#34;&#34;&#34;
+        new_connector = ConnectorObject(
+            connector[&#34;mu&#34;], connector[&#34;sigma&#34;], self.conf_con
+        )
+
+        node1 = None
+        if connector[&#34;node1&#34;][&#34;objectType&#34;] == &#34;pssm&#34;:
+            node1 = self.import_pssm(connector[&#34;node1&#34;])
+        else:
+            node1 = self.import_connector(connector[&#34;node1&#34;])
+
+        new_connector.set_node1(node1)
+
+        node2 = None
+        if connector[&#34;node2&#34;][&#34;objectType&#34;] == &#34;pssm&#34;:
+            node2 = self.import_pssm(connector[&#34;node2&#34;])
+        else:
+            node2 = self.import_connector(connector[&#34;node2&#34;])
+
+        new_connector.set_node2(node2)
+
+        return new_connector
+
+    def import_pssm(self, pssm: dict) -&gt; PssmObject:
+        &#34;&#34;&#34;Import PSSM from JSON object
+
+        Args:
+            pssm: pssm recognizer in dictionary format
+
+        Returns:
+            PSSM Object from given  pssm dictionary
+
+        &#34;&#34;&#34;
+        return PssmObject(numpy.array(pssm[&#34;pwm&#34;]), self.conf_pssm)
+
+    def export_organisms(self, a_organisms: list, filename: str) -&gt; None:
+        &#34;&#34;&#34;Export a list of organisms to JSON format
+
+        Args:
+            a_organisms: list of organisms to export
+            filename: name of the file to export all the organisms
+        &#34;&#34;&#34;
+        list_json_organisms = []
+        for o_organism in a_organisms:
+            organism = {}
+            if o_organism.root_node.is_connector():
+                organism[&#34;rootNode&#34;] = self.export_connector(
+                    o_organism.root_node
+                )
+            else:
+                organism[&#34;rootNode&#34;] = self.export_pssm(o_organism.root_node)
+            list_json_organisms.append(organism)
+
+        with open(filename, &#34;w+&#34;) as json_file:
+            json.dump(list_json_organisms, json_file, indent=2)
+
+    def export_connector(self, o_connector: ConnectorObject) -&gt; dict:
+        &#34;&#34;&#34;Export connector object
+
+        Args:
+            o_connector: Connector to export
+
+        Returns:
+            Connector in dictionary format
+        &#34;&#34;&#34;
+        connector = {}
+        connector[&#34;objectType&#34;] = &#34;connector&#34;
+        connector[&#34;mu&#34;] = o_connector._mu
+        connector[&#34;sigma&#34;] = o_connector._sigma
+
+        # Check if its pssm
+        if o_connector.node1.is_connector():
+            connector[&#34;node1&#34;] = self.export_connector(o_connector.node1)
+        else:
+            connector[&#34;node1&#34;] = self.export_pssm(o_connector.node1)
+
+        if o_connector.node2.is_connector():
+            connector[&#34;node2&#34;] = self.export_connector(o_connector.node2)
+        else:
+            connector[&#34;node2&#34;] = self.export_pssm(o_connector.node2)
+
+        return connector
+
+    def export_pssm(self, o_pssm: PssmObject) -&gt; dict:
+        &#34;&#34;&#34;Export PSSM object
+
+        Args:
+            o_pssm: PSSM object to export
+
+        Returns:
+            pssm in dictionary format
+
+        &#34;&#34;&#34;
+        pssm = {}
+        pssm[&#34;objectType&#34;] = &#34;pssm&#34;
+        pssm[&#34;pwm&#34;] = o_pssm.pwm.tolist()
+        return pssm</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="src.objects.organism_factory.OrganismFactory.create_connection"><code class="name flex">
+<span>def <span class="ident">create_connection</span></span>(<span>self, connection_probability: float) -> <a title="src.objects.connector_object.ConnectorObject" href="connector_object.html#src.objects.connector_object.ConnectorObject">ConnectorObject</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>It returns a connector object with its nodes assigned depending on
+connectionProbability</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>connection_probability</code></strong></dt>
+<dd>Probability to generate a connector instead
+of a recognizer</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A new Connection with recognizers included</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_connection(
+        self, connection_probability: float
+) -&gt; ConnectorObject:
+    &#34;&#34;&#34;It returns a connector object with its nodes assigned depending on
+    connectionProbability
+
+    Args:
+        connection_probability: Probability to generate a connector instead
+                                of a recognizer
+
+    Returns:
+        A new Connection with recognizers included
+    &#34;&#34;&#34;
+
+    # Assign a random value to mu and sigma
+    _mu = random.randint(self.min_mu, self.max_mu)
+    _sigma = random.randint(self.min_sigma, self.max_sigma)
+
+    # Create the new connection
+    new_connection = ConnectorObject(_mu, _sigma, self.conf_con)
+
+    # Set the connection node to a connector or PSSM object, based on a
+    # random probability. If connector object is selected, probability of
+    # getting another connector is reduced by PROBABILITY_REDUCED_FACTOR
+    node1 = None
+    if random.random() &lt; connection_probability:
+        node1 = self.create_connection(
+            connection_probability * self.reducer_probability_factor
+        )
+    else:
+        node1 = self.create_pssm(self.pwm_length)
+
+    new_connection.set_node1(node1)
+
+    node2 = None
+    if random.random() &lt; connection_probability:
+        node2 = self.create_connection(
+            connection_probability * self.reducer_probability_factor
+        )
+    else:
+        node2 = self.create_pssm(self.pwm_length)
+
+    new_connection.set_node2(node2)
+
+    return new_connection</code></pre>
+</details>
+</dd>
+<dt id="src.objects.organism_factory.OrganismFactory.create_pssm"><code class="name flex">
+<span>def <span class="ident">create_pssm</span></span>(<span>self, length: int) -> <a title="src.objects.pssm_object.PssmObject" href="pssm_object.html#src.objects.pssm_object.PssmObject">PssmObject</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>It return a PSSM object with a specific length</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>length</code></strong></dt>
+<dd>positions a recognizer can recognize</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A pssm with an initializated PWM</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_pssm(self, length: int) -&gt; PssmObject:
+    &#34;&#34;&#34;It return a PSSM object with a specific length
+
+    Args:
+        length: positions a recognizer can recognize
+
+    Returns:
+        A pssm with an initializated PWM
+    &#34;&#34;&#34;
+
+    pwm = []
+    # Generate as much as needed
+    for _ in range(length):
+        pwm.append(self.get_pwm_column())
+
+    return PssmObject(numpy.array(pwm), self.conf_pssm)</code></pre>
+</details>
+</dd>
+<dt id="src.objects.organism_factory.OrganismFactory.export_connector"><code class="name flex">
+<span>def <span class="ident">export_connector</span></span>(<span>self, o_connector: <a title="src.objects.connector_object.ConnectorObject" href="connector_object.html#src.objects.connector_object.ConnectorObject">ConnectorObject</a>) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Export connector object</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>o_connector</code></strong></dt>
+<dd>Connector to export</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Connector in dictionary format</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_connector(self, o_connector: ConnectorObject) -&gt; dict:
+    &#34;&#34;&#34;Export connector object
+
+    Args:
+        o_connector: Connector to export
+
+    Returns:
+        Connector in dictionary format
+    &#34;&#34;&#34;
+    connector = {}
+    connector[&#34;objectType&#34;] = &#34;connector&#34;
+    connector[&#34;mu&#34;] = o_connector._mu
+    connector[&#34;sigma&#34;] = o_connector._sigma
+
+    # Check if its pssm
+    if o_connector.node1.is_connector():
+        connector[&#34;node1&#34;] = self.export_connector(o_connector.node1)
+    else:
+        connector[&#34;node1&#34;] = self.export_pssm(o_connector.node1)
+
+    if o_connector.node2.is_connector():
+        connector[&#34;node2&#34;] = self.export_connector(o_connector.node2)
+    else:
+        connector[&#34;node2&#34;] = self.export_pssm(o_connector.node2)
+
+    return connector</code></pre>
+</details>
+</dd>
+<dt id="src.objects.organism_factory.OrganismFactory.export_organisms"><code class="name flex">
+<span>def <span class="ident">export_organisms</span></span>(<span>self, a_organisms: list, filename: str) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Export a list of organisms to JSON format</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>a_organisms</code></strong></dt>
+<dd>list of organisms to export</dd>
+<dt><strong><code>filename</code></strong></dt>
+<dd>name of the file to export all the organisms</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_organisms(self, a_organisms: list, filename: str) -&gt; None:
+    &#34;&#34;&#34;Export a list of organisms to JSON format
+
+    Args:
+        a_organisms: list of organisms to export
+        filename: name of the file to export all the organisms
+    &#34;&#34;&#34;
+    list_json_organisms = []
+    for o_organism in a_organisms:
+        organism = {}
+        if o_organism.root_node.is_connector():
+            organism[&#34;rootNode&#34;] = self.export_connector(
+                o_organism.root_node
+            )
+        else:
+            organism[&#34;rootNode&#34;] = self.export_pssm(o_organism.root_node)
+        list_json_organisms.append(organism)
+
+    with open(filename, &#34;w+&#34;) as json_file:
+        json.dump(list_json_organisms, json_file, indent=2)</code></pre>
+</details>
+</dd>
+<dt id="src.objects.organism_factory.OrganismFactory.export_pssm"><code class="name flex">
+<span>def <span class="ident">export_pssm</span></span>(<span>self, o_pssm: <a title="src.objects.pssm_object.PssmObject" href="pssm_object.html#src.objects.pssm_object.PssmObject">PssmObject</a>) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Export PSSM object</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>o_pssm</code></strong></dt>
+<dd>PSSM object to export</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>pssm in dictionary format</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_pssm(self, o_pssm: PssmObject) -&gt; dict:
+    &#34;&#34;&#34;Export PSSM object
+
+    Args:
+        o_pssm: PSSM object to export
+
+    Returns:
+        pssm in dictionary format
+
+    &#34;&#34;&#34;
+    pssm = {}
+    pssm[&#34;objectType&#34;] = &#34;pssm&#34;
+    pssm[&#34;pwm&#34;] = o_pssm.pwm.tolist()
+    return pssm</code></pre>
+</details>
+</dd>
+<dt id="src.objects.organism_factory.OrganismFactory.get_id"><code class="name flex">
+<span>def <span class="ident">get_id</span></span>(<span>self) -> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gives a new ID for an organism
+TODO: This should be a function so all the count of IDs, including
+assigned outside the class, keep consistency between all organisms</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>a new non-repeated ID</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_id(self) -&gt; int:
+    &#34;&#34;&#34;Gives a new ID for an organism
+    TODO: This should be a function so all the count of IDs, including
+    assigned outside the class, keep consistency between all organisms
+
+    Returns:
+       a new non-repeated ID
+    &#34;&#34;&#34;
+    self._id += 1
+    return self._id</code></pre>
+</details>
+</dd>
+<dt id="src.objects.organism_factory.OrganismFactory.get_organism"><code class="name flex">
+<span>def <span class="ident">get_organism</span></span>(<span>self) -> <a title="src.objects.organism_object.OrganismObject" href="organism_object.html#src.objects.organism_object.OrganismObject">OrganismObject</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>It creates and returns a full organism datastructure</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A new organism based on JSON config file</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_organism(self) -&gt; OrganismObject:
+    &#34;&#34;&#34;It creates and returns a full organism datastructure
+
+    Returns:
+        A new organism based on JSON config file
+    &#34;&#34;&#34;
+
+    new_organism = OrganismObject(self.get_id(), self.conf_org)
+    root_node = None
+
+    # Based on a random probability, we assign a connector or a PSSM object
+    # to the root Node
+    if random.random() &lt; self.initial_connector_probability:
+        root_node = self.create_connection(
+            self.initial_connector_probability
+            * self.reducer_probability_factor
+        )
+    else:
+        root_node = self.create_pssm(self.pwm_length)
+
+    new_organism.set_root_node(root_node)
+    new_organism.reset_ids()
+
+    return new_organism</code></pre>
+</details>
+</dd>
+<dt id="src.objects.organism_factory.OrganismFactory.get_pwm_column"><code class="name flex">
+<span>def <span class="ident">get_pwm_column</span></span>(<span>self) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates a single column of the pwm</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>a random probability for each base [a, c, g, t]</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_pwm_column(self) -&gt; dict:
+    &#34;&#34;&#34;Generates a single column of the pwm
+
+    Returns:
+        a random probability for each base [a, c, g, t]
+    &#34;&#34;&#34;
+
+    initial_probability = (
+        self.pwm_probability_base / self.pwm_probability_step
+    )
+    probabilities: list = []
+    # Left probability is
+    left_probability = initial_probability
+    # Minimum and maximum number of probabilities to be generated
+    min_probability = 0
+    max_probability = 4
+    # Number of decimals on the probability
+    decimals = 2
+    # Generate 4 random probabilities out of initial_probability, one for
+    # each base
+
+    # Add a probability while we have less than 3 and and total probability
+    # is not 1
+    while (
+            left_probability &gt; min_probability
+            and len(probabilities) &lt; max_probability - 1
+    ):
+        new_probability = random.randint(0, left_probability)
+        probabilities.append(float(new_probability))
+        left_probability -= new_probability
+    # Add the last probability or fill with 0 probability
+    if left_probability &gt; 0:
+        probabilities.append(initial_probability - sum(probabilities))
+    else:
+        while len(probabilities) &lt; max_probability:
+            probabilities.append(0.0)
+
+    # Shuffle the array is needed so high probability is not always on
+    # first positions
+    random.shuffle(probabilities)
+
+    # Transform probabilities array from integer
+    # [0-(BASE_PROBABILITY / STEP)] to complementary float
+    # probabilities [0.0-1.0]
+    numpy_probabilities = (
+        numpy.array(probabilities)
+        * self.pwm_probability_step
+        * (1 / self.pwm_probability_base)
+    )
+    probabilities = numpy_probabilities.tolist()
+
+    # Return object with &#34;decimals&#34; decimals probability to each base
+    return {
+        &#34;a&#34;: round(probabilities[0], decimals),
+        &#34;g&#34;: round(probabilities[1], decimals),
+        &#34;c&#34;: round(probabilities[2], decimals),
+        &#34;t&#34;: round(probabilities[3], decimals),
+    }</code></pre>
+</details>
+</dd>
+<dt id="src.objects.organism_factory.OrganismFactory.import_connector"><code class="name flex">
+<span>def <span class="ident">import_connector</span></span>(<span>self, connector: dict) -> <a title="src.objects.connector_object.ConnectorObject" href="connector_object.html#src.objects.connector_object.ConnectorObject">ConnectorObject</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Import Connector from JSON object</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>connector</code></strong></dt>
+<dd>connector in dictionary format</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Connector object from given connector dictionary</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_connector(self, connector: dict) -&gt; ConnectorObject:
+    &#34;&#34;&#34;Import Connector from JSON object
+
+    Args:
+        connector: connector in dictionary format
+
+    Returns:
+        Connector object from given connector dictionary
+    &#34;&#34;&#34;
+    new_connector = ConnectorObject(
+        connector[&#34;mu&#34;], connector[&#34;sigma&#34;], self.conf_con
+    )
+
+    node1 = None
+    if connector[&#34;node1&#34;][&#34;objectType&#34;] == &#34;pssm&#34;:
+        node1 = self.import_pssm(connector[&#34;node1&#34;])
+    else:
+        node1 = self.import_connector(connector[&#34;node1&#34;])
+
+    new_connector.set_node1(node1)
+
+    node2 = None
+    if connector[&#34;node2&#34;][&#34;objectType&#34;] == &#34;pssm&#34;:
+        node2 = self.import_pssm(connector[&#34;node2&#34;])
+    else:
+        node2 = self.import_connector(connector[&#34;node2&#34;])
+
+    new_connector.set_node2(node2)
+
+    return new_connector</code></pre>
+</details>
+</dd>
+<dt id="src.objects.organism_factory.OrganismFactory.import_organisms"><code class="name flex">
+<span>def <span class="ident">import_organisms</span></span>(<span>self, file_name: str) -> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Import Organisms from file</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>file_name</code></strong></dt>
+<dd>Name of the file with the organisms to read as an input</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>a list</code> of <code>organisms objects read from the file</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_organisms(self, file_name: str) -&gt; list:
+    &#34;&#34;&#34;Import Organisms from file
+
+    Args:
+        file_name: Name of the file with the organisms to read as an input
+
+    Returns:
+        a list of organisms objects read from the file
+    &#34;&#34;&#34;
+    organism_list = []
+    organism_json = {}
+    with open(file_name) as json_file:
+        organism_json = json.load(json_file)
+
+    for organism in organism_json:
+
+        new_organism = OrganismObject(self.get_id(), self.conf_org)
+        root_node = None
+
+        if organism[&#34;rootNode&#34;][&#34;objectType&#34;] == &#34;pssm&#34;:
+            root_node = self.import_pssm(organism[&#34;rootNode&#34;])
+        else:
+            root_node = self.import_connector(organism[&#34;rootNode&#34;])
+
+        new_organism.set_root_node(root_node)
+        new_organism.reset_ids()
+
+        if &#34;isTracked&#34; in organism.keys():
+            new_organism.set_is_tracked(organism[&#34;isTracked&#34;])
+
+        organism_list.append(new_organism)
+
+    return organism_list</code></pre>
+</details>
+</dd>
+<dt id="src.objects.organism_factory.OrganismFactory.import_pssm"><code class="name flex">
+<span>def <span class="ident">import_pssm</span></span>(<span>self, pssm: dict) -> <a title="src.objects.pssm_object.PssmObject" href="pssm_object.html#src.objects.pssm_object.PssmObject">PssmObject</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Import PSSM from JSON object</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>pssm</code></strong></dt>
+<dd>pssm recognizer in dictionary format</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>PSSM Object from given
+pssm dictionary</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_pssm(self, pssm: dict) -&gt; PssmObject:
+    &#34;&#34;&#34;Import PSSM from JSON object
+
+    Args:
+        pssm: pssm recognizer in dictionary format
+
+    Returns:
+        PSSM Object from given  pssm dictionary
+
+    &#34;&#34;&#34;
+    return PssmObject(numpy.array(pssm[&#34;pwm&#34;]), self.conf_pssm)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.objects" href="index.html">src.objects</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.objects.organism_factory.OrganismFactory" href="#src.objects.organism_factory.OrganismFactory">OrganismFactory</a></code></h4>
+<ul class="two-column">
+<li><code><a title="src.objects.organism_factory.OrganismFactory.create_connection" href="#src.objects.organism_factory.OrganismFactory.create_connection">create_connection</a></code></li>
+<li><code><a title="src.objects.organism_factory.OrganismFactory.create_pssm" href="#src.objects.organism_factory.OrganismFactory.create_pssm">create_pssm</a></code></li>
+<li><code><a title="src.objects.organism_factory.OrganismFactory.export_connector" href="#src.objects.organism_factory.OrganismFactory.export_connector">export_connector</a></code></li>
+<li><code><a title="src.objects.organism_factory.OrganismFactory.export_organisms" href="#src.objects.organism_factory.OrganismFactory.export_organisms">export_organisms</a></code></li>
+<li><code><a title="src.objects.organism_factory.OrganismFactory.export_pssm" href="#src.objects.organism_factory.OrganismFactory.export_pssm">export_pssm</a></code></li>
+<li><code><a title="src.objects.organism_factory.OrganismFactory.get_id" href="#src.objects.organism_factory.OrganismFactory.get_id">get_id</a></code></li>
+<li><code><a title="src.objects.organism_factory.OrganismFactory.get_organism" href="#src.objects.organism_factory.OrganismFactory.get_organism">get_organism</a></code></li>
+<li><code><a title="src.objects.organism_factory.OrganismFactory.get_pwm_column" href="#src.objects.organism_factory.OrganismFactory.get_pwm_column">get_pwm_column</a></code></li>
+<li><code><a title="src.objects.organism_factory.OrganismFactory.import_connector" href="#src.objects.organism_factory.OrganismFactory.import_connector">import_connector</a></code></li>
+<li><code><a title="src.objects.organism_factory.OrganismFactory.import_organisms" href="#src.objects.organism_factory.OrganismFactory.import_organisms">import_organisms</a></code></li>
+<li><code><a title="src.objects.organism_factory.OrganismFactory.import_pssm" href="#src.objects.organism_factory.OrganismFactory.import_pssm">import_pssm</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

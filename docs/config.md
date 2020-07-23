@@ -21,7 +21,7 @@
 
 ### Stopping criteria
 
-- - END_WHILE_METHOD
+- END_WHILE_METHOD
 	- Termination criteria. Determines whether the algorithm terminates after a fixed number of `iterations`, when the `fitness` meets some upper bound or when the difference in fitness between two consecutive iterations is lower than some `threshold`
 	- Default: `iterations`.
 	- Options: `iterations`, `fitness`, `threshold`
@@ -52,7 +52,7 @@
 	- Default: `0.5`
 	- Range: `>0 [float]`
 
-## Directory organization
+### Directory organization
 
 - DATASET_BASE_PATH_DIR
 	- Base directory for datasets.
@@ -63,6 +63,66 @@
 - RESULT_TEST_BASE_PATH_DIR
 	- Base directory for test results [where test organisms are assessed].
 	- Default: `resultsTEST/`
-- POSITIVE_FILENAME":"positive_dataset.fas",
-- NEGATIVE_FILENAME":"negative_dataset.fas",
-- INPUT_FILENAME":"inputOrganisms2.json",
+- POSITIVE_FILENAME
+  - Name of the positive dataset
+- NEGATIVE_FILENAME
+  - Name of the control dataset
+- INPUT_FILENAME
+  - Used in both search and test organisms. specifies the path to the file that includes the organisms that will be used as input in the program.
+- OUTPUT_FILENAME
+  - Name for the file where the output of the program will be redirected.
+
+### Others
+
+- PERIODIC_EXPORT
+  - Number of iterations used to export periodically the max scored organism. Sometimes it's hard to track how the GA is doing, so every X iterations it exports the max organism on that iteration.
+
+## Organism
+
+- CUMULATIVE_FIT_METHOD
+  - This is how we compute the fitness of a dataset when we have the energy on individual sequences.
+  - Options: sum, mean
+- MUTATE_PROBABILITY_SUBSTITUTE_PSSM
+  - Probability to execute the Substitute pssm mutator. It creates a random pssm recognizer and inserts it in a random node position.
+  - Range
+- MUTATE_PROBABILITY_RISE_CHILD
+  - Probability to execute the rise child mutator. It selects a random node in the organism and 
+- MUTATE_PROBABILITY_NODE_MUTATION
+- MUTATE_PROBABILITY_SUNK_CHILD
+- MIN_NODES
+- MAX_NODES
+
+## Factory
+
+- INITIAL_CONNECTOR_PROBABILITY
+- REDUCER_PROBABILITY_FACTOR
+- MIN_MU
+- MAX_MU
+- MIN_SIGMA
+- MAX_SIGMA
+- PWM_LENGTH
+- PWM_PROBABILITY_STEP
+- PWM_PROBABILITY_BASE
+- PWM_PROBABILITY_DECIMALS
+
+## Connector
+
+- MUTATE_PROBABILITY_SIGMA
+- MUTATE_PROBABILITY_MU
+- MUTATE_PROBABILITY_SWAP
+- TAU
+- MUTATE_VARIANCE_SIGMA
+- MUTATE_VARIANCE_MU
+- PLACEMENT_OPTIONS
+
+## PSSM recognizer
+
+- MUTATE_PROBABILITY_RANDOM_COL
+- MUTATE_PROBABILITY_FLIP_COL
+- MUTATE_PROBABILITY_FLIP_ROW
+- MUTATE_PROBABILITY_SHIFT_LEFT
+- MUTATE_PROBABILITY_SHIFT_RIGHT
+- UPPER_PRINT_PROBABILITY
+- PSEUDO_COUNT
+- PLACEMENT_OPTIONS
+- SCAN_REVERSE_COMPLEMENT

@@ -1,0 +1,1696 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>src.search_organisms API documentation</title>
+<meta name="description" content="Main execution …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.search_organisms</code></h1>
+</header>
+<section id="section-intro">
+<p>Main execution</p>
+<p>This program searches for models that fit an specific motif.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Main execution
+
+This program searches for models that fit an specific motif.
+
+&#34;&#34;&#34;
+
+import time
+import random
+import copy
+import json
+import os
+import cProfile
+import pstats
+import io
+import numpy as np
+from objects.organism_factory import OrganismFactory
+from Bio import SeqIO
+
+&#34;&#34;&#34;
+Variable definition
+&#34;&#34;&#34;
+POPULATION_LENGTH = 0
+DATASET_BASE_PATH_DIR = &#34;&#34;
+RESULT_BASE_PATH_DIR = &#34;&#34;
+POSITIVE_FILENAME = &#34;&#34;
+NEGATIVE_FILENAME = &#34;&#34;
+POPULATION_ORIGIN = &#34;&#34;
+POPULATION_FILL_TYPE = &#34;&#34;
+INPUT_FILENAME = &#34;&#34;
+OUTPUT_FILENAME = &#34;&#34;
+MAX_SEQUENCES_TO_FIT_POS = 0
+MAX_SEQUENCES_TO_FIT_NEG = 0
+MIN_ITERATIONS = 0
+MIN_FITNESS = 0
+RECOMBINATION_PROBABILITY = 0.0
+THRESHOLD = 0.0
+
+JSON_CONFIG_FILENAME = &#34;config.json&#34;
+&#34;&#34;&#34;
+Configuration of the object types
+Populated by JSON read.
+&#34;&#34;&#34;
+configOrganism: dict = {}
+configOrganismFactory: dict = {}
+configConnector: dict = {}
+configPssm: dict = {}
+
+
+# list that holds the population
+organism_population: list = []
+
+# mean_nodes are the average number of nodes per organism in the population
+# used to calculate organism complexity
+mean_nodes: float = 0
+# mean_fitness is the average fitness per organism in the population
+# used to calculate organism complexity
+mean_fitness: float = 0
+
+# Initialize datasets
+positive_dataset: list = []
+negative_dataset: list = []
+
+
+def main():
+    &#34;&#34;&#34;Main function for the motif seek
+    &#34;&#34;&#34;
+
+    print(&#34;Loading parameters...&#34;)
+    positive_dataset = read_fasta_file(
+        DATASET_BASE_PATH_DIR + POSITIVE_FILENAME
+    )
+    negative_dataset = read_fasta_file(
+        DATASET_BASE_PATH_DIR + NEGATIVE_FILENAME
+    )
+
+    mean_nodes = 0
+    mean_fitness = 0
+    &#34;&#34;&#34;
+    Generate initial population
+    &#34;&#34;&#34;
+    # Instantiate organism Factory object with object configurations
+    organism_factory = OrganismFactory(
+        configOrganism, configOrganismFactory, configConnector, configPssm
+    )
+    # initialize organisms population
+    organism_population = []
+
+    # Generate population depending on origin and fill type.
+    # Origin can be &#34;random&#34; or &#34;file&#34;(read a set of organisms from a file).
+    if POPULATION_ORIGIN.lower() == &#34;random&#34;:
+        # For a random origin, we can generate #POPULATION_LENGTH organisms.
+
+        for i in range(POPULATION_LENGTH):
+            new_organism = organism_factory.get_organism()
+            organism_population.append(new_organism)
+
+            mean_nodes += new_organism.count_nodes()
+
+    elif POPULATION_ORIGIN.lower() == &#34;file&#34;:
+        # Set the file organisms and fill with random/same organisms
+        # POPULATION_LENGTH must be &gt;= len(fileOrganisms)
+        file_organisms = organism_factory.import_organisms(INPUT_FILENAME)
+        remaining_organisms = POPULATION_LENGTH - len(file_organisms)
+        fill_organism_population = []
+
+        if POPULATION_FILL_TYPE.lower() == &#34;random&#34;:
+            # FILL WITH RANDOM
+
+            for i in range(remaining_organisms):
+                new_organism = organism_factory.get_organism()
+                fill_organism_population.append(new_organism)
+
+        elif POPULATION_FILL_TYPE.lower() == &#34;uniform&#34;:
+            # FILL WITH SAME ORGANISMS IN FILE
+
+            for i in range(remaining_organisms):
+                new_organism = copy.deepcopy(
+                    file_organisms[i % len(file_organisms)]
+                )
+                fill_organism_population.append(new_organism)
+                new_organism.set_id(organism_factory.get_id())
+
+        # join &amp; calculate mean nodes
+        organism_population = file_organisms + fill_organism_population
+
+        for org in organism_population:
+            mean_nodes += org.count_nodes()
+
+    else:
+        raise (
+            Exception,
+            &#34;Not a valid population origin, &#34;
+            + &#34;check the configuration file.&#34;,
+        )
+
+    # Convert node count into mean
+    mean_nodes /= POPULATION_LENGTH
+    print(&#34;len = {}&#34;.format(len(organism_population)))
+    &#34;&#34;&#34;
+    Initialize iteration variables.
+    &#34;&#34;&#34;
+    iterations = 0
+    max_score = float(&#34;-inf&#34;)
+    last_max_score = 0.0
+    best_organism = (None, 0.0, 0, 0.0)
+    max_organism = (None, 0.0, 0, 0.0)
+
+    timeformat = &#34;%Y-%m-%d--%H-%M-%S&#34;
+    print(&#34;Starting execution...&#34;)
+
+    # Main loop, it iterates until organisms do not get a significant change
+    # or MIN_ITERATIONS or MIN_FITNESS is reached.
+
+    while not is_finished(
+            END_WHILE_METHOD, iterations, max_score, last_max_score
+    ):
+
+        # Shuffle population &amp; datasets
+        # Organisms are shuffled for deterministic crowding selection
+        # Datasets are shuffled for subsampling
+        random.shuffle(organism_population)
+        random.shuffle(negative_dataset)
+        random.shuffle(positive_dataset)
+
+        # Reset max_score
+        last_max_score = max_score
+        max_score = float(&#34;-inf&#34;)
+        changed_best_score = False
+        initial = time.time()
+
+        a_fitness = []
+        a_nodes = []
+
+        # Deterministic crowding
+        # Iterate over pairs of organisms
+        for i in range(0, len(organism_population) - 1, 2):
+            org1 = organism_population[i]
+            org2 = organism_population[i + 1]
+
+            # Cross parents to get children
+            # Returns two children. Each child contains:
+            #   - Child object itself
+            #   - Similarity to organism 1
+            #   - Similarity to organism 2
+            #
+            children = combine_organisms(org1, org2, organism_factory)
+
+            child1 = children[&#34;child1&#34;][&#34;child&#34;]
+            child2 = children[&#34;child2&#34;][&#34;child&#34;]
+
+            # Mutate children
+            child1.mutate(organism_factory)
+            child2.mutate(organism_factory)
+
+            # Match parent with its closest child for deterministic crowding
+            # selection.
+            # There are 2 possible combinations p_1-c1, p_2-c2 &amp; p1-c2, p2-c1
+            # We select a combination based on a sum of similarities in
+            # combinations
+            combination_1 = (
+                children[&#34;child1&#34;][&#34;sim_org_1&#34;]
+                + children[&#34;child2&#34;][&#34;sim_org_2&#34;]
+            )  # Match the first parent to first child and second parent to
+            # second child
+            combination_2 = (
+                children[&#34;child1&#34;][&#34;sim_org_2&#34;]
+                + children[&#34;child2&#34;][&#34;sim_org_1&#34;]
+            )  # Match the first parent to second child and second parent to
+            # first child
+
+            pair_children = []
+
+            if combination_1 &gt; combination_2:
+                pair_children.append((org1, child1))
+                pair_children.append((org2, child2))
+            else:
+                pair_children.append((org1, child2))
+                pair_children.append((org2, child1))
+
+            # Make two organisms compete
+            # j index is used to re insert winning organism
+            # into the population
+            for j in range(len(pair_children)):
+
+                first_organism = pair_children[j][0]  # Parent Organism
+                second_organism = pair_children[j][1]  # Chid Organism
+
+                # Compute fitness for organisms
+                p_1 = first_organism.get_seq_set_fitness(
+                    positive_dataset[:MAX_SEQUENCES_TO_FIT_POS]
+                )
+                n_1 = first_organism.get_seq_set_fitness(
+                    negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG]
+                )
+
+                p_2 = second_organism.get_seq_set_fitness(
+                    positive_dataset[:MAX_SEQUENCES_TO_FIT_POS]
+                )
+                n_2 = second_organism.get_seq_set_fitness(
+                    negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG]
+                )
+                # Compute complexity after gettig the score
+                c_1 = first_organism.get_complexity(mean_nodes, mean_fitness)
+                c_2 = second_organism.get_complexity(mean_nodes, mean_fitness)
+
+                # Assign effective fitness
+                fitness1 = p_1 - n_1
+                effective_fitness_1 = fitness1 - COMPLEXITY_FACTOR * c_1
+
+                fitness2 = p_2 - n_2
+                effective_fitness_2 = fitness2 - COMPLEXITY_FACTOR * c_2
+
+                # print(
+                #    (
+                #        &#34;ID1: {} EFitness1:{:.2f}-{:.2f}-{:.2f} =  {:.2f}&#34;
+                #        + &#34; \nID2: {} EFitness2: {:.2f}-{:.2f}-{:.2f} &#34;
+                #        + &#34;= {:.2f}&#34;
+                #    ).format(
+                #        first_organism._id,
+                #        p_1,
+                #        n_1,
+                #        c_1,
+                #        effective_fitness_1,
+                #        second_organism._id,
+                #        p_2,
+                #        n_2,
+                #        c_2,
+                #        effective_fitness_2,
+                #    )
+                # )
+
+                if (
+                        effective_fitness_1 &gt; effective_fitness_2
+                ):  # The first organism wins
+                    # Set it back to the population and save fitness
+                    # for next iteration
+                    organism_population[i + j] = first_organism
+                    a_fitness.append(fitness1)
+                    # If the parent wins, mean_nodes don&#39;t change
+                    a_nodes.append(first_organism.count_nodes())
+
+                    # Check if its the max score in that iteration
+                    if effective_fitness_1 &gt; max_score:
+                        max_score_p = p_1
+                        max_score = effective_fitness_1
+                        max_organism = (
+                            first_organism,
+                            effective_fitness_1,
+                            first_organism.count_nodes(),
+                            c_1,
+                        )
+
+                    # Check if its the max score so far and if it is set it as
+                    # best organism
+                    if max_organism[1] &gt; best_organism[1]:
+                        # ID, EF, Nodes, Penalty applied
+                        best_organism = max_organism
+                        changed_best_score = True
+
+                else:  # The second organism wins (child)
+                    # Set it back to the population and save fitness for next
+                    # iteration
+                    organism_population[i + j] = second_organism
+                    a_fitness.append(fitness2)
+                    # If the child wins, update mean_nodes
+                    # mean_nodes = ((meanNodes * POPULATION_LENGTH) +
+                    # second_organism.count_nodes() -
+                    # first_organism.count_nodes()) / POPULATION_LENGTH
+                    a_nodes.append(second_organism.count_nodes())
+
+                    # Pass tracking parameter from paretn to child
+                    second_organism.set_is_tracked(first_organism.is_tracked)
+                    if second_organism.is_tracked:
+                        # Export it If its being tracked
+                        print_ln(
+                            &#34;Evolution {}-&gt;{}&#34;.format(
+                                first_organism._id, second_organism.ID
+                            ),
+                            RESULT_BASE_PATH_DIR + &#34;evolution.txt&#34;,
+                        )
+                        filename = &#34;tr{}_{}&#34;.format(
+                            time.strftime(timeformat), second_organism._id
+                        )
+                        export_organism(
+                            second_organism,
+                            positive_dataset,
+                            filename,
+                            organism_factory,
+                        )
+
+                    # Check if its the max score in that iteration
+                    if effective_fitness_2 &gt; max_score:
+                        max_score_p = p_2
+                        max_score = effective_fitness_2
+                        max_organism = (
+                            second_organism,
+                            effective_fitness_2,
+                            second_organism.count_nodes(),
+                            c_2,
+                        )
+
+                    # Check if its the max score so far and if it is set it as
+                    # best organism
+                    if effective_fitness_2 &gt; best_organism[1]:
+                        # ID, EF, Nodes, Penalty applied
+                        best_organism = max_organism
+                        changed_best_score = True
+
+                # END FOR j
+
+            # END FOR i
+
+        # Compute mean fitness of the organisms
+        mean_fitness = np.mean(a_fitness)
+        mean_nodes = np.mean(a_nodes)
+
+        # Show IDs of final array
+        # print(&#34;-&#34;*10)
+        _m, _s = divmod((time.time() - initial), 60)
+        _h, _m = divmod(_m, 60)
+        s_time = &#34;{}h:{}m:{:.2f}s&#34;.format(int(_h), int(_m), _s)
+        print_ln(
+            (
+                &#34;Iter: {} AN:{:.2f} AF:{:.2f} - MO: {} MF: {:.2f} MN: {} &#34;
+                + &#34;MP: {:.2f} MSP: {:.2f} -  BO: {} BF: {:.2f} BN: {} &#34;
+                + &#34;BP: {:.2f} Time: {}&#34;
+            ).format(
+                iterations,
+                mean_nodes,
+                mean_fitness,
+                max_organism[0]._id,
+                max_organism[1],
+                max_organism[2],
+                max_organism[3],
+                max_score_p,
+                best_organism[0]._id,
+                best_organism[1],
+                best_organism[2],
+                best_organism[3],
+                s_time,
+            ),
+            RESULT_BASE_PATH_DIR + OUTPUT_FILENAME,
+        )
+
+        # Print against a random positive secuence
+        random.shuffle(positive_dataset)
+        print(max_organism[0].print_result(positive_dataset[0]))
+
+        # Export organism if new best organism
+        if changed_best_score:
+            filename = &#34;{}_{}&#34;.format(
+                time.strftime(timeformat), best_organism[0]._id
+            )
+            export_organism(
+                best_organism[0], positive_dataset, filename, organism_factory
+            )
+        # Periodic organism export
+        if iterations % PERIODIC_EXPORT == 0:
+            filename = &#34;{}_{}&#34;.format(
+                time.strftime(timeformat), max_organism[0]._id
+            )
+            export_organism(
+                max_organism[0], positive_dataset, filename, organism_factory
+            )
+
+        # print(&#34;-&#34;*10)
+        iterations += 1
+        # END WHILE
+
+    # TODO: Maybe a good idea to export the full population after all
+    # organism_factory.export_organisms(organism_population,
+    #         RESULT_BASE_PATH_DIR+&#34;final_population.json&#34;)
+
+
+def is_finished(
+        method: str, iterations: int, max_score: float, last_max_score: float
+) -&gt; bool:
+    &#34;&#34;&#34;Checks if main while loop is finished
+    methods: &#39;Iterations&#39;, &#39;minScore&#39;, &#39;Threshold&#39;
+
+    Args:
+        method: Name of the finishing method
+        max_score: max score recorded on the current iteration
+        last_max_score: max score recorded on the laset iteration
+        iterations: Number of the current iteration
+
+    Returns:
+        True if program should finnish.
+        False otherwise
+    &#34;&#34;&#34;
+
+    if method.lower() == &#34;iterations&#34;:
+        return iterations &gt;= MIN_ITERATIONS
+
+    if method.lower() == &#34;fitness&#34;:
+        return max_score &gt;= MIN_FITNESS
+
+    if method.lower() == &#34;threshold&#34;:
+        return abs(last_max_score - max_score) &lt;= THRESHOLD
+
+    return True
+
+
+def export_organism(
+        organism, dataset: list, filename: str, factory: OrganismFactory
+) -&gt; None:
+    &#34;&#34;&#34;Exports a single organism in json format, visual format and its
+    recognizers binding
+
+    Args:
+        organism (OrganismObject): organism to export
+        dataset: Sequences to check the organism binding
+        filename: Previous info to export filenames. Common in all filenames
+        factory: Used to export in json format
+    &#34;&#34;&#34;
+
+    organism_file = &#34;{}{}_organism.txt&#34;.format(RESULT_BASE_PATH_DIR, filename)
+    organism_file_json = &#34;{}{}_organism.json&#34;.format(
+        RESULT_BASE_PATH_DIR, filename
+    )
+    results_file = &#34;{}{}_results.txt&#34;.format(RESULT_BASE_PATH_DIR, filename)
+
+    organism.export(organism_file)
+    organism.export_results(dataset, results_file)
+    factory.export_organisms([organism], organism_file_json)
+
+
+def combine_organisms(
+        organism1, organism2, organism_factory: OrganismFactory
+) -&gt; dict:
+    &#34;&#34;&#34;Gets 2 organisms, and returns 2 children with format
+    (child, similarity to parent 1, similarity to parent 2)
+
+    Args:
+        organism1 (OrganismObject): First organism for the crossover
+        organism2 (OrganismObject): Second organism for the crossover
+        organism_factory: factory used to set the children ids
+
+    Retruns:
+        A dictionary with 2 children:
+        &#34;child1&#34;: child derived from organism1
+        &#34;child2&#34;: child derived from organism1
+    &#34;&#34;&#34;
+    # Save the number of nodes from the parents
+    n_nodes_org_1 = organism1.count_nodes()
+    n_nodes_org_2 = organism2.count_nodes()
+
+    # Create the 2 childs and assign new IDs
+    child1 = copy.deepcopy(organism1)
+    child2 = copy.deepcopy(organism2)
+
+    # Assign IDs to organisms and increase factory counter
+    child1.set_id(organism_factory.get_id())
+    child2.set_id(organism_factory.get_id())
+
+    # Combine parents with probability p
+    if random.random() &lt; RECOMBINATION_PROBABILITY:
+
+        # Select random nodes to swap from each child
+        random_node_1 = random.randint(0, n_nodes_org_1 - 1)
+        random_node_2 = random.randint(0, n_nodes_org_2 - 1)
+        node1 = child1.get_node(random_node_1)
+        node2 = child2.get_node(random_node_2)
+
+        # Save the number of nodes taken from each  child
+        n_nodes_from_org_1 = node1.count_nodes()
+        n_nodes_from_org_2 = node2.count_nodes()
+
+        # Get parents nodes of swapping nodes before swap
+        parent_node_1 = child1.get_parent(node1._id)
+        parent_node_2 = child2.get_parent(node2._id)
+
+        # Swap nodes
+        # Set nodes in oposite children
+        # based on recipient parent node determine if incoming node goes to
+        # left descendent or right descendent
+        # if recipient node is root, subsitute with incoming
+        if parent_node_1[&#34;is_root_node&#34;]:
+            # Its the root node of child 1
+            child1.set_root_node(node2)
+        else:
+            if parent_node_1[&#34;is_left_side&#34;]:
+                # Child on left side
+                parent_node_1[&#34;self&#34;].set_node1(node2)
+            else:
+                # Child on right side
+                parent_node_1[&#34;self&#34;].set_node2(node2)
+
+        if parent_node_2[&#34;is_root_node&#34;]:
+            # Its the root node of child 2
+            child2.set_root_node(node1)
+        else:
+            if parent_node_2[&#34;is_left_side&#34;]:
+                # Child on left side
+                parent_node_2[&#34;self&#34;].set_node1(node1)
+            else:
+                # Child on right side
+                parent_node_2[&#34;self&#34;].set_node2(node1)
+
+        n_nodes_child_1 = child1.count_nodes()
+        n_nodes_child_2 = child2.count_nodes()
+
+        # Reset children node IDs across the organism
+        child1.reset_ids()
+        child2.reset_ids()
+
+        # dictionary with an organism and similarities to each parent
+        # similatiries are computed as the number of nodes shared  between
+        # each parent and child
+        child_1_similarities = {
+            &#34;sim_org_1&#34;: (n_nodes_child_1 - n_nodes_from_org_2)
+                         / n_nodes_child_1,
+            &#34;sim_org_2&#34;: n_nodes_from_org_2 / n_nodes_child_1,
+            &#34;child&#34;: child1,
+        }
+
+        child_2_similarities = {
+            &#34;sim_org_1&#34;: n_nodes_from_org_1 / n_nodes_child_2,
+            &#34;sim_org_2&#34;: (n_nodes_child_2 - n_nodes_from_org_1)
+                         / n_nodes_child_2,
+            &#34;child&#34;: child2,
+        }
+    else:
+
+        # If children are not recombined, return the same organisms and their
+        # similarities
+        child_1_similarities = {
+            &#34;sim_org_1&#34;: 1,  # Equal to organism 1
+            &#34;sim_org_2&#34;: 0,
+            &#34;child&#34;: child1,
+        }
+
+        child_2_similarities = {
+            &#34;sim_org_1&#34;: 0,
+            &#34;sim_org_2&#34;: 1,  # Equal to organism2
+            &#34;child&#34;: child2,
+        }
+
+    return {&#34;child1&#34;: child_1_similarities, &#34;child2&#34;: child_2_similarities}
+
+
+def set_up():
+    &#34;&#34;&#34;Reads configuration file and sets up all program variables
+
+    &#34;&#34;&#34;
+
+    # specify as global variable so it can be accesed in local
+    # contexts outside setUp
+
+    global END_WHILE_METHOD
+    global POPULATION_LENGTH
+    global DATASET_BASE_PATH_DIR
+    global RESULT_BASE_PATH_DIR
+    global POSITIVE_FILENAME
+    global NEGATIVE_FILENAME
+    global RESULT_PATH_PATH_DIR
+    global MAX_SEQUENCES_TO_FIT_POS
+    global MAX_SEQUENCES_TO_FIT_NEG
+    global MIN_ITERATIONS
+    global MIN_FITNESS
+    global THRESHOLD
+    global COMPLEXITY_FACTOR
+    global POPULATION_ORIGIN
+    global POPULATION_FILL_TYPE
+    global INPUT_FILENAME
+    global OUTPUT_FILENAME
+    global RECOMBINATION_PROBABILITY
+    global PERIODIC_EXPORT
+
+    # Config data
+    global configOrganism
+    global configOrganismFactory
+    global configConnector
+    global configPssm
+
+    config = read_json_file(JSON_CONFIG_FILENAME)
+    # Store config variables for main function
+    POPULATION_LENGTH = config[&#34;main&#34;][&#34;POPULATION_LENGTH&#34;]
+    DATASET_BASE_PATH_DIR = config[&#34;main&#34;][&#34;DATASET_BASE_PATH_DIR&#34;]
+    RESULT_BASE_PATH_DIR = (
+        config[&#34;main&#34;][&#34;RESULT_BASE_PATH_DIR&#34;]
+        + time.strftime(&#34;%Y%m%d%H%M%S&#34;)
+        + &#34;/&#34;
+    )
+    POSITIVE_FILENAME = config[&#34;main&#34;][&#34;POSITIVE_FILENAME&#34;]
+    NEGATIVE_FILENAME = config[&#34;main&#34;][&#34;NEGATIVE_FILENAME&#34;]
+    MAX_SEQUENCES_TO_FIT_POS = config[&#34;main&#34;][&#34;MAX_SEQUENCES_TO_FIT_POS&#34;]
+    MAX_SEQUENCES_TO_FIT_NEG = config[&#34;main&#34;][&#34;MAX_SEQUENCES_TO_FIT_NEG&#34;]
+    MIN_ITERATIONS = config[&#34;main&#34;][&#34;MIN_ITERATIONS&#34;]
+    MIN_FITNESS = config[&#34;main&#34;][&#34;MIN_FITNESS&#34;]
+    THRESHOLD = config[&#34;main&#34;][&#34;THRESHOLD&#34;]
+    END_WHILE_METHOD = config[&#34;main&#34;][&#34;END_WHILE_METHOD&#34;]
+    COMPLEXITY_FACTOR = config[&#34;main&#34;][&#34;COMPLEXITY_FACTOR&#34;]
+    POPULATION_ORIGIN = config[&#34;main&#34;][&#34;POPULATION_ORIGIN&#34;]
+    POPULATION_FILL_TYPE = config[&#34;main&#34;][&#34;POPULATION_FILL_TYPE&#34;]
+    INPUT_FILENAME = config[&#34;main&#34;][&#34;INPUT_FILENAME&#34;]
+    OUTPUT_FILENAME = config[&#34;main&#34;][&#34;OUTPUT_FILENAME&#34;]
+    RECOMBINATION_PROBABILITY = config[&#34;main&#34;][&#34;RECOMBINATION_PROBABILITY&#34;]
+    PERIODIC_EXPORT = config[&#34;main&#34;][&#34;PERIODIC_EXPORT&#34;]
+
+    # Create directory where the output and results will be stored
+    os.mkdir(RESULT_BASE_PATH_DIR)
+
+    # Store Config into variables to use later
+    configOrganism = config[&#34;organism&#34;]
+    configOrganismFactory = config[&#34;organismFactory&#34;]
+    configConnector = config[&#34;connector&#34;]
+    configPssm = config[&#34;pssm&#34;]
+
+    # Throw config on a file
+    parameters_path = RESULT_BASE_PATH_DIR + &#34;parameters.txt&#34;
+    print_ln(&#34;-&#34; * 50, parameters_path)
+    print_ln(&#34; &#34; * 20 + &#34;PARAMETERS&#34;, parameters_path)
+    print_ln(&#34;-&#34; * 50, parameters_path)
+
+    print_config_json(config[&#34;main&#34;], &#34;Main Config&#34;, parameters_path)
+    print_config_json(configOrganism, &#34;Organism Config&#34;, parameters_path)
+    print_config_json(
+        configOrganismFactory, &#34;Organism Factory Config&#34;, parameters_path
+    )
+    print_config_json(configConnector, &#34;Connector Config&#34;, parameters_path)
+    print_config_json(configPssm, &#34;PSSM Config&#34;, parameters_path)
+
+    print_ln(&#34;-&#34; * 50, parameters_path)
+
+
+def read_fasta_file(filename: str) -&gt; list:
+    &#34;&#34;&#34;Reads a fasta file and returns an array of DNA sequences (strings)
+
+    TODO: probably it can be useful to create our own Sequence object that
+    creates the string and stores some properties from fasta format. Also
+    we can adapt the current program to use Biopythons&#39;s Seq object.
+
+    Args:
+        filename: Name of the file that contains FASTA format sequences to read
+
+    Returns:
+        The set of sequences in string format
+
+    &#34;&#34;&#34;
+    dataset = []
+
+    fasta_sequences = SeqIO.parse(open(filename), &#34;fasta&#34;)
+
+    for fasta in fasta_sequences:
+        dataset.append(str(fasta.seq))
+
+    return dataset
+
+
+def read_json_file(filename: str) -&gt; dict:
+    &#34;&#34;&#34;Reads a JSON file and returns a dictionary with the content
+
+    Args:
+        filename: Name of the json file to read
+
+    Returns:
+        Dictionary with the json file info
+
+    &#34;&#34;&#34;
+
+    with open(filename) as json_content:
+
+        return json.load(json_content)
+
+
+def print_config_json(config: dict, name: str, path: str) -&gt; None:
+    &#34;&#34;&#34;Print the config file on std out and send it to a file.
+    It is useful so we can know which was the configuration on every run
+
+    Args:
+        config: Configuration file to print
+        name: Title for the configuration file
+        path: File to export the configuration info
+    &#34;&#34;&#34;
+    print_ln(&#34;{}:&#34;.format(name), path)
+
+    for key in config.keys():
+        print_ln(&#34;{}: {}&#34;.format(key, config[key]), path)
+    print_ln(&#34;\n&#34;, path)
+
+
+def print_ln(string: str, name_file: str) -&gt; None:
+    &#34;&#34;&#34;Shows the string on stdout and write it to a file
+    (like the python&#39;s logging modules does)
+
+    Args:
+        string: Information to print on stdout and file
+        name_file: path to the file to export the string
+    &#34;&#34;&#34;
+
+    print(string)
+
+    # Here we are sure file exists
+    _f = open(name_file, &#34;a+&#34;)
+    _f.write(string + &#34;\n&#34;)
+    _f.close()
+
+
+# Entry point to app execution
+# It calculates the time, but could include other app stats
+
+if __name__ == &#34;__main__&#34;:
+
+    INITIAL = time.time()
+    # Reads configuration file and sets up all program variables
+    set_up()
+
+    # Profiling
+    PROFILER = cProfile.Profile()
+    PROFILER.enable()
+
+    # Main function
+    main()
+
+    # Profiler output
+    PROFILER.disable()
+    STRING = io.StringIO()
+    SORTBY = &#34;cumulative&#34;
+    PS = pstats.Stats(PROFILER, stream=STRING).sort_stats(SORTBY)
+    PS.print_stats()
+    # print(STRING.getvalue())
+
+    # Print final execution time and read parameters
+    _M, _S = divmod((time.time() - INITIAL), 60)
+    _H, _M = divmod(_M, 60)
+    print_ln(
+        &#34;Time: {}h:{}m:{:.2f}s&#34;.format(int(_H), int(_M), _S),
+        RESULT_BASE_PATH_DIR + &#34;parameters.txt&#34;,
+    )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="src.search_organisms.JSON_CONFIG_FILENAME"><code class="name">var <span class="ident">JSON_CONFIG_FILENAME</span></code></dt>
+<dd>
+<div class="desc"><p>Configuration of the object types
+Populated by JSON read.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="src.search_organisms.combine_organisms"><code class="name flex">
+<span>def <span class="ident">combine_organisms</span></span>(<span>organism1, organism2, organism_factory: objects.organism_factory.OrganismFactory) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets 2 organisms, and returns 2 children with format
+(child, similarity to parent 1, similarity to parent 2)</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>organism1</code></strong> :&ensp;<code>OrganismObject</code></dt>
+<dd>First organism for the crossover</dd>
+<dt><strong><code>organism2</code></strong> :&ensp;<code>OrganismObject</code></dt>
+<dd>Second organism for the crossover</dd>
+<dt><strong><code>organism_factory</code></strong></dt>
+<dd>factory used to set the children ids</dd>
+</dl>
+<h2 id="retruns">Retruns</h2>
+<p>A dictionary with 2 children:
+"child1": child derived from organism1
+"child2": child derived from organism1</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def combine_organisms(
+        organism1, organism2, organism_factory: OrganismFactory
+) -&gt; dict:
+    &#34;&#34;&#34;Gets 2 organisms, and returns 2 children with format
+    (child, similarity to parent 1, similarity to parent 2)
+
+    Args:
+        organism1 (OrganismObject): First organism for the crossover
+        organism2 (OrganismObject): Second organism for the crossover
+        organism_factory: factory used to set the children ids
+
+    Retruns:
+        A dictionary with 2 children:
+        &#34;child1&#34;: child derived from organism1
+        &#34;child2&#34;: child derived from organism1
+    &#34;&#34;&#34;
+    # Save the number of nodes from the parents
+    n_nodes_org_1 = organism1.count_nodes()
+    n_nodes_org_2 = organism2.count_nodes()
+
+    # Create the 2 childs and assign new IDs
+    child1 = copy.deepcopy(organism1)
+    child2 = copy.deepcopy(organism2)
+
+    # Assign IDs to organisms and increase factory counter
+    child1.set_id(organism_factory.get_id())
+    child2.set_id(organism_factory.get_id())
+
+    # Combine parents with probability p
+    if random.random() &lt; RECOMBINATION_PROBABILITY:
+
+        # Select random nodes to swap from each child
+        random_node_1 = random.randint(0, n_nodes_org_1 - 1)
+        random_node_2 = random.randint(0, n_nodes_org_2 - 1)
+        node1 = child1.get_node(random_node_1)
+        node2 = child2.get_node(random_node_2)
+
+        # Save the number of nodes taken from each  child
+        n_nodes_from_org_1 = node1.count_nodes()
+        n_nodes_from_org_2 = node2.count_nodes()
+
+        # Get parents nodes of swapping nodes before swap
+        parent_node_1 = child1.get_parent(node1._id)
+        parent_node_2 = child2.get_parent(node2._id)
+
+        # Swap nodes
+        # Set nodes in oposite children
+        # based on recipient parent node determine if incoming node goes to
+        # left descendent or right descendent
+        # if recipient node is root, subsitute with incoming
+        if parent_node_1[&#34;is_root_node&#34;]:
+            # Its the root node of child 1
+            child1.set_root_node(node2)
+        else:
+            if parent_node_1[&#34;is_left_side&#34;]:
+                # Child on left side
+                parent_node_1[&#34;self&#34;].set_node1(node2)
+            else:
+                # Child on right side
+                parent_node_1[&#34;self&#34;].set_node2(node2)
+
+        if parent_node_2[&#34;is_root_node&#34;]:
+            # Its the root node of child 2
+            child2.set_root_node(node1)
+        else:
+            if parent_node_2[&#34;is_left_side&#34;]:
+                # Child on left side
+                parent_node_2[&#34;self&#34;].set_node1(node1)
+            else:
+                # Child on right side
+                parent_node_2[&#34;self&#34;].set_node2(node1)
+
+        n_nodes_child_1 = child1.count_nodes()
+        n_nodes_child_2 = child2.count_nodes()
+
+        # Reset children node IDs across the organism
+        child1.reset_ids()
+        child2.reset_ids()
+
+        # dictionary with an organism and similarities to each parent
+        # similatiries are computed as the number of nodes shared  between
+        # each parent and child
+        child_1_similarities = {
+            &#34;sim_org_1&#34;: (n_nodes_child_1 - n_nodes_from_org_2)
+                         / n_nodes_child_1,
+            &#34;sim_org_2&#34;: n_nodes_from_org_2 / n_nodes_child_1,
+            &#34;child&#34;: child1,
+        }
+
+        child_2_similarities = {
+            &#34;sim_org_1&#34;: n_nodes_from_org_1 / n_nodes_child_2,
+            &#34;sim_org_2&#34;: (n_nodes_child_2 - n_nodes_from_org_1)
+                         / n_nodes_child_2,
+            &#34;child&#34;: child2,
+        }
+    else:
+
+        # If children are not recombined, return the same organisms and their
+        # similarities
+        child_1_similarities = {
+            &#34;sim_org_1&#34;: 1,  # Equal to organism 1
+            &#34;sim_org_2&#34;: 0,
+            &#34;child&#34;: child1,
+        }
+
+        child_2_similarities = {
+            &#34;sim_org_1&#34;: 0,
+            &#34;sim_org_2&#34;: 1,  # Equal to organism2
+            &#34;child&#34;: child2,
+        }
+
+    return {&#34;child1&#34;: child_1_similarities, &#34;child2&#34;: child_2_similarities}</code></pre>
+</details>
+</dd>
+<dt id="src.search_organisms.export_organism"><code class="name flex">
+<span>def <span class="ident">export_organism</span></span>(<span>organism, dataset: list, filename: str, factory: objects.organism_factory.OrganismFactory) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Exports a single organism in json format, visual format and its
+recognizers binding</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>organism</code></strong> :&ensp;<code>OrganismObject</code></dt>
+<dd>organism to export</dd>
+<dt><strong><code>dataset</code></strong></dt>
+<dd>Sequences to check the organism binding</dd>
+<dt><strong><code>filename</code></strong></dt>
+<dd>Previous info to export filenames. Common in all filenames</dd>
+<dt><strong><code>factory</code></strong></dt>
+<dd>Used to export in json format</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_organism(
+        organism, dataset: list, filename: str, factory: OrganismFactory
+) -&gt; None:
+    &#34;&#34;&#34;Exports a single organism in json format, visual format and its
+    recognizers binding
+
+    Args:
+        organism (OrganismObject): organism to export
+        dataset: Sequences to check the organism binding
+        filename: Previous info to export filenames. Common in all filenames
+        factory: Used to export in json format
+    &#34;&#34;&#34;
+
+    organism_file = &#34;{}{}_organism.txt&#34;.format(RESULT_BASE_PATH_DIR, filename)
+    organism_file_json = &#34;{}{}_organism.json&#34;.format(
+        RESULT_BASE_PATH_DIR, filename
+    )
+    results_file = &#34;{}{}_results.txt&#34;.format(RESULT_BASE_PATH_DIR, filename)
+
+    organism.export(organism_file)
+    organism.export_results(dataset, results_file)
+    factory.export_organisms([organism], organism_file_json)</code></pre>
+</details>
+</dd>
+<dt id="src.search_organisms.is_finished"><code class="name flex">
+<span>def <span class="ident">is_finished</span></span>(<span>method: str, iterations: int, max_score: float, last_max_score: float) -> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Checks if main while loop is finished
+methods: 'Iterations', 'minScore', 'Threshold'</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>method</code></strong></dt>
+<dd>Name of the finishing method</dd>
+<dt><strong><code>max_score</code></strong></dt>
+<dd>max score recorded on the current iteration</dd>
+<dt><strong><code>last_max_score</code></strong></dt>
+<dd>max score recorded on the laset iteration</dd>
+<dt><strong><code>iterations</code></strong></dt>
+<dd>Number of the current iteration</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt>True if program should finnish.</dt>
+<dt><code>False otherwise</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_finished(
+        method: str, iterations: int, max_score: float, last_max_score: float
+) -&gt; bool:
+    &#34;&#34;&#34;Checks if main while loop is finished
+    methods: &#39;Iterations&#39;, &#39;minScore&#39;, &#39;Threshold&#39;
+
+    Args:
+        method: Name of the finishing method
+        max_score: max score recorded on the current iteration
+        last_max_score: max score recorded on the laset iteration
+        iterations: Number of the current iteration
+
+    Returns:
+        True if program should finnish.
+        False otherwise
+    &#34;&#34;&#34;
+
+    if method.lower() == &#34;iterations&#34;:
+        return iterations &gt;= MIN_ITERATIONS
+
+    if method.lower() == &#34;fitness&#34;:
+        return max_score &gt;= MIN_FITNESS
+
+    if method.lower() == &#34;threshold&#34;:
+        return abs(last_max_score - max_score) &lt;= THRESHOLD
+
+    return True</code></pre>
+</details>
+</dd>
+<dt id="src.search_organisms.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Main function for the motif seek</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main():
+    &#34;&#34;&#34;Main function for the motif seek
+    &#34;&#34;&#34;
+
+    print(&#34;Loading parameters...&#34;)
+    positive_dataset = read_fasta_file(
+        DATASET_BASE_PATH_DIR + POSITIVE_FILENAME
+    )
+    negative_dataset = read_fasta_file(
+        DATASET_BASE_PATH_DIR + NEGATIVE_FILENAME
+    )
+
+    mean_nodes = 0
+    mean_fitness = 0
+    &#34;&#34;&#34;
+    Generate initial population
+    &#34;&#34;&#34;
+    # Instantiate organism Factory object with object configurations
+    organism_factory = OrganismFactory(
+        configOrganism, configOrganismFactory, configConnector, configPssm
+    )
+    # initialize organisms population
+    organism_population = []
+
+    # Generate population depending on origin and fill type.
+    # Origin can be &#34;random&#34; or &#34;file&#34;(read a set of organisms from a file).
+    if POPULATION_ORIGIN.lower() == &#34;random&#34;:
+        # For a random origin, we can generate #POPULATION_LENGTH organisms.
+
+        for i in range(POPULATION_LENGTH):
+            new_organism = organism_factory.get_organism()
+            organism_population.append(new_organism)
+
+            mean_nodes += new_organism.count_nodes()
+
+    elif POPULATION_ORIGIN.lower() == &#34;file&#34;:
+        # Set the file organisms and fill with random/same organisms
+        # POPULATION_LENGTH must be &gt;= len(fileOrganisms)
+        file_organisms = organism_factory.import_organisms(INPUT_FILENAME)
+        remaining_organisms = POPULATION_LENGTH - len(file_organisms)
+        fill_organism_population = []
+
+        if POPULATION_FILL_TYPE.lower() == &#34;random&#34;:
+            # FILL WITH RANDOM
+
+            for i in range(remaining_organisms):
+                new_organism = organism_factory.get_organism()
+                fill_organism_population.append(new_organism)
+
+        elif POPULATION_FILL_TYPE.lower() == &#34;uniform&#34;:
+            # FILL WITH SAME ORGANISMS IN FILE
+
+            for i in range(remaining_organisms):
+                new_organism = copy.deepcopy(
+                    file_organisms[i % len(file_organisms)]
+                )
+                fill_organism_population.append(new_organism)
+                new_organism.set_id(organism_factory.get_id())
+
+        # join &amp; calculate mean nodes
+        organism_population = file_organisms + fill_organism_population
+
+        for org in organism_population:
+            mean_nodes += org.count_nodes()
+
+    else:
+        raise (
+            Exception,
+            &#34;Not a valid population origin, &#34;
+            + &#34;check the configuration file.&#34;,
+        )
+
+    # Convert node count into mean
+    mean_nodes /= POPULATION_LENGTH
+    print(&#34;len = {}&#34;.format(len(organism_population)))
+    &#34;&#34;&#34;
+    Initialize iteration variables.
+    &#34;&#34;&#34;
+    iterations = 0
+    max_score = float(&#34;-inf&#34;)
+    last_max_score = 0.0
+    best_organism = (None, 0.0, 0, 0.0)
+    max_organism = (None, 0.0, 0, 0.0)
+
+    timeformat = &#34;%Y-%m-%d--%H-%M-%S&#34;
+    print(&#34;Starting execution...&#34;)
+
+    # Main loop, it iterates until organisms do not get a significant change
+    # or MIN_ITERATIONS or MIN_FITNESS is reached.
+
+    while not is_finished(
+            END_WHILE_METHOD, iterations, max_score, last_max_score
+    ):
+
+        # Shuffle population &amp; datasets
+        # Organisms are shuffled for deterministic crowding selection
+        # Datasets are shuffled for subsampling
+        random.shuffle(organism_population)
+        random.shuffle(negative_dataset)
+        random.shuffle(positive_dataset)
+
+        # Reset max_score
+        last_max_score = max_score
+        max_score = float(&#34;-inf&#34;)
+        changed_best_score = False
+        initial = time.time()
+
+        a_fitness = []
+        a_nodes = []
+
+        # Deterministic crowding
+        # Iterate over pairs of organisms
+        for i in range(0, len(organism_population) - 1, 2):
+            org1 = organism_population[i]
+            org2 = organism_population[i + 1]
+
+            # Cross parents to get children
+            # Returns two children. Each child contains:
+            #   - Child object itself
+            #   - Similarity to organism 1
+            #   - Similarity to organism 2
+            #
+            children = combine_organisms(org1, org2, organism_factory)
+
+            child1 = children[&#34;child1&#34;][&#34;child&#34;]
+            child2 = children[&#34;child2&#34;][&#34;child&#34;]
+
+            # Mutate children
+            child1.mutate(organism_factory)
+            child2.mutate(organism_factory)
+
+            # Match parent with its closest child for deterministic crowding
+            # selection.
+            # There are 2 possible combinations p_1-c1, p_2-c2 &amp; p1-c2, p2-c1
+            # We select a combination based on a sum of similarities in
+            # combinations
+            combination_1 = (
+                children[&#34;child1&#34;][&#34;sim_org_1&#34;]
+                + children[&#34;child2&#34;][&#34;sim_org_2&#34;]
+            )  # Match the first parent to first child and second parent to
+            # second child
+            combination_2 = (
+                children[&#34;child1&#34;][&#34;sim_org_2&#34;]
+                + children[&#34;child2&#34;][&#34;sim_org_1&#34;]
+            )  # Match the first parent to second child and second parent to
+            # first child
+
+            pair_children = []
+
+            if combination_1 &gt; combination_2:
+                pair_children.append((org1, child1))
+                pair_children.append((org2, child2))
+            else:
+                pair_children.append((org1, child2))
+                pair_children.append((org2, child1))
+
+            # Make two organisms compete
+            # j index is used to re insert winning organism
+            # into the population
+            for j in range(len(pair_children)):
+
+                first_organism = pair_children[j][0]  # Parent Organism
+                second_organism = pair_children[j][1]  # Chid Organism
+
+                # Compute fitness for organisms
+                p_1 = first_organism.get_seq_set_fitness(
+                    positive_dataset[:MAX_SEQUENCES_TO_FIT_POS]
+                )
+                n_1 = first_organism.get_seq_set_fitness(
+                    negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG]
+                )
+
+                p_2 = second_organism.get_seq_set_fitness(
+                    positive_dataset[:MAX_SEQUENCES_TO_FIT_POS]
+                )
+                n_2 = second_organism.get_seq_set_fitness(
+                    negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG]
+                )
+                # Compute complexity after gettig the score
+                c_1 = first_organism.get_complexity(mean_nodes, mean_fitness)
+                c_2 = second_organism.get_complexity(mean_nodes, mean_fitness)
+
+                # Assign effective fitness
+                fitness1 = p_1 - n_1
+                effective_fitness_1 = fitness1 - COMPLEXITY_FACTOR * c_1
+
+                fitness2 = p_2 - n_2
+                effective_fitness_2 = fitness2 - COMPLEXITY_FACTOR * c_2
+
+                # print(
+                #    (
+                #        &#34;ID1: {} EFitness1:{:.2f}-{:.2f}-{:.2f} =  {:.2f}&#34;
+                #        + &#34; \nID2: {} EFitness2: {:.2f}-{:.2f}-{:.2f} &#34;
+                #        + &#34;= {:.2f}&#34;
+                #    ).format(
+                #        first_organism._id,
+                #        p_1,
+                #        n_1,
+                #        c_1,
+                #        effective_fitness_1,
+                #        second_organism._id,
+                #        p_2,
+                #        n_2,
+                #        c_2,
+                #        effective_fitness_2,
+                #    )
+                # )
+
+                if (
+                        effective_fitness_1 &gt; effective_fitness_2
+                ):  # The first organism wins
+                    # Set it back to the population and save fitness
+                    # for next iteration
+                    organism_population[i + j] = first_organism
+                    a_fitness.append(fitness1)
+                    # If the parent wins, mean_nodes don&#39;t change
+                    a_nodes.append(first_organism.count_nodes())
+
+                    # Check if its the max score in that iteration
+                    if effective_fitness_1 &gt; max_score:
+                        max_score_p = p_1
+                        max_score = effective_fitness_1
+                        max_organism = (
+                            first_organism,
+                            effective_fitness_1,
+                            first_organism.count_nodes(),
+                            c_1,
+                        )
+
+                    # Check if its the max score so far and if it is set it as
+                    # best organism
+                    if max_organism[1] &gt; best_organism[1]:
+                        # ID, EF, Nodes, Penalty applied
+                        best_organism = max_organism
+                        changed_best_score = True
+
+                else:  # The second organism wins (child)
+                    # Set it back to the population and save fitness for next
+                    # iteration
+                    organism_population[i + j] = second_organism
+                    a_fitness.append(fitness2)
+                    # If the child wins, update mean_nodes
+                    # mean_nodes = ((meanNodes * POPULATION_LENGTH) +
+                    # second_organism.count_nodes() -
+                    # first_organism.count_nodes()) / POPULATION_LENGTH
+                    a_nodes.append(second_organism.count_nodes())
+
+                    # Pass tracking parameter from paretn to child
+                    second_organism.set_is_tracked(first_organism.is_tracked)
+                    if second_organism.is_tracked:
+                        # Export it If its being tracked
+                        print_ln(
+                            &#34;Evolution {}-&gt;{}&#34;.format(
+                                first_organism._id, second_organism.ID
+                            ),
+                            RESULT_BASE_PATH_DIR + &#34;evolution.txt&#34;,
+                        )
+                        filename = &#34;tr{}_{}&#34;.format(
+                            time.strftime(timeformat), second_organism._id
+                        )
+                        export_organism(
+                            second_organism,
+                            positive_dataset,
+                            filename,
+                            organism_factory,
+                        )
+
+                    # Check if its the max score in that iteration
+                    if effective_fitness_2 &gt; max_score:
+                        max_score_p = p_2
+                        max_score = effective_fitness_2
+                        max_organism = (
+                            second_organism,
+                            effective_fitness_2,
+                            second_organism.count_nodes(),
+                            c_2,
+                        )
+
+                    # Check if its the max score so far and if it is set it as
+                    # best organism
+                    if effective_fitness_2 &gt; best_organism[1]:
+                        # ID, EF, Nodes, Penalty applied
+                        best_organism = max_organism
+                        changed_best_score = True
+
+                # END FOR j
+
+            # END FOR i
+
+        # Compute mean fitness of the organisms
+        mean_fitness = np.mean(a_fitness)
+        mean_nodes = np.mean(a_nodes)
+
+        # Show IDs of final array
+        # print(&#34;-&#34;*10)
+        _m, _s = divmod((time.time() - initial), 60)
+        _h, _m = divmod(_m, 60)
+        s_time = &#34;{}h:{}m:{:.2f}s&#34;.format(int(_h), int(_m), _s)
+        print_ln(
+            (
+                &#34;Iter: {} AN:{:.2f} AF:{:.2f} - MO: {} MF: {:.2f} MN: {} &#34;
+                + &#34;MP: {:.2f} MSP: {:.2f} -  BO: {} BF: {:.2f} BN: {} &#34;
+                + &#34;BP: {:.2f} Time: {}&#34;
+            ).format(
+                iterations,
+                mean_nodes,
+                mean_fitness,
+                max_organism[0]._id,
+                max_organism[1],
+                max_organism[2],
+                max_organism[3],
+                max_score_p,
+                best_organism[0]._id,
+                best_organism[1],
+                best_organism[2],
+                best_organism[3],
+                s_time,
+            ),
+            RESULT_BASE_PATH_DIR + OUTPUT_FILENAME,
+        )
+
+        # Print against a random positive secuence
+        random.shuffle(positive_dataset)
+        print(max_organism[0].print_result(positive_dataset[0]))
+
+        # Export organism if new best organism
+        if changed_best_score:
+            filename = &#34;{}_{}&#34;.format(
+                time.strftime(timeformat), best_organism[0]._id
+            )
+            export_organism(
+                best_organism[0], positive_dataset, filename, organism_factory
+            )
+        # Periodic organism export
+        if iterations % PERIODIC_EXPORT == 0:
+            filename = &#34;{}_{}&#34;.format(
+                time.strftime(timeformat), max_organism[0]._id
+            )
+            export_organism(
+                max_organism[0], positive_dataset, filename, organism_factory
+            )
+
+        # print(&#34;-&#34;*10)
+        iterations += 1</code></pre>
+</details>
+</dd>
+<dt id="src.search_organisms.print_config_json"><code class="name flex">
+<span>def <span class="ident">print_config_json</span></span>(<span>config: dict, name: str, path: str) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print the config file on std out and send it to a file.
+It is useful so we can know which was the configuration on every run</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Configuration file to print</dd>
+<dt><strong><code>name</code></strong></dt>
+<dd>Title for the configuration file</dd>
+<dt><strong><code>path</code></strong></dt>
+<dd>File to export the configuration info</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_config_json(config: dict, name: str, path: str) -&gt; None:
+    &#34;&#34;&#34;Print the config file on std out and send it to a file.
+    It is useful so we can know which was the configuration on every run
+
+    Args:
+        config: Configuration file to print
+        name: Title for the configuration file
+        path: File to export the configuration info
+    &#34;&#34;&#34;
+    print_ln(&#34;{}:&#34;.format(name), path)
+
+    for key in config.keys():
+        print_ln(&#34;{}: {}&#34;.format(key, config[key]), path)
+    print_ln(&#34;\n&#34;, path)</code></pre>
+</details>
+</dd>
+<dt id="src.search_organisms.print_ln"><code class="name flex">
+<span>def <span class="ident">print_ln</span></span>(<span>string: str, name_file: str) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Shows the string on stdout and write it to a file
+(like the python's logging modules does)</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>string</code></strong></dt>
+<dd>Information to print on stdout and file</dd>
+<dt><strong><code>name_file</code></strong></dt>
+<dd>path to the file to export the string</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_ln(string: str, name_file: str) -&gt; None:
+    &#34;&#34;&#34;Shows the string on stdout and write it to a file
+    (like the python&#39;s logging modules does)
+
+    Args:
+        string: Information to print on stdout and file
+        name_file: path to the file to export the string
+    &#34;&#34;&#34;
+
+    print(string)
+
+    # Here we are sure file exists
+    _f = open(name_file, &#34;a+&#34;)
+    _f.write(string + &#34;\n&#34;)
+    _f.close()</code></pre>
+</details>
+</dd>
+<dt id="src.search_organisms.read_fasta_file"><code class="name flex">
+<span>def <span class="ident">read_fasta_file</span></span>(<span>filename: str) -> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reads a fasta file and returns an array of DNA sequences (strings)</p>
+<p>TODO: probably it can be useful to create our own Sequence object that
+creates the string and stores some properties from fasta format. Also
+we can adapt the current program to use Biopythons's Seq object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>filename</code></strong></dt>
+<dd>Name of the file that contains FASTA format sequences to read</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The set</code> of <code>sequences in string format</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_fasta_file(filename: str) -&gt; list:
+    &#34;&#34;&#34;Reads a fasta file and returns an array of DNA sequences (strings)
+
+    TODO: probably it can be useful to create our own Sequence object that
+    creates the string and stores some properties from fasta format. Also
+    we can adapt the current program to use Biopythons&#39;s Seq object.
+
+    Args:
+        filename: Name of the file that contains FASTA format sequences to read
+
+    Returns:
+        The set of sequences in string format
+
+    &#34;&#34;&#34;
+    dataset = []
+
+    fasta_sequences = SeqIO.parse(open(filename), &#34;fasta&#34;)
+
+    for fasta in fasta_sequences:
+        dataset.append(str(fasta.seq))
+
+    return dataset</code></pre>
+</details>
+</dd>
+<dt id="src.search_organisms.read_json_file"><code class="name flex">
+<span>def <span class="ident">read_json_file</span></span>(<span>filename: str) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reads a JSON file and returns a dictionary with the content</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>filename</code></strong></dt>
+<dd>Name of the json file to read</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dictionary with the json file info</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_json_file(filename: str) -&gt; dict:
+    &#34;&#34;&#34;Reads a JSON file and returns a dictionary with the content
+
+    Args:
+        filename: Name of the json file to read
+
+    Returns:
+        Dictionary with the json file info
+
+    &#34;&#34;&#34;
+
+    with open(filename) as json_content:
+
+        return json.load(json_content)</code></pre>
+</details>
+</dd>
+<dt id="src.search_organisms.set_up"><code class="name flex">
+<span>def <span class="ident">set_up</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reads configuration file and sets up all program variables</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_up():
+    &#34;&#34;&#34;Reads configuration file and sets up all program variables
+
+    &#34;&#34;&#34;
+
+    # specify as global variable so it can be accesed in local
+    # contexts outside setUp
+
+    global END_WHILE_METHOD
+    global POPULATION_LENGTH
+    global DATASET_BASE_PATH_DIR
+    global RESULT_BASE_PATH_DIR
+    global POSITIVE_FILENAME
+    global NEGATIVE_FILENAME
+    global RESULT_PATH_PATH_DIR
+    global MAX_SEQUENCES_TO_FIT_POS
+    global MAX_SEQUENCES_TO_FIT_NEG
+    global MIN_ITERATIONS
+    global MIN_FITNESS
+    global THRESHOLD
+    global COMPLEXITY_FACTOR
+    global POPULATION_ORIGIN
+    global POPULATION_FILL_TYPE
+    global INPUT_FILENAME
+    global OUTPUT_FILENAME
+    global RECOMBINATION_PROBABILITY
+    global PERIODIC_EXPORT
+
+    # Config data
+    global configOrganism
+    global configOrganismFactory
+    global configConnector
+    global configPssm
+
+    config = read_json_file(JSON_CONFIG_FILENAME)
+    # Store config variables for main function
+    POPULATION_LENGTH = config[&#34;main&#34;][&#34;POPULATION_LENGTH&#34;]
+    DATASET_BASE_PATH_DIR = config[&#34;main&#34;][&#34;DATASET_BASE_PATH_DIR&#34;]
+    RESULT_BASE_PATH_DIR = (
+        config[&#34;main&#34;][&#34;RESULT_BASE_PATH_DIR&#34;]
+        + time.strftime(&#34;%Y%m%d%H%M%S&#34;)
+        + &#34;/&#34;
+    )
+    POSITIVE_FILENAME = config[&#34;main&#34;][&#34;POSITIVE_FILENAME&#34;]
+    NEGATIVE_FILENAME = config[&#34;main&#34;][&#34;NEGATIVE_FILENAME&#34;]
+    MAX_SEQUENCES_TO_FIT_POS = config[&#34;main&#34;][&#34;MAX_SEQUENCES_TO_FIT_POS&#34;]
+    MAX_SEQUENCES_TO_FIT_NEG = config[&#34;main&#34;][&#34;MAX_SEQUENCES_TO_FIT_NEG&#34;]
+    MIN_ITERATIONS = config[&#34;main&#34;][&#34;MIN_ITERATIONS&#34;]
+    MIN_FITNESS = config[&#34;main&#34;][&#34;MIN_FITNESS&#34;]
+    THRESHOLD = config[&#34;main&#34;][&#34;THRESHOLD&#34;]
+    END_WHILE_METHOD = config[&#34;main&#34;][&#34;END_WHILE_METHOD&#34;]
+    COMPLEXITY_FACTOR = config[&#34;main&#34;][&#34;COMPLEXITY_FACTOR&#34;]
+    POPULATION_ORIGIN = config[&#34;main&#34;][&#34;POPULATION_ORIGIN&#34;]
+    POPULATION_FILL_TYPE = config[&#34;main&#34;][&#34;POPULATION_FILL_TYPE&#34;]
+    INPUT_FILENAME = config[&#34;main&#34;][&#34;INPUT_FILENAME&#34;]
+    OUTPUT_FILENAME = config[&#34;main&#34;][&#34;OUTPUT_FILENAME&#34;]
+    RECOMBINATION_PROBABILITY = config[&#34;main&#34;][&#34;RECOMBINATION_PROBABILITY&#34;]
+    PERIODIC_EXPORT = config[&#34;main&#34;][&#34;PERIODIC_EXPORT&#34;]
+
+    # Create directory where the output and results will be stored
+    os.mkdir(RESULT_BASE_PATH_DIR)
+
+    # Store Config into variables to use later
+    configOrganism = config[&#34;organism&#34;]
+    configOrganismFactory = config[&#34;organismFactory&#34;]
+    configConnector = config[&#34;connector&#34;]
+    configPssm = config[&#34;pssm&#34;]
+
+    # Throw config on a file
+    parameters_path = RESULT_BASE_PATH_DIR + &#34;parameters.txt&#34;
+    print_ln(&#34;-&#34; * 50, parameters_path)
+    print_ln(&#34; &#34; * 20 + &#34;PARAMETERS&#34;, parameters_path)
+    print_ln(&#34;-&#34; * 50, parameters_path)
+
+    print_config_json(config[&#34;main&#34;], &#34;Main Config&#34;, parameters_path)
+    print_config_json(configOrganism, &#34;Organism Config&#34;, parameters_path)
+    print_config_json(
+        configOrganismFactory, &#34;Organism Factory Config&#34;, parameters_path
+    )
+    print_config_json(configConnector, &#34;Connector Config&#34;, parameters_path)
+    print_config_json(configPssm, &#34;PSSM Config&#34;, parameters_path)
+
+    print_ln(&#34;-&#34; * 50, parameters_path)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src" href="index.html">src</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="src.search_organisms.JSON_CONFIG_FILENAME" href="#src.search_organisms.JSON_CONFIG_FILENAME">JSON_CONFIG_FILENAME</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="src.search_organisms.combine_organisms" href="#src.search_organisms.combine_organisms">combine_organisms</a></code></li>
+<li><code><a title="src.search_organisms.export_organism" href="#src.search_organisms.export_organism">export_organism</a></code></li>
+<li><code><a title="src.search_organisms.is_finished" href="#src.search_organisms.is_finished">is_finished</a></code></li>
+<li><code><a title="src.search_organisms.main" href="#src.search_organisms.main">main</a></code></li>
+<li><code><a title="src.search_organisms.print_config_json" href="#src.search_organisms.print_config_json">print_config_json</a></code></li>
+<li><code><a title="src.search_organisms.print_ln" href="#src.search_organisms.print_ln">print_ln</a></code></li>
+<li><code><a title="src.search_organisms.read_fasta_file" href="#src.search_organisms.read_fasta_file">read_fasta_file</a></code></li>
+<li><code><a title="src.search_organisms.read_json_file" href="#src.search_organisms.read_json_file">read_json_file</a></code></li>
+<li><code><a title="src.search_organisms.set_up" href="#src.search_organisms.set_up">set_up</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

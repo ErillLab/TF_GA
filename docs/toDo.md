@@ -6,17 +6,17 @@
 - [x] Independent parameters (+ JSON)
 - [x] Increase connector tau
 - [x] Check complementary reverse
-- [x] Llegir i avaluar un organisme desde fitxer?
-- [x] Treure nodes -> amb mes probabilitat de trure 
+- [x] Test organisms from file
+- [x] Remove nodes -> with a higher probability to remove 
 - [x] Complexity penalty (+ prob delete)
 - [x] Check energy function
 - [x] PSEUDO COUNT ON PWM reduced
 - [x] ratio --> diferencia/exponenciacio
-- [x] fitness mitjana de tots els organismes per calcular la complexitat
-- [x] score(per dataset) -> fitness(organisme)
+- [x] use average fitness of the population organisms to compute complexity
+- [x] score(per dataset) -> fitness(organism)
 - [x] Effective fitness -> diff scores - complexitat
-- [x] complexitat com a parametre real
+- [x] complexity as a real parameter
 - [ ] Check ETE3 python lib
-- [ ] inicialitzar amb una solució
-- [ ] Afegir complexitat --> 1+(depthOptima - depth) o 1+(pssmsOptims - pssms)
+- [x] Initialize with a solution
+- [ ] Implicit Complexity function --> 1+(depthOptima - depth) o 1+(pssmsOptims - pssms)
 

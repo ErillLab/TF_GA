@@ -1,0 +1,1421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>src.objects.pssm_object API documentation</title>
+<meta name="description" content="P object
+Saves al specific PSSM data structure" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.objects.pssm_object</code></h1>
+</header>
+<section id="section-intro">
+<p>P object
+Saves al specific PSSM data structure</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;P object
+Saves al specific PSSM data structure
+&#34;&#34;&#34;
+import random
+from objects.node_object import Node
+import numpy as np
+
+
+class PssmObject(Node):
+    &#34;&#34;&#34;PSSM object
+    &#34;&#34;&#34;
+
+    def __init__(self, pwm, config: dict) -&gt; None:
+        &#34;&#34;&#34;PSSM constructor
+
+        Args:
+            pwm (numpy.array): PWM
+            config: configuration from JSON file
+        &#34;&#34;&#34;
+
+        super().__init__()
+        self._id = 0
+        self.length = len(pwm)  # length of the numpy array
+        self.pwm = pwm  # numpy array of dictionaries
+        self.pssm = None
+        self.optimal_combination: list = []
+        self.mutate_probability_random_col = config[
+            &#34;MUTATE_PROBABILITY_RANDOM_COL&#34;
+        ]
+        self.mutate_probability_flip_cols = config[
+            &#34;MUTATE_PROBABILITY_FLIP_COL&#34;
+        ]
+        self.mutate_probability_flip_rows = config[
+            &#34;MUTATE_PROBABILITY_FLIP_ROW&#34;
+        ]
+        self.mutate_probability_shift_left = config[
+            &#34;MUTATE_PROBABILITY_SHIFT_LEFT&#34;
+        ]
+        self.mutate_probability_shift_right = config[
+            &#34;MUTATE_PROBABILITY_SHIFT_RIGHT&#34;
+        ]
+        self.pseudo_count = config[&#34;PSEUDO_COUNT&#34;]
+        self.upper_print_probability = config[&#34;UPPER_PRINT_PROBABILITY&#34;]
+        self.scan_reverse_complement = config[&#34;SCAN_REVERSE_COMPLEMENT&#34;]
+        # It first calculates PSSM Matrix based on  pwm
+        self.recalculate_pssm()
+
+    def count_nodes(self) -&gt; int:
+        &#34;&#34;&#34;Counts the number of nodes. Leaves always return 1 as it is a single
+        node
+
+        Returns:
+           The number of nodes(1)
+        &#34;&#34;&#34;
+        return 1
+
+    def get_node(self, objective: int, node_count: int) -&gt; Node:
+        &#34;&#34;&#34;Get an specific node
+
+        Args:
+            objective: ID of the objective node to find
+            node_count: number of nodes before the current node
+
+        Returns:
+            itself if its the node, otherwise return None
+
+        &#34;&#34;&#34;
+        return self if objective == node_count else None
+
+    def get_parent(self, _id: int) -&gt; Node:
+        &#34;&#34;&#34;pssm objects cannot be parents
+
+        Args:
+            _id: Id of the child node
+
+        Returns:
+            Node with ID _id. PSSM recognizers cannot be parents.
+        &#34;&#34;&#34;
+        return None
+
+    def get_length(self) -&gt; int:
+        &#34;&#34;&#34;Length of the pssm recognizer
+
+        Returns:
+            Length of the pwm
+        &#34;&#34;&#34;
+        return self.length
+
+    def mutate(self, org_factory) -&gt; None:
+        &#34;&#34;&#34;Mutation operators associated to the PSSM recognizer
+
+        Args:
+            org_factory (OrganismFactory): Cretes organisms and Node components
+        &#34;&#34;&#34;
+
+        if random.random() &lt; self.mutate_probability_random_col:
+
+            # Randomize PSSM column
+            new_col = org_factory.get_pwm_column()
+            # Select a random col in self.pwm
+            column_to_update = random.randint(0, self.length - 1)
+            # Insert it in that position
+            self.pwm[column_to_update] = new_col
+
+        if random.random() &lt; self.mutate_probability_flip_cols:
+            # Flip two columns
+
+            col1, col2 = random.sample(range(self.length), 2)
+            # Select two random columns and swap it
+            tmp_col = self.pwm[col1]
+            self.pwm[col1] = self.pwm[col2]
+            self.pwm[col2] = tmp_col
+
+        if random.random() &lt; self.mutate_probability_flip_rows:
+            # Flip two rows
+            # Save values of two rows and swap it (its gonna be one by one)
+            bases = [&#34;a&#34;, &#34;c&#34;, &#34;g&#34;, &#34;t&#34;]
+            random.shuffle(bases)
+            base1, base2 = bases[:2]
+
+            # Swap rows
+            for i in range(self.length):
+                tmp_base = self.pwm[i][base1]
+                self.pwm[i][base1] = self.pwm[i][base2]
+                self.pwm[i][base2] = tmp_base
+
+        if random.random() &lt; self.mutate_probability_shift_left:
+            # Shift to right/left
+            self.pwm = np.roll(self.pwm, -1)
+
+        if random.random() &lt; self.mutate_probability_shift_right:
+            # Shift to right/left
+            self.pwm = np.roll(self.pwm, 1)
+
+        self.recalculate_pssm()
+
+    # Calculate self.pssm based on self.pwm
+    def recalculate_pssm(self) -&gt; None:
+        &#34;&#34;&#34; Calculates the PSSM based on the pwm values
+        &#34;&#34;&#34;
+        tmp_pssm = []
+        for column in self.pwm:
+            # From pwm to pssm
+            # log2(base/0.25) = log2(4.0*base)
+            decimals = 2
+            tmp_bases = []
+            # cast to float so round function does not become crazy
+            tmp_bases.append(
+                float(np.log2(4.0 * column[&#34;c&#34;] + self.pseudo_count))
+            )
+            tmp_bases.append(
+                float(np.log2(4.0 * column[&#34;t&#34;] + self.pseudo_count))
+            )
+            tmp_bases.append(
+                float(np.log2(4.0 * column[&#34;g&#34;] + self.pseudo_count))
+            )
+            tmp_bases.append(
+                float(np.log2(4.0 * column[&#34;a&#34;] + self.pseudo_count))
+            )
+
+            tmp_pssm.append(
+                {
+                    &#34;c&#34;: round(tmp_bases[0], decimals),
+                    &#34;t&#34;: round(tmp_bases[1], decimals),
+                    &#34;g&#34;: round(tmp_bases[2], decimals),
+                    &#34;a&#34;: round(tmp_bases[3], decimals),
+                }
+            )
+        self.pssm = np.array(tmp_pssm)
+        # Also calculate the optimal pssm combinations
+        self.optimal_combination = [&#34;&#34;]
+        for position in tmp_pssm:
+            max_bases = []
+            max_base_score = float(&#34;-inf&#34;)
+            for base in position:
+                if position[base] &gt; max_base_score:
+                    max_bases = [base]
+                    max_base_score = position[base]
+                elif position[base] == max_base_score:
+                    max_bases.append(base)
+
+            tmp_optimal = []
+            for base in max_bases:
+                for comb in self.optimal_combination:
+                    tmp_optimal.append(comb + base)
+
+            self.optimal_combination = tmp_optimal
+        # print(self.optimal_combination)
+
+    def get_placement(
+            self, s_dna: str, s_dna_len: int, blocks: list, blockers: list
+    ) -&gt; dict:
+        &#34;&#34;&#34;Searchs sequence with PSSM ojbect returns position and score
+
+        Args:
+            s_dna: DNA sequence
+            s_dna_len: length of the DNA sequence
+            blocks: TODO
+            blockers: IDs of the blocked nodes
+
+        Returns:
+            dictionary with info about the energy
+            &#34;pspairs&#34;: TODO
+            &#34;blocked&#34;: TODO
+            &#34;blocker&#34;: TODO
+
+        &#34;&#34;&#34;
+
+        scores_on_seq = []
+        pssm_length = self.length
+
+        # Check every position possible on the sequence
+        for pos in range(s_dna_len - pssm_length):
+            mypos = float(pos) + pssm_length / 2
+            blocked = False
+            for jpos in range(pos, pos + pssm_length):
+                if jpos in blocks:
+                    blocked = True
+                    break
+            # if the position has not been blocked by another PSSM
+            if not blocked:
+                # Compute the score of PSSM at position in sequence
+                # append them to list
+                scores_on_seq.append(
+                    {
+                        &#34;pos&#34;: mypos,
+                        &#34;energy&#34;: self.get_score(
+                            s_dna[pos: pos + pssm_length]
+                        ),
+                    }
+                )
+            # otherwise just add large negative
+            else:
+                scores_on_seq.append({&#34;pos&#34;: mypos, &#34;energy&#34;: -10000.0})
+
+        # print (blocks)
+        # print(scoresonseq,&#39;\n&#39;)
+        # sort list and return it
+        scores_on_seq.sort(key=lambda k: k[&#34;energy&#34;], reverse=True)
+
+        return {
+            &#34;pspairs&#34;: scores_on_seq,
+            &#34;blocked&#34;: blocks,
+            &#34;blocker&#34;: blockers,
+        }
+
+    def get_all_pssm(self) -&gt; list:
+        &#34;&#34;&#34;Adds himself as a pssm recognizer
+
+        Returns:
+            list of pssms
+        &#34;&#34;&#34;
+        return [self]
+
+    def get_score(self, s_dna: str) -&gt; float:
+        &#34;&#34;&#34;a score to that DNA secuence
+
+        Args:
+            s_dna: dna partial sequence (length of the pssm)
+
+        Returns:
+            score assigned to s_dna. If reverse sequence is better, reverse
+            score is returned
+
+        &#34;&#34;&#34;
+
+        complement = {&#34;a&#34;: &#34;t&#34;, &#34;t&#34;: &#34;a&#34;, &#34;g&#34;: &#34;c&#34;, &#34;c&#34;: &#34;g&#34;}
+        # gets a score from pssm
+        score = 0
+        score_reverse = 0
+        str_length = len(s_dna)
+        for i in range(str_length):
+
+            score += self.pssm[i][s_dna[i]]
+            score_reverse += self.pssm[str_length - i - 1][
+                complement[s_dna[str_length - i - 1]]
+            ]
+        # Returns the max binding score
+        return (
+            score
+            if score &gt; score_reverse or not self.scan_reverse_complement
+            else score_reverse
+        )
+
+    def set_node(self, node: Node, _id: int) -&gt; None:
+        &#34;&#34;&#34;Nodes cannot be setted from recognizer objects
+
+        Args:
+            node: Node to insert in the tree
+            _id: id to insert the node
+        &#34;&#34;&#34;
+
+    def reset_id(self, new_id: int) -&gt; int:
+        &#34;&#34;&#34;Resets the id on the whole tree structure
+
+        Args:
+            new_id: id to assign to the current recognizer
+
+        Returns:
+            The next id to assign
+        &#34;&#34;&#34;
+
+        self._id = new_id
+        return new_id + 1
+
+    def print(self, distance: int) -&gt; None:
+        &#34;&#34;&#34;Print PSSM object (similar to Logo format)
+
+        Args:
+            distance: Depth in the tree
+        &#34;&#34;&#34;
+
+        recognized = &#34;&#34;
+
+        for position in self.pwm:
+            base = &#34;a&#34;
+            # Find max base
+            for new_base in position.keys():
+                if position[new_base] &gt; position[base]:
+                    base = new_base
+
+            if position[base] &gt;= self.upper_print_probability:
+                base = base.upper()
+            recognized += base
+
+        print(&#34;   |&#34; * distance + &#34; - &#34; + recognized)
+
+    def export(self, export_file, level: int) -&gt; None:
+        &#34;&#34;&#34;Exports pssm to a file
+
+        Args:
+            export_file: File to write the output
+            level: Depth in the tree
+        &#34;&#34;&#34;
+        recognized = &#34;&#34;
+
+        for position in self.pwm:
+            base = &#34;a&#34;
+            # Find max base
+            for new_base in position.keys():
+                if position[new_base] &gt; position[base]:
+                    base = new_base
+            # Change to uppercase based on probability
+            if position[base] &gt;= self.upper_print_probability:
+                base = base.upper()
+            recognized += base
+
+        export_file.write(&#34;\n&#34; + &#34;   |&#34; * level + &#34; - &#34; + recognized)
+        # exportFile.write(&#34;\n&#34;)
+
+    # pylint: disable=R0201
+    def is_connector(self) -&gt; bool:
+        &#34;&#34;&#34;node is not a connector
+
+        Returns:
+            False because is a pssm recognizer
+
+        &#34;&#34;&#34;
+        return False
+
+    def is_pssm(self):
+        &#34;&#34;&#34;node is a pssm recognizer
+
+        Returns:
+            True because is a pssm recognizer
+
+        &#34;&#34;&#34;
+        return True</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.objects.pssm_object.PssmObject"><code class="flex name class">
+<span>class <span class="ident">PssmObject</span></span>
+<span>(</span><span>pwm, config: dict)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>PSSM object</p>
+<p>PSSM constructor</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>pwm</code></strong> :&ensp;<code>numpy.array</code></dt>
+<dd>PWM</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>configuration from JSON file</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PssmObject(Node):
+    &#34;&#34;&#34;PSSM object
+    &#34;&#34;&#34;
+
+    def __init__(self, pwm, config: dict) -&gt; None:
+        &#34;&#34;&#34;PSSM constructor
+
+        Args:
+            pwm (numpy.array): PWM
+            config: configuration from JSON file
+        &#34;&#34;&#34;
+
+        super().__init__()
+        self._id = 0
+        self.length = len(pwm)  # length of the numpy array
+        self.pwm = pwm  # numpy array of dictionaries
+        self.pssm = None
+        self.optimal_combination: list = []
+        self.mutate_probability_random_col = config[
+            &#34;MUTATE_PROBABILITY_RANDOM_COL&#34;
+        ]
+        self.mutate_probability_flip_cols = config[
+            &#34;MUTATE_PROBABILITY_FLIP_COL&#34;
+        ]
+        self.mutate_probability_flip_rows = config[
+            &#34;MUTATE_PROBABILITY_FLIP_ROW&#34;
+        ]
+        self.mutate_probability_shift_left = config[
+            &#34;MUTATE_PROBABILITY_SHIFT_LEFT&#34;
+        ]
+        self.mutate_probability_shift_right = config[
+            &#34;MUTATE_PROBABILITY_SHIFT_RIGHT&#34;
+        ]
+        self.pseudo_count = config[&#34;PSEUDO_COUNT&#34;]
+        self.upper_print_probability = config[&#34;UPPER_PRINT_PROBABILITY&#34;]
+        self.scan_reverse_complement = config[&#34;SCAN_REVERSE_COMPLEMENT&#34;]
+        # It first calculates PSSM Matrix based on  pwm
+        self.recalculate_pssm()
+
+    def count_nodes(self) -&gt; int:
+        &#34;&#34;&#34;Counts the number of nodes. Leaves always return 1 as it is a single
+        node
+
+        Returns:
+           The number of nodes(1)
+        &#34;&#34;&#34;
+        return 1
+
+    def get_node(self, objective: int, node_count: int) -&gt; Node:
+        &#34;&#34;&#34;Get an specific node
+
+        Args:
+            objective: ID of the objective node to find
+            node_count: number of nodes before the current node
+
+        Returns:
+            itself if its the node, otherwise return None
+
+        &#34;&#34;&#34;
+        return self if objective == node_count else None
+
+    def get_parent(self, _id: int) -&gt; Node:
+        &#34;&#34;&#34;pssm objects cannot be parents
+
+        Args:
+            _id: Id of the child node
+
+        Returns:
+            Node with ID _id. PSSM recognizers cannot be parents.
+        &#34;&#34;&#34;
+        return None
+
+    def get_length(self) -&gt; int:
+        &#34;&#34;&#34;Length of the pssm recognizer
+
+        Returns:
+            Length of the pwm
+        &#34;&#34;&#34;
+        return self.length
+
+    def mutate(self, org_factory) -&gt; None:
+        &#34;&#34;&#34;Mutation operators associated to the PSSM recognizer
+
+        Args:
+            org_factory (OrganismFactory): Cretes organisms and Node components
+        &#34;&#34;&#34;
+
+        if random.random() &lt; self.mutate_probability_random_col:
+
+            # Randomize PSSM column
+            new_col = org_factory.get_pwm_column()
+            # Select a random col in self.pwm
+            column_to_update = random.randint(0, self.length - 1)
+            # Insert it in that position
+            self.pwm[column_to_update] = new_col
+
+        if random.random() &lt; self.mutate_probability_flip_cols:
+            # Flip two columns
+
+            col1, col2 = random.sample(range(self.length), 2)
+            # Select two random columns and swap it
+            tmp_col = self.pwm[col1]
+            self.pwm[col1] = self.pwm[col2]
+            self.pwm[col2] = tmp_col
+
+        if random.random() &lt; self.mutate_probability_flip_rows:
+            # Flip two rows
+            # Save values of two rows and swap it (its gonna be one by one)
+            bases = [&#34;a&#34;, &#34;c&#34;, &#34;g&#34;, &#34;t&#34;]
+            random.shuffle(bases)
+            base1, base2 = bases[:2]
+
+            # Swap rows
+            for i in range(self.length):
+                tmp_base = self.pwm[i][base1]
+                self.pwm[i][base1] = self.pwm[i][base2]
+                self.pwm[i][base2] = tmp_base
+
+        if random.random() &lt; self.mutate_probability_shift_left:
+            # Shift to right/left
+            self.pwm = np.roll(self.pwm, -1)
+
+        if random.random() &lt; self.mutate_probability_shift_right:
+            # Shift to right/left
+            self.pwm = np.roll(self.pwm, 1)
+
+        self.recalculate_pssm()
+
+    # Calculate self.pssm based on self.pwm
+    def recalculate_pssm(self) -&gt; None:
+        &#34;&#34;&#34; Calculates the PSSM based on the pwm values
+        &#34;&#34;&#34;
+        tmp_pssm = []
+        for column in self.pwm:
+            # From pwm to pssm
+            # log2(base/0.25) = log2(4.0*base)
+            decimals = 2
+            tmp_bases = []
+            # cast to float so round function does not become crazy
+            tmp_bases.append(
+                float(np.log2(4.0 * column[&#34;c&#34;] + self.pseudo_count))
+            )
+            tmp_bases.append(
+                float(np.log2(4.0 * column[&#34;t&#34;] + self.pseudo_count))
+            )
+            tmp_bases.append(
+                float(np.log2(4.0 * column[&#34;g&#34;] + self.pseudo_count))
+            )
+            tmp_bases.append(
+                float(np.log2(4.0 * column[&#34;a&#34;] + self.pseudo_count))
+            )
+
+            tmp_pssm.append(
+                {
+                    &#34;c&#34;: round(tmp_bases[0], decimals),
+                    &#34;t&#34;: round(tmp_bases[1], decimals),
+                    &#34;g&#34;: round(tmp_bases[2], decimals),
+                    &#34;a&#34;: round(tmp_bases[3], decimals),
+                }
+            )
+        self.pssm = np.array(tmp_pssm)
+        # Also calculate the optimal pssm combinations
+        self.optimal_combination = [&#34;&#34;]
+        for position in tmp_pssm:
+            max_bases = []
+            max_base_score = float(&#34;-inf&#34;)
+            for base in position:
+                if position[base] &gt; max_base_score:
+                    max_bases = [base]
+                    max_base_score = position[base]
+                elif position[base] == max_base_score:
+                    max_bases.append(base)
+
+            tmp_optimal = []
+            for base in max_bases:
+                for comb in self.optimal_combination:
+                    tmp_optimal.append(comb + base)
+
+            self.optimal_combination = tmp_optimal
+        # print(self.optimal_combination)
+
+    def get_placement(
+            self, s_dna: str, s_dna_len: int, blocks: list, blockers: list
+    ) -&gt; dict:
+        &#34;&#34;&#34;Searchs sequence with PSSM ojbect returns position and score
+
+        Args:
+            s_dna: DNA sequence
+            s_dna_len: length of the DNA sequence
+            blocks: TODO
+            blockers: IDs of the blocked nodes
+
+        Returns:
+            dictionary with info about the energy
+            &#34;pspairs&#34;: TODO
+            &#34;blocked&#34;: TODO
+            &#34;blocker&#34;: TODO
+
+        &#34;&#34;&#34;
+
+        scores_on_seq = []
+        pssm_length = self.length
+
+        # Check every position possible on the sequence
+        for pos in range(s_dna_len - pssm_length):
+            mypos = float(pos) + pssm_length / 2
+            blocked = False
+            for jpos in range(pos, pos + pssm_length):
+                if jpos in blocks:
+                    blocked = True
+                    break
+            # if the position has not been blocked by another PSSM
+            if not blocked:
+                # Compute the score of PSSM at position in sequence
+                # append them to list
+                scores_on_seq.append(
+                    {
+                        &#34;pos&#34;: mypos,
+                        &#34;energy&#34;: self.get_score(
+                            s_dna[pos: pos + pssm_length]
+                        ),
+                    }
+                )
+            # otherwise just add large negative
+            else:
+                scores_on_seq.append({&#34;pos&#34;: mypos, &#34;energy&#34;: -10000.0})
+
+        # print (blocks)
+        # print(scoresonseq,&#39;\n&#39;)
+        # sort list and return it
+        scores_on_seq.sort(key=lambda k: k[&#34;energy&#34;], reverse=True)
+
+        return {
+            &#34;pspairs&#34;: scores_on_seq,
+            &#34;blocked&#34;: blocks,
+            &#34;blocker&#34;: blockers,
+        }
+
+    def get_all_pssm(self) -&gt; list:
+        &#34;&#34;&#34;Adds himself as a pssm recognizer
+
+        Returns:
+            list of pssms
+        &#34;&#34;&#34;
+        return [self]
+
+    def get_score(self, s_dna: str) -&gt; float:
+        &#34;&#34;&#34;a score to that DNA secuence
+
+        Args:
+            s_dna: dna partial sequence (length of the pssm)
+
+        Returns:
+            score assigned to s_dna. If reverse sequence is better, reverse
+            score is returned
+
+        &#34;&#34;&#34;
+
+        complement = {&#34;a&#34;: &#34;t&#34;, &#34;t&#34;: &#34;a&#34;, &#34;g&#34;: &#34;c&#34;, &#34;c&#34;: &#34;g&#34;}
+        # gets a score from pssm
+        score = 0
+        score_reverse = 0
+        str_length = len(s_dna)
+        for i in range(str_length):
+
+            score += self.pssm[i][s_dna[i]]
+            score_reverse += self.pssm[str_length - i - 1][
+                complement[s_dna[str_length - i - 1]]
+            ]
+        # Returns the max binding score
+        return (
+            score
+            if score &gt; score_reverse or not self.scan_reverse_complement
+            else score_reverse
+        )
+
+    def set_node(self, node: Node, _id: int) -&gt; None:
+        &#34;&#34;&#34;Nodes cannot be setted from recognizer objects
+
+        Args:
+            node: Node to insert in the tree
+            _id: id to insert the node
+        &#34;&#34;&#34;
+
+    def reset_id(self, new_id: int) -&gt; int:
+        &#34;&#34;&#34;Resets the id on the whole tree structure
+
+        Args:
+            new_id: id to assign to the current recognizer
+
+        Returns:
+            The next id to assign
+        &#34;&#34;&#34;
+
+        self._id = new_id
+        return new_id + 1
+
+    def print(self, distance: int) -&gt; None:
+        &#34;&#34;&#34;Print PSSM object (similar to Logo format)
+
+        Args:
+            distance: Depth in the tree
+        &#34;&#34;&#34;
+
+        recognized = &#34;&#34;
+
+        for position in self.pwm:
+            base = &#34;a&#34;
+            # Find max base
+            for new_base in position.keys():
+                if position[new_base] &gt; position[base]:
+                    base = new_base
+
+            if position[base] &gt;= self.upper_print_probability:
+                base = base.upper()
+            recognized += base
+
+        print(&#34;   |&#34; * distance + &#34; - &#34; + recognized)
+
+    def export(self, export_file, level: int) -&gt; None:
+        &#34;&#34;&#34;Exports pssm to a file
+
+        Args:
+            export_file: File to write the output
+            level: Depth in the tree
+        &#34;&#34;&#34;
+        recognized = &#34;&#34;
+
+        for position in self.pwm:
+            base = &#34;a&#34;
+            # Find max base
+            for new_base in position.keys():
+                if position[new_base] &gt; position[base]:
+                    base = new_base
+            # Change to uppercase based on probability
+            if position[base] &gt;= self.upper_print_probability:
+                base = base.upper()
+            recognized += base
+
+        export_file.write(&#34;\n&#34; + &#34;   |&#34; * level + &#34; - &#34; + recognized)
+        # exportFile.write(&#34;\n&#34;)
+
+    # pylint: disable=R0201
+    def is_connector(self) -&gt; bool:
+        &#34;&#34;&#34;node is not a connector
+
+        Returns:
+            False because is a pssm recognizer
+
+        &#34;&#34;&#34;
+        return False
+
+    def is_pssm(self):
+        &#34;&#34;&#34;node is a pssm recognizer
+
+        Returns:
+            True because is a pssm recognizer
+
+        &#34;&#34;&#34;
+        return True</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>objects.node_object.Node</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.objects.pssm_object.PssmObject.count_nodes"><code class="name flex">
+<span>def <span class="ident">count_nodes</span></span>(<span>self) -> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Counts the number of nodes. Leaves always return 1 as it is a single
+node</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The number</code> of <code>nodes(1)</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def count_nodes(self) -&gt; int:
+    &#34;&#34;&#34;Counts the number of nodes. Leaves always return 1 as it is a single
+    node
+
+    Returns:
+       The number of nodes(1)
+    &#34;&#34;&#34;
+    return 1</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.export"><code class="name flex">
+<span>def <span class="ident">export</span></span>(<span>self, export_file, level: int) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Exports pssm to a file</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>export_file</code></strong></dt>
+<dd>File to write the output</dd>
+<dt><strong><code>level</code></strong></dt>
+<dd>Depth in the tree</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export(self, export_file, level: int) -&gt; None:
+    &#34;&#34;&#34;Exports pssm to a file
+
+    Args:
+        export_file: File to write the output
+        level: Depth in the tree
+    &#34;&#34;&#34;
+    recognized = &#34;&#34;
+
+    for position in self.pwm:
+        base = &#34;a&#34;
+        # Find max base
+        for new_base in position.keys():
+            if position[new_base] &gt; position[base]:
+                base = new_base
+        # Change to uppercase based on probability
+        if position[base] &gt;= self.upper_print_probability:
+            base = base.upper()
+        recognized += base
+
+    export_file.write(&#34;\n&#34; + &#34;   |&#34; * level + &#34; - &#34; + recognized)</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.get_all_pssm"><code class="name flex">
+<span>def <span class="ident">get_all_pssm</span></span>(<span>self) -> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds himself as a pssm recognizer</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code> of <code>pssms</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_all_pssm(self) -&gt; list:
+    &#34;&#34;&#34;Adds himself as a pssm recognizer
+
+    Returns:
+        list of pssms
+    &#34;&#34;&#34;
+    return [self]</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.get_length"><code class="name flex">
+<span>def <span class="ident">get_length</span></span>(<span>self) -> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Length of the pssm recognizer</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Length</code> of <code>the pwm</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_length(self) -&gt; int:
+    &#34;&#34;&#34;Length of the pssm recognizer
+
+    Returns:
+        Length of the pwm
+    &#34;&#34;&#34;
+    return self.length</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.get_node"><code class="name flex">
+<span>def <span class="ident">get_node</span></span>(<span>self, objective: int, node_count: int) -> objects.node_object.Node</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get an specific node</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>objective</code></strong></dt>
+<dd>ID of the objective node to find</dd>
+<dt><strong><code>node_count</code></strong></dt>
+<dd>number of nodes before the current node</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>itself if its the node, otherwise return None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_node(self, objective: int, node_count: int) -&gt; Node:
+    &#34;&#34;&#34;Get an specific node
+
+    Args:
+        objective: ID of the objective node to find
+        node_count: number of nodes before the current node
+
+    Returns:
+        itself if its the node, otherwise return None
+
+    &#34;&#34;&#34;
+    return self if objective == node_count else None</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.get_parent"><code class="name flex">
+<span>def <span class="ident">get_parent</span></span>(<span>self, _id: int) -> objects.node_object.Node</span>
+</code></dt>
+<dd>
+<div class="desc"><p>pssm objects cannot be parents</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>_id</code></strong></dt>
+<dd>Id of the child node</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Node with ID _id. PSSM recognizers cannot be parents.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_parent(self, _id: int) -&gt; Node:
+    &#34;&#34;&#34;pssm objects cannot be parents
+
+    Args:
+        _id: Id of the child node
+
+    Returns:
+        Node with ID _id. PSSM recognizers cannot be parents.
+    &#34;&#34;&#34;
+    return None</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.get_placement"><code class="name flex">
+<span>def <span class="ident">get_placement</span></span>(<span>self, s_dna: str, s_dna_len: int, blocks: list, blockers: list) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Searchs sequence with PSSM ojbect returns position and score</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>s_dna</code></strong></dt>
+<dd>DNA sequence</dd>
+<dt><strong><code>s_dna_len</code></strong></dt>
+<dd>length of the DNA sequence</dd>
+<dt><strong><code>blocks</code></strong></dt>
+<dd>TODO</dd>
+<dt><strong><code>blockers</code></strong></dt>
+<dd>IDs of the blocked nodes</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dictionary with info about the energy</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>"pspairs": TODO
+"blocked": TODO
+"blocker": TODO</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_placement(
+        self, s_dna: str, s_dna_len: int, blocks: list, blockers: list
+) -&gt; dict:
+    &#34;&#34;&#34;Searchs sequence with PSSM ojbect returns position and score
+
+    Args:
+        s_dna: DNA sequence
+        s_dna_len: length of the DNA sequence
+        blocks: TODO
+        blockers: IDs of the blocked nodes
+
+    Returns:
+        dictionary with info about the energy
+        &#34;pspairs&#34;: TODO
+        &#34;blocked&#34;: TODO
+        &#34;blocker&#34;: TODO
+
+    &#34;&#34;&#34;
+
+    scores_on_seq = []
+    pssm_length = self.length
+
+    # Check every position possible on the sequence
+    for pos in range(s_dna_len - pssm_length):
+        mypos = float(pos) + pssm_length / 2
+        blocked = False
+        for jpos in range(pos, pos + pssm_length):
+            if jpos in blocks:
+                blocked = True
+                break
+        # if the position has not been blocked by another PSSM
+        if not blocked:
+            # Compute the score of PSSM at position in sequence
+            # append them to list
+            scores_on_seq.append(
+                {
+                    &#34;pos&#34;: mypos,
+                    &#34;energy&#34;: self.get_score(
+                        s_dna[pos: pos + pssm_length]
+                    ),
+                }
+            )
+        # otherwise just add large negative
+        else:
+            scores_on_seq.append({&#34;pos&#34;: mypos, &#34;energy&#34;: -10000.0})
+
+    # print (blocks)
+    # print(scoresonseq,&#39;\n&#39;)
+    # sort list and return it
+    scores_on_seq.sort(key=lambda k: k[&#34;energy&#34;], reverse=True)
+
+    return {
+        &#34;pspairs&#34;: scores_on_seq,
+        &#34;blocked&#34;: blocks,
+        &#34;blocker&#34;: blockers,
+    }</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.get_score"><code class="name flex">
+<span>def <span class="ident">get_score</span></span>(<span>self, s_dna: str) -> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>a score to that DNA secuence</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>s_dna</code></strong></dt>
+<dd>dna partial sequence (length of the pssm)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>score assigned to s_dna. If reverse sequence is better, reverse</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>score is returned</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_score(self, s_dna: str) -&gt; float:
+    &#34;&#34;&#34;a score to that DNA secuence
+
+    Args:
+        s_dna: dna partial sequence (length of the pssm)
+
+    Returns:
+        score assigned to s_dna. If reverse sequence is better, reverse
+        score is returned
+
+    &#34;&#34;&#34;
+
+    complement = {&#34;a&#34;: &#34;t&#34;, &#34;t&#34;: &#34;a&#34;, &#34;g&#34;: &#34;c&#34;, &#34;c&#34;: &#34;g&#34;}
+    # gets a score from pssm
+    score = 0
+    score_reverse = 0
+    str_length = len(s_dna)
+    for i in range(str_length):
+
+        score += self.pssm[i][s_dna[i]]
+        score_reverse += self.pssm[str_length - i - 1][
+            complement[s_dna[str_length - i - 1]]
+        ]
+    # Returns the max binding score
+    return (
+        score
+        if score &gt; score_reverse or not self.scan_reverse_complement
+        else score_reverse
+    )</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.is_connector"><code class="name flex">
+<span>def <span class="ident">is_connector</span></span>(<span>self) -> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>node is not a connector</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>False because is a pssm recognizer</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_connector(self) -&gt; bool:
+    &#34;&#34;&#34;node is not a connector
+
+    Returns:
+        False because is a pssm recognizer
+
+    &#34;&#34;&#34;
+    return False</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.is_pssm"><code class="name flex">
+<span>def <span class="ident">is_pssm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>node is a pssm recognizer</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>True because is a pssm recognizer</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_pssm(self):
+    &#34;&#34;&#34;node is a pssm recognizer
+
+    Returns:
+        True because is a pssm recognizer
+
+    &#34;&#34;&#34;
+    return True</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.mutate"><code class="name flex">
+<span>def <span class="ident">mutate</span></span>(<span>self, org_factory) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Mutation operators associated to the PSSM recognizer</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>org_factory</code></strong> :&ensp;<code>OrganismFactory</code></dt>
+<dd>Cretes organisms and Node components</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mutate(self, org_factory) -&gt; None:
+    &#34;&#34;&#34;Mutation operators associated to the PSSM recognizer
+
+    Args:
+        org_factory (OrganismFactory): Cretes organisms and Node components
+    &#34;&#34;&#34;
+
+    if random.random() &lt; self.mutate_probability_random_col:
+
+        # Randomize PSSM column
+        new_col = org_factory.get_pwm_column()
+        # Select a random col in self.pwm
+        column_to_update = random.randint(0, self.length - 1)
+        # Insert it in that position
+        self.pwm[column_to_update] = new_col
+
+    if random.random() &lt; self.mutate_probability_flip_cols:
+        # Flip two columns
+
+        col1, col2 = random.sample(range(self.length), 2)
+        # Select two random columns and swap it
+        tmp_col = self.pwm[col1]
+        self.pwm[col1] = self.pwm[col2]
+        self.pwm[col2] = tmp_col
+
+    if random.random() &lt; self.mutate_probability_flip_rows:
+        # Flip two rows
+        # Save values of two rows and swap it (its gonna be one by one)
+        bases = [&#34;a&#34;, &#34;c&#34;, &#34;g&#34;, &#34;t&#34;]
+        random.shuffle(bases)
+        base1, base2 = bases[:2]
+
+        # Swap rows
+        for i in range(self.length):
+            tmp_base = self.pwm[i][base1]
+            self.pwm[i][base1] = self.pwm[i][base2]
+            self.pwm[i][base2] = tmp_base
+
+    if random.random() &lt; self.mutate_probability_shift_left:
+        # Shift to right/left
+        self.pwm = np.roll(self.pwm, -1)
+
+    if random.random() &lt; self.mutate_probability_shift_right:
+        # Shift to right/left
+        self.pwm = np.roll(self.pwm, 1)
+
+    self.recalculate_pssm()</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.print"><code class="name flex">
+<span>def <span class="ident">print</span></span>(<span>self, distance: int) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print PSSM object (similar to Logo format)</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>distance</code></strong></dt>
+<dd>Depth in the tree</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print(self, distance: int) -&gt; None:
+    &#34;&#34;&#34;Print PSSM object (similar to Logo format)
+
+    Args:
+        distance: Depth in the tree
+    &#34;&#34;&#34;
+
+    recognized = &#34;&#34;
+
+    for position in self.pwm:
+        base = &#34;a&#34;
+        # Find max base
+        for new_base in position.keys():
+            if position[new_base] &gt; position[base]:
+                base = new_base
+
+        if position[base] &gt;= self.upper_print_probability:
+            base = base.upper()
+        recognized += base
+
+    print(&#34;   |&#34; * distance + &#34; - &#34; + recognized)</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.recalculate_pssm"><code class="name flex">
+<span>def <span class="ident">recalculate_pssm</span></span>(<span>self) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculates the PSSM based on the pwm values</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def recalculate_pssm(self) -&gt; None:
+    &#34;&#34;&#34; Calculates the PSSM based on the pwm values
+    &#34;&#34;&#34;
+    tmp_pssm = []
+    for column in self.pwm:
+        # From pwm to pssm
+        # log2(base/0.25) = log2(4.0*base)
+        decimals = 2
+        tmp_bases = []
+        # cast to float so round function does not become crazy
+        tmp_bases.append(
+            float(np.log2(4.0 * column[&#34;c&#34;] + self.pseudo_count))
+        )
+        tmp_bases.append(
+            float(np.log2(4.0 * column[&#34;t&#34;] + self.pseudo_count))
+        )
+        tmp_bases.append(
+            float(np.log2(4.0 * column[&#34;g&#34;] + self.pseudo_count))
+        )
+        tmp_bases.append(
+            float(np.log2(4.0 * column[&#34;a&#34;] + self.pseudo_count))
+        )
+
+        tmp_pssm.append(
+            {
+                &#34;c&#34;: round(tmp_bases[0], decimals),
+                &#34;t&#34;: round(tmp_bases[1], decimals),
+                &#34;g&#34;: round(tmp_bases[2], decimals),
+                &#34;a&#34;: round(tmp_bases[3], decimals),
+            }
+        )
+    self.pssm = np.array(tmp_pssm)
+    # Also calculate the optimal pssm combinations
+    self.optimal_combination = [&#34;&#34;]
+    for position in tmp_pssm:
+        max_bases = []
+        max_base_score = float(&#34;-inf&#34;)
+        for base in position:
+            if position[base] &gt; max_base_score:
+                max_bases = [base]
+                max_base_score = position[base]
+            elif position[base] == max_base_score:
+                max_bases.append(base)
+
+        tmp_optimal = []
+        for base in max_bases:
+            for comb in self.optimal_combination:
+                tmp_optimal.append(comb + base)
+
+        self.optimal_combination = tmp_optimal</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.reset_id"><code class="name flex">
+<span>def <span class="ident">reset_id</span></span>(<span>self, new_id: int) -> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Resets the id on the whole tree structure</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>new_id</code></strong></dt>
+<dd>id to assign to the current recognizer</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The next id to assign</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reset_id(self, new_id: int) -&gt; int:
+    &#34;&#34;&#34;Resets the id on the whole tree structure
+
+    Args:
+        new_id: id to assign to the current recognizer
+
+    Returns:
+        The next id to assign
+    &#34;&#34;&#34;
+
+    self._id = new_id
+    return new_id + 1</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.set_node"><code class="name flex">
+<span>def <span class="ident">set_node</span></span>(<span>self, node: objects.node_object.Node, _id: int) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Nodes cannot be setted from recognizer objects</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>Node to insert in the tree</dd>
+<dt><strong><code>_id</code></strong></dt>
+<dd>id to insert the node</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_node(self, node: Node, _id: int) -&gt; None:
+    &#34;&#34;&#34;Nodes cannot be setted from recognizer objects
+
+    Args:
+        node: Node to insert in the tree
+        _id: id to insert the node
+    &#34;&#34;&#34;</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.objects" href="index.html">src.objects</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.objects.pssm_object.PssmObject" href="#src.objects.pssm_object.PssmObject">PssmObject</a></code></h4>
+<ul class="two-column">
+<li><code><a title="src.objects.pssm_object.PssmObject.count_nodes" href="#src.objects.pssm_object.PssmObject.count_nodes">count_nodes</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.export" href="#src.objects.pssm_object.PssmObject.export">export</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.get_all_pssm" href="#src.objects.pssm_object.PssmObject.get_all_pssm">get_all_pssm</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.get_length" href="#src.objects.pssm_object.PssmObject.get_length">get_length</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.get_node" href="#src.objects.pssm_object.PssmObject.get_node">get_node</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.get_parent" href="#src.objects.pssm_object.PssmObject.get_parent">get_parent</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.get_placement" href="#src.objects.pssm_object.PssmObject.get_placement">get_placement</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.get_score" href="#src.objects.pssm_object.PssmObject.get_score">get_score</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.is_connector" href="#src.objects.pssm_object.PssmObject.is_connector">is_connector</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.is_pssm" href="#src.objects.pssm_object.PssmObject.is_pssm">is_pssm</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.mutate" href="#src.objects.pssm_object.PssmObject.mutate">mutate</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.print" href="#src.objects.pssm_object.PssmObject.print">print</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.recalculate_pssm" href="#src.objects.pssm_object.PssmObject.recalculate_pssm">recalculate_pssm</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.reset_id" href="#src.objects.pssm_object.PssmObject.reset_id">reset_id</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.set_node" href="#src.objects.pssm_object.PssmObject.set_node">set_node</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

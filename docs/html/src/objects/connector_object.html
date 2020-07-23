@@ -1,0 +1,1784 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>src.objects.connector_object API documentation</title>
+<meta name="description" content="C object
+Connects two nodes at a specific distance" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.objects.connector_object</code></h1>
+</header>
+<section id="section-intro">
+<p>C object
+Connects two nodes at a specific distance</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;C object
+Connects two nodes at a specific distance
+
+&#34;&#34;&#34;
+
+# pylint: disable=E0402
+# type: ignore
+import random
+from .node_object import Node
+import numpy as np
+
+
+# pylint: disable=R0902
+class ConnectorObject(Node):
+    &#34;&#34;&#34;Connector Object is a node that connects two nodes
+    &#34;&#34;&#34;
+
+    # pylint: disable=R0913
+    def __init__(
+            self,
+            _mu: int,
+            _sigma: int,
+            config: dict,
+            node_1: Node = Node(),
+            node_2: Node = Node(),
+    ):
+        &#34;&#34;&#34;Connector constructor gets mu, sigma and can get the two initial nodes.
+
+        Args:
+            _mu: Mean distance between node1 and node2
+            _sigma: Variance between node 1 and node2
+            config: Configurations loadad from config.json
+            node_1: Conceptual left node
+            node_2: Conceptual right node
+
+        &#34;&#34;&#34;
+        super().__init__()
+        self._mu = _mu  # Mean discance
+        self._sigma = _sigma  # Variance between elements
+        self._id = 0
+        self.mutate_probability_sigma = config[&#34;MUTATE_PROBABILITY_SIGMA&#34;]
+        self.mutate_probability_mu = config[&#34;MUTATE_PROBABILITY_MU&#34;]
+        self.mutate_probability_swap = config[&#34;MUTATE_PROBABILITY_SWAP&#34;]
+        self.tau = config[&#34;TAU&#34;]
+        self.mutate_variance_sigma = config[&#34;MUTATE_VARIANCE_SIGMA&#34;]
+        self.mutate_variance_mu = config[&#34;MUTATE_VARIANCE_MU&#34;]
+        self.placement_options = config[&#34;PLACEMENT_OPTIONS&#34;]
+
+        self.node1 = node_1
+        self.node2 = node_2
+
+    # pylint: enable=R0913
+    # Setters
+    def set_mu(self, _mu: int) -&gt; None:
+        &#34;&#34;&#34;Set mu variable
+
+        Args:
+            _mu: Mean distance between node1 and node2
+        &#34;&#34;&#34;
+        self._mu = _mu
+
+    def set_sigma(self, sigma: int) -&gt; None:
+        &#34;&#34;&#34;Set sigma variable
+
+        Args:
+            sigma: Variance between node 1 and node2
+        &#34;&#34;&#34;
+        self._sigma = sigma
+
+    def set_node1(self, node1: Node) -&gt; None:
+        &#34;&#34;&#34;Set left node
+
+        Args:
+            node1: Conceptual left node
+        &#34;&#34;&#34;
+        self.node1 = node1
+
+    def set_node2(self, node2: Node) -&gt; None:
+        &#34;&#34;&#34;Set right node
+
+        Args:
+            node2: Conceptual right node
+        &#34;&#34;&#34;
+        self.node2 = node2
+
+    def count_nodes(self) -&gt; int:
+        &#34;&#34;&#34;Counts the number of nodes below the node (including itself)
+
+        Returns:
+            Number of nodes below the current connector
+        &#34;&#34;&#34;
+        return self.node1.count_nodes() + self.node2.count_nodes() + 1
+
+    def get_node(self, objective: int, node_count: int) -&gt; Node:
+        &#34;&#34;&#34;Get a specific node based on a count and the objective node
+
+        Args:
+            objective: ID of the objectivo node to return
+            node_count: Number of nodes analized
+
+        Returns:
+            Node with the objective. None otherwise
+        &#34;&#34;&#34;
+        left_nodes = self.node1.count_nodes()
+        node_number = left_nodes + node_count
+        returned_node = None
+
+        if node_number == objective:
+            # We are on the node we are searching
+            returned_node = self
+        elif node_number &lt; objective:
+            # The node is on the right side
+            returned_node = self.node2.get_node(objective, node_number + 1)
+        elif node_number &gt; objective:
+            # The node is on the left side
+            returned_node = self.node1.get_node(objective, node_count)
+
+        return returned_node
+
+    def get_parent(self, _id: int) -&gt; dict:
+        &#34;&#34;&#34;Get the parent node of a given ID and if it is the left child
+
+        Args:
+            _id: Identificator of the child node
+
+        Returns:
+            dictionary with the parent info if exists:
+            &#34;isRootNode&#34;: True if the _id if from the root node and has.
+                          no parent
+            &#34;self&#34;:       Node object with the parent of the _id child.
+            &#34;isLeftSide&#34;: True if _id child is on the left side.
+                          False otherwise.
+
+            if the parent does not exist, returns None
+        &#34;&#34;&#34;
+
+        if self.node1._id == _id:
+            # Return itself and specify child is on left side
+            return {&#34;is_root_node&#34;: False, &#34;self&#34;: self, &#34;is_left_side&#34;: True}
+
+        if self.node2._id == _id:
+            # Return itself and specify child is on right side
+            return {&#34;is_root_node&#34;: False, &#34;self&#34;: self, &#34;is_left_side&#34;: False}
+
+        check_node = None
+        check_node = self.node1.get_parent(_id)
+        if check_node is None:
+            check_node = self.node2.get_parent(_id)
+        return check_node
+
+    def get_all_pssm(self) -&gt; list:
+        &#34;&#34;&#34;returns an array of all pssm objects of the organism
+
+        Returns:
+            List with all the pssm
+        &#34;&#34;&#34;
+        return self.node1.getAllPssm() + self.node2.getAllPssm()
+
+    # pylint: disable=R1702
+    # pylint: disable=R0915
+    def get_placement(
+        self, sDNA: str, sDNAlen: int, blocks: list, blockers: list
+    ) -&gt; dict:
+        &#34;&#34;&#34;This is a position/score propagation method, defined for connector
+           objects.
+           It is invoked by the placement method in the organism, for the root
+           connector object, and calls itself recursively.
+           The function calls itself until reaching terminal connectors, which
+           call onto PSSM objects.
+           At that point, the call to the getPlacement function in PSSM nodes
+           leads to the evaluation of the PSSM node across all the sequence,
+           and it returns the score/position pairs, sorted by descending score.
+
+           The connector function then propagates this up, taking the middle
+           position between both PSSMs and adding the connector energy to the
+           energies provided by the PSSMs.
+
+           The connector determines (i.e. freezes) the PSSM locations, adding
+           them to the block list that is passed as a parameter.
+
+           Further connector objects proceed in the same manner, computing
+           middle distance and adding their energy contribution, until the
+           energy reaches the root node, and is returned as the fitness for
+           the organism.
+
+           The energy contribution of each connector is: EN1 + EN2 + Tau * EC,
+           where EN1 is the energy of its daugher element 1, and EN2 that of
+           daughter element 2. The EC connector energy component is an
+           exponential function controlled by the difference in the observed
+           distance of the elements  of the connector with respect to an ideal
+           mean distance (mu), and modulated by a dispersion parameter (sigma).
+           Tau controls the &#34;weight&#34; of the connector contribution to energy.
+
+        Args:
+            sDNA: DNA sequence to compute energy
+            sDNAlen: length of the DNA sequence
+            blocks: TODO
+            blockers: ids of the blocked nodes
+
+        Returns:
+            dictionary with the info about the energy
+            &#34;pspairs&#34;: TODO
+            &#34;blocked&#34;: TODO
+            &#34;blocker&#34;: TODO
+
+        &#34;&#34;&#34;
+
+        # This tau shows how much value we give to the connector fit
+        tau = self.tau
+
+        # ask daughter nodes what their placement is
+        # placement call will return a vector of positions (for PSSMs) and
+        # their scores (sorted descending by score) , as well as an udpated
+        # block/blocker vector
+        node1 = self.node1.get_placement(sDNA, sDNAlen, blocks, blockers)
+        node2 = self.node2.get_placement(sDNA, sDNAlen, blocks, blockers)
+
+        # precompute connector energy term (not dependent on PSSM placement)
+        logterm = np.log10(10 + self._sigma ** 2)
+
+        maxenergy = -np.inf
+        maxposition = 0
+        max1 = 0
+        max2 = 0
+        placecnt = 0
+        placeopt = self.placement_options
+        confset = False
+        # iterate over all possible configurations of sub-node placements
+        # and determine the optimal one. this goes on for a _minimum_ number of
+        # iterations (user-defined), but continues if a satisfactory
+        # configuration has not been found (for instance, because
+        # all tried configurations generated conflicts with blocked positions)
+        # the two for loops iterate over possible subset of configurations
+        # if a valid solution is not found, they iterate over next subset
+        # this will take place when at least one of the nodes is a PSSM and has
+        # returned more than one possible position (although in theory
+        # connectors could also return more than one position)
+
+        while not confset:
+            # set range according to availability of positions
+            if len(node1[&#34;pspairs&#34;]) &gt; placeopt:
+                range1st = placecnt
+                range1nd = placecnt + placeopt
+            else:
+                range1st = 0
+                range1nd = 1
+            if len(node2[&#34;pspairs&#34;]) &gt; placeopt:
+                range2st = placecnt
+                range2nd = placecnt + placeopt
+            else:
+                range2st = 0
+                range2nd = 1
+
+            for n1count in range(range1st, range1nd):
+                for n2count in range(range2st, range2nd):
+                    # compute connector energy terms that depend on PSSM
+                    # placement
+                    numerator = (
+                        self._mu
+                        - (
+                            node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                            - node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                        )
+                    ) ** 2
+                    exponent = -1.0 * numerator / (1 + 2 * (self._sigma ** 2))
+                    expterm = np.exp(exponent)
+                    # compute additive connector energy term
+                    e_connector = (tau / logterm) * expterm
+                    # submodel energy: additive
+                    energy = (
+                        node1[&#34;pspairs&#34;][n1count][&#34;energy&#34;]
+                        + node2[&#34;pspairs&#34;][n2count][&#34;energy&#34;]
+                    ) + e_connector
+                    # submodel position: average of daughter positions
+                    position = (
+                        node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                        + node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                    ) / 2
+
+                    # if BOTH nodes are pssms, avoid pssm overlapping
+                    if self.node1.is_pssm() and self.node2.is_pssm():
+                        # determine largest PSSM
+                        p_len = (
+                            self.node1.get_length()
+                            if self.node1.get_length()
+                            &gt; self.node2.get_length()
+                            else self.node2.get_length()
+                        )
+                        # determine if overlap exists, skip combo if there is
+                        if (
+                                abs(
+                                    round(node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;])
+                                    - round(node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;])
+                                ) &lt; p_len
+                        ):
+                            continue
+
+                    # if ONE of the nodes is a PSSM, make sure its position
+                    # does not overlap with blocked positions
+                    if self.node1.is_pssm():
+                        p_len = self.node1.get_length()
+                        startpos1 = round(
+                            node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                        ) - round(p_len / 2)
+                        blocked = False
+                        for jpos in range(startpos1, startpos1 + p_len):
+                            if jpos in blocks:
+                                blocked = True
+                                break
+                        # if position has been blocked, skip this combo
+                        if blocked:
+                            continue
+                    if self.node2.is_pssm():
+                        p_len = self.node2.get_length()
+                        startpos2 = round(
+                            node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                        ) - round(p_len / 2)
+                        blocked = False
+                        for jpos in range(startpos2, startpos2 + p_len):
+                            if jpos in blocks:
+                                blocked = True
+                                break
+                        # if position has been blocked, skip this combo
+                        if blocked:
+                            continue
+                    # if this energy is the best so far, annotate it
+                    # set confset to true, since we have obtained a valid
+                    # configuration
+                    if energy &gt; maxenergy:
+                        maxenergy = energy
+                        maxposition = position
+                        max1 = n1count
+                        max2 = n2count
+                        confset = True
+
+                # increase base configuration counter
+                placecnt = placecnt + 1
+
+            # print(&#39;Max1: &#39;,node1[&#39;pspairs&#39;][max1][&#39;pos&#39;])
+            # print(&#39;Max2: &#39;,node2[&#39;pspairs&#39;][max2][&#39;pos&#39;])
+
+        # block the positions of this connector&#39;s PSSMs
+        if self.node1.is_pssm():
+            n1length = self.node1.get_length()
+            blockstartpos1 = round(node1[&#34;pspairs&#34;][max1][&#34;pos&#34;]) - round(
+                n1length / 2
+            )
+            for blockade in range(n1length):
+                blocks.append(blockstartpos1 + blockade)
+                blockers.append(self.node1._id)
+        if self.node2.is_pssm():
+            n2length = self.node2.get_length()
+            blockstartpos2 = round(node2[&#34;pspairs&#34;][max2][&#34;pos&#34;]) - round(
+                n2length / 2
+            )
+            for blockade in range(n2length):
+                blocks.append(blockstartpos2 + blockade)
+                blockers.append(self.node2._id)
+
+        pair = {&#34;pos&#34;: maxposition, &#34;energy&#34;: maxenergy}
+
+        return {&#34;pspairs&#34;: [pair], &#34;blocked&#34;: blocks, &#34;blocker&#34;: blockers}
+
+    # pylint: enable=R1702
+    # pylint: enable=R0915
+
+    def set_node(self, node, _id) -&gt; None:
+        &#34;&#34;&#34;Sets the node on a given ID
+
+        Args:
+            node: Node to insert in the tree
+            _id: id to insert the node
+
+        &#34;&#34;&#34;
+
+        if self.node1._id == _id:
+            self.node1 = node
+        elif self.node2._id == _id:
+            self.node2 = node
+        else:
+            self.node1.set_node(node, _id)
+            self.node2.set_node(node, _id)
+
+    def reset_id(self, new_id: int) -&gt; int:
+        &#34;&#34;&#34;Resets the id parameter based on a given_ID
+
+        Args:
+            new_id: Base id to set the subtree IDs
+
+        Returns:
+            id of the last id assigned in the tree
+
+        &#34;&#34;&#34;
+        new_id = self.node1.reset_id(new_id)
+        self._id = new_id
+        new_id = self.node2.reset_id(new_id + 1)
+        return new_id
+
+    # pylint: disable=W0613
+    def mutate(self, org_factory) -&gt; None:
+        &#34;&#34;&#34;mutation for a connector
+
+        Args:
+            org_factory(organism_factory): Organism Facory
+        &#34;&#34;&#34;
+        # print(&#34;Mutating Connector...&#34; + str(self.ID))
+        if random.random() &lt; self.mutate_probability_sigma:
+            # Alter sigma
+            self._sigma += random.randint(
+                -self.mutate_variance_sigma, self.mutate_variance_sigma
+            )
+
+        if random.random() &lt; self.mutate_probability_mu:
+            # Alter mu
+            self._mu += random.randint(
+                -self.mutate_variance_mu, self.mutate_variance_mu
+            )
+
+        if random.random() &lt; self.mutate_probability_swap:
+            # Swap connectors
+            tmp_node = self.node1
+            self.node1 = self.node2
+            self.node2 = tmp_node
+
+    # pylint: enable=W0613
+
+    def print(self, distance: int) -&gt; None:
+        &#34;&#34;&#34;It prints the connector mu, sigma values and its children values in
+           tree structure
+
+        Args:
+            distance: Depth in the tree
+        &#34;&#34;&#34;
+        print(
+            &#34;   |&#34; * distance
+            + &#34; - C&#34;
+            + str(self.ID)
+            + &#34; m: {} s: {}&#34;.format(self.mu, self.sigma)
+        )
+        self.node1.print(distance + 1)
+        self.node2.print(distance + 1)
+
+    def export(self, export_file, level: int) -&gt; None:
+        &#34;&#34;&#34;Exports Connector data to the given file
+
+        Args:
+            export_file (file): File to export the conector
+            level: Depth in the tree
+
+        &#34;&#34;&#34;
+        export_file.write(
+            &#34;\n&#34;
+            + &#34;   |&#34; * level
+            + &#34; - C&#34;
+            + str(self._id)
+            + &#34; m: {} s: {}&#34;.format(self._mu, self._sigma)
+        )
+        self.node1.export(export_file, level + 1)
+        self.node2.export(export_file, level + 1)
+
+    # pylint: disable=R0201
+    def is_connector(self) -&gt; bool:
+        &#34;&#34;&#34;node is connector
+
+        Returns:
+            True because is a connector
+        &#34;&#34;&#34;
+        return True
+
+    def is_pssm(self) -&gt; bool:
+        &#34;&#34;&#34;node is not a pssm
+
+        Returns:
+            False because is a connector
+        &#34;&#34;&#34;
+        return False</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.objects.connector_object.ConnectorObject"><code class="flex name class">
+<span>class <span class="ident">ConnectorObject</span></span>
+<span>(</span><span>_mu: int, _sigma: int, config: dict, node_1: src.objects.node_object.Node = &lt;<a title="src.objects.node_object.Node" href="node_object.html#src.objects.node_object.Node">Node</a> object&gt;, node_2: src.objects.node_object.Node = &lt;<a title="src.objects.node_object.Node" href="node_object.html#src.objects.node_object.Node">Node</a> object&gt;)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Connector Object is a node that connects two nodes</p>
+<p>Connector constructor gets mu, sigma and can get the two initial nodes.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>_mu</code></strong></dt>
+<dd>Mean distance between node1 and node2</dd>
+<dt><strong><code>_sigma</code></strong></dt>
+<dd>Variance between node 1 and node2</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Configurations loadad from config.json</dd>
+<dt><strong><code>node_1</code></strong></dt>
+<dd>Conceptual left node</dd>
+<dt><strong><code>node_2</code></strong></dt>
+<dd>Conceptual right node</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConnectorObject(Node):
+    &#34;&#34;&#34;Connector Object is a node that connects two nodes
+    &#34;&#34;&#34;
+
+    # pylint: disable=R0913
+    def __init__(
+            self,
+            _mu: int,
+            _sigma: int,
+            config: dict,
+            node_1: Node = Node(),
+            node_2: Node = Node(),
+    ):
+        &#34;&#34;&#34;Connector constructor gets mu, sigma and can get the two initial nodes.
+
+        Args:
+            _mu: Mean distance between node1 and node2
+            _sigma: Variance between node 1 and node2
+            config: Configurations loadad from config.json
+            node_1: Conceptual left node
+            node_2: Conceptual right node
+
+        &#34;&#34;&#34;
+        super().__init__()
+        self._mu = _mu  # Mean discance
+        self._sigma = _sigma  # Variance between elements
+        self._id = 0
+        self.mutate_probability_sigma = config[&#34;MUTATE_PROBABILITY_SIGMA&#34;]
+        self.mutate_probability_mu = config[&#34;MUTATE_PROBABILITY_MU&#34;]
+        self.mutate_probability_swap = config[&#34;MUTATE_PROBABILITY_SWAP&#34;]
+        self.tau = config[&#34;TAU&#34;]
+        self.mutate_variance_sigma = config[&#34;MUTATE_VARIANCE_SIGMA&#34;]
+        self.mutate_variance_mu = config[&#34;MUTATE_VARIANCE_MU&#34;]
+        self.placement_options = config[&#34;PLACEMENT_OPTIONS&#34;]
+
+        self.node1 = node_1
+        self.node2 = node_2
+
+    # pylint: enable=R0913
+    # Setters
+    def set_mu(self, _mu: int) -&gt; None:
+        &#34;&#34;&#34;Set mu variable
+
+        Args:
+            _mu: Mean distance between node1 and node2
+        &#34;&#34;&#34;
+        self._mu = _mu
+
+    def set_sigma(self, sigma: int) -&gt; None:
+        &#34;&#34;&#34;Set sigma variable
+
+        Args:
+            sigma: Variance between node 1 and node2
+        &#34;&#34;&#34;
+        self._sigma = sigma
+
+    def set_node1(self, node1: Node) -&gt; None:
+        &#34;&#34;&#34;Set left node
+
+        Args:
+            node1: Conceptual left node
+        &#34;&#34;&#34;
+        self.node1 = node1
+
+    def set_node2(self, node2: Node) -&gt; None:
+        &#34;&#34;&#34;Set right node
+
+        Args:
+            node2: Conceptual right node
+        &#34;&#34;&#34;
+        self.node2 = node2
+
+    def count_nodes(self) -&gt; int:
+        &#34;&#34;&#34;Counts the number of nodes below the node (including itself)
+
+        Returns:
+            Number of nodes below the current connector
+        &#34;&#34;&#34;
+        return self.node1.count_nodes() + self.node2.count_nodes() + 1
+
+    def get_node(self, objective: int, node_count: int) -&gt; Node:
+        &#34;&#34;&#34;Get a specific node based on a count and the objective node
+
+        Args:
+            objective: ID of the objectivo node to return
+            node_count: Number of nodes analized
+
+        Returns:
+            Node with the objective. None otherwise
+        &#34;&#34;&#34;
+        left_nodes = self.node1.count_nodes()
+        node_number = left_nodes + node_count
+        returned_node = None
+
+        if node_number == objective:
+            # We are on the node we are searching
+            returned_node = self
+        elif node_number &lt; objective:
+            # The node is on the right side
+            returned_node = self.node2.get_node(objective, node_number + 1)
+        elif node_number &gt; objective:
+            # The node is on the left side
+            returned_node = self.node1.get_node(objective, node_count)
+
+        return returned_node
+
+    def get_parent(self, _id: int) -&gt; dict:
+        &#34;&#34;&#34;Get the parent node of a given ID and if it is the left child
+
+        Args:
+            _id: Identificator of the child node
+
+        Returns:
+            dictionary with the parent info if exists:
+            &#34;isRootNode&#34;: True if the _id if from the root node and has.
+                          no parent
+            &#34;self&#34;:       Node object with the parent of the _id child.
+            &#34;isLeftSide&#34;: True if _id child is on the left side.
+                          False otherwise.
+
+            if the parent does not exist, returns None
+        &#34;&#34;&#34;
+
+        if self.node1._id == _id:
+            # Return itself and specify child is on left side
+            return {&#34;is_root_node&#34;: False, &#34;self&#34;: self, &#34;is_left_side&#34;: True}
+
+        if self.node2._id == _id:
+            # Return itself and specify child is on right side
+            return {&#34;is_root_node&#34;: False, &#34;self&#34;: self, &#34;is_left_side&#34;: False}
+
+        check_node = None
+        check_node = self.node1.get_parent(_id)
+        if check_node is None:
+            check_node = self.node2.get_parent(_id)
+        return check_node
+
+    def get_all_pssm(self) -&gt; list:
+        &#34;&#34;&#34;returns an array of all pssm objects of the organism
+
+        Returns:
+            List with all the pssm
+        &#34;&#34;&#34;
+        return self.node1.getAllPssm() + self.node2.getAllPssm()
+
+    # pylint: disable=R1702
+    # pylint: disable=R0915
+    def get_placement(
+        self, sDNA: str, sDNAlen: int, blocks: list, blockers: list
+    ) -&gt; dict:
+        &#34;&#34;&#34;This is a position/score propagation method, defined for connector
+           objects.
+           It is invoked by the placement method in the organism, for the root
+           connector object, and calls itself recursively.
+           The function calls itself until reaching terminal connectors, which
+           call onto PSSM objects.
+           At that point, the call to the getPlacement function in PSSM nodes
+           leads to the evaluation of the PSSM node across all the sequence,
+           and it returns the score/position pairs, sorted by descending score.
+
+           The connector function then propagates this up, taking the middle
+           position between both PSSMs and adding the connector energy to the
+           energies provided by the PSSMs.
+
+           The connector determines (i.e. freezes) the PSSM locations, adding
+           them to the block list that is passed as a parameter.
+
+           Further connector objects proceed in the same manner, computing
+           middle distance and adding their energy contribution, until the
+           energy reaches the root node, and is returned as the fitness for
+           the organism.
+
+           The energy contribution of each connector is: EN1 + EN2 + Tau * EC,
+           where EN1 is the energy of its daugher element 1, and EN2 that of
+           daughter element 2. The EC connector energy component is an
+           exponential function controlled by the difference in the observed
+           distance of the elements  of the connector with respect to an ideal
+           mean distance (mu), and modulated by a dispersion parameter (sigma).
+           Tau controls the &#34;weight&#34; of the connector contribution to energy.
+
+        Args:
+            sDNA: DNA sequence to compute energy
+            sDNAlen: length of the DNA sequence
+            blocks: TODO
+            blockers: ids of the blocked nodes
+
+        Returns:
+            dictionary with the info about the energy
+            &#34;pspairs&#34;: TODO
+            &#34;blocked&#34;: TODO
+            &#34;blocker&#34;: TODO
+
+        &#34;&#34;&#34;
+
+        # This tau shows how much value we give to the connector fit
+        tau = self.tau
+
+        # ask daughter nodes what their placement is
+        # placement call will return a vector of positions (for PSSMs) and
+        # their scores (sorted descending by score) , as well as an udpated
+        # block/blocker vector
+        node1 = self.node1.get_placement(sDNA, sDNAlen, blocks, blockers)
+        node2 = self.node2.get_placement(sDNA, sDNAlen, blocks, blockers)
+
+        # precompute connector energy term (not dependent on PSSM placement)
+        logterm = np.log10(10 + self._sigma ** 2)
+
+        maxenergy = -np.inf
+        maxposition = 0
+        max1 = 0
+        max2 = 0
+        placecnt = 0
+        placeopt = self.placement_options
+        confset = False
+        # iterate over all possible configurations of sub-node placements
+        # and determine the optimal one. this goes on for a _minimum_ number of
+        # iterations (user-defined), but continues if a satisfactory
+        # configuration has not been found (for instance, because
+        # all tried configurations generated conflicts with blocked positions)
+        # the two for loops iterate over possible subset of configurations
+        # if a valid solution is not found, they iterate over next subset
+        # this will take place when at least one of the nodes is a PSSM and has
+        # returned more than one possible position (although in theory
+        # connectors could also return more than one position)
+
+        while not confset:
+            # set range according to availability of positions
+            if len(node1[&#34;pspairs&#34;]) &gt; placeopt:
+                range1st = placecnt
+                range1nd = placecnt + placeopt
+            else:
+                range1st = 0
+                range1nd = 1
+            if len(node2[&#34;pspairs&#34;]) &gt; placeopt:
+                range2st = placecnt
+                range2nd = placecnt + placeopt
+            else:
+                range2st = 0
+                range2nd = 1
+
+            for n1count in range(range1st, range1nd):
+                for n2count in range(range2st, range2nd):
+                    # compute connector energy terms that depend on PSSM
+                    # placement
+                    numerator = (
+                        self._mu
+                        - (
+                            node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                            - node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                        )
+                    ) ** 2
+                    exponent = -1.0 * numerator / (1 + 2 * (self._sigma ** 2))
+                    expterm = np.exp(exponent)
+                    # compute additive connector energy term
+                    e_connector = (tau / logterm) * expterm
+                    # submodel energy: additive
+                    energy = (
+                        node1[&#34;pspairs&#34;][n1count][&#34;energy&#34;]
+                        + node2[&#34;pspairs&#34;][n2count][&#34;energy&#34;]
+                    ) + e_connector
+                    # submodel position: average of daughter positions
+                    position = (
+                        node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                        + node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                    ) / 2
+
+                    # if BOTH nodes are pssms, avoid pssm overlapping
+                    if self.node1.is_pssm() and self.node2.is_pssm():
+                        # determine largest PSSM
+                        p_len = (
+                            self.node1.get_length()
+                            if self.node1.get_length()
+                            &gt; self.node2.get_length()
+                            else self.node2.get_length()
+                        )
+                        # determine if overlap exists, skip combo if there is
+                        if (
+                                abs(
+                                    round(node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;])
+                                    - round(node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;])
+                                ) &lt; p_len
+                        ):
+                            continue
+
+                    # if ONE of the nodes is a PSSM, make sure its position
+                    # does not overlap with blocked positions
+                    if self.node1.is_pssm():
+                        p_len = self.node1.get_length()
+                        startpos1 = round(
+                            node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                        ) - round(p_len / 2)
+                        blocked = False
+                        for jpos in range(startpos1, startpos1 + p_len):
+                            if jpos in blocks:
+                                blocked = True
+                                break
+                        # if position has been blocked, skip this combo
+                        if blocked:
+                            continue
+                    if self.node2.is_pssm():
+                        p_len = self.node2.get_length()
+                        startpos2 = round(
+                            node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                        ) - round(p_len / 2)
+                        blocked = False
+                        for jpos in range(startpos2, startpos2 + p_len):
+                            if jpos in blocks:
+                                blocked = True
+                                break
+                        # if position has been blocked, skip this combo
+                        if blocked:
+                            continue
+                    # if this energy is the best so far, annotate it
+                    # set confset to true, since we have obtained a valid
+                    # configuration
+                    if energy &gt; maxenergy:
+                        maxenergy = energy
+                        maxposition = position
+                        max1 = n1count
+                        max2 = n2count
+                        confset = True
+
+                # increase base configuration counter
+                placecnt = placecnt + 1
+
+            # print(&#39;Max1: &#39;,node1[&#39;pspairs&#39;][max1][&#39;pos&#39;])
+            # print(&#39;Max2: &#39;,node2[&#39;pspairs&#39;][max2][&#39;pos&#39;])
+
+        # block the positions of this connector&#39;s PSSMs
+        if self.node1.is_pssm():
+            n1length = self.node1.get_length()
+            blockstartpos1 = round(node1[&#34;pspairs&#34;][max1][&#34;pos&#34;]) - round(
+                n1length / 2
+            )
+            for blockade in range(n1length):
+                blocks.append(blockstartpos1 + blockade)
+                blockers.append(self.node1._id)
+        if self.node2.is_pssm():
+            n2length = self.node2.get_length()
+            blockstartpos2 = round(node2[&#34;pspairs&#34;][max2][&#34;pos&#34;]) - round(
+                n2length / 2
+            )
+            for blockade in range(n2length):
+                blocks.append(blockstartpos2 + blockade)
+                blockers.append(self.node2._id)
+
+        pair = {&#34;pos&#34;: maxposition, &#34;energy&#34;: maxenergy}
+
+        return {&#34;pspairs&#34;: [pair], &#34;blocked&#34;: blocks, &#34;blocker&#34;: blockers}
+
+    # pylint: enable=R1702
+    # pylint: enable=R0915
+
+    def set_node(self, node, _id) -&gt; None:
+        &#34;&#34;&#34;Sets the node on a given ID
+
+        Args:
+            node: Node to insert in the tree
+            _id: id to insert the node
+
+        &#34;&#34;&#34;
+
+        if self.node1._id == _id:
+            self.node1 = node
+        elif self.node2._id == _id:
+            self.node2 = node
+        else:
+            self.node1.set_node(node, _id)
+            self.node2.set_node(node, _id)
+
+    def reset_id(self, new_id: int) -&gt; int:
+        &#34;&#34;&#34;Resets the id parameter based on a given_ID
+
+        Args:
+            new_id: Base id to set the subtree IDs
+
+        Returns:
+            id of the last id assigned in the tree
+
+        &#34;&#34;&#34;
+        new_id = self.node1.reset_id(new_id)
+        self._id = new_id
+        new_id = self.node2.reset_id(new_id + 1)
+        return new_id
+
+    # pylint: disable=W0613
+    def mutate(self, org_factory) -&gt; None:
+        &#34;&#34;&#34;mutation for a connector
+
+        Args:
+            org_factory(organism_factory): Organism Facory
+        &#34;&#34;&#34;
+        # print(&#34;Mutating Connector...&#34; + str(self.ID))
+        if random.random() &lt; self.mutate_probability_sigma:
+            # Alter sigma
+            self._sigma += random.randint(
+                -self.mutate_variance_sigma, self.mutate_variance_sigma
+            )
+
+        if random.random() &lt; self.mutate_probability_mu:
+            # Alter mu
+            self._mu += random.randint(
+                -self.mutate_variance_mu, self.mutate_variance_mu
+            )
+
+        if random.random() &lt; self.mutate_probability_swap:
+            # Swap connectors
+            tmp_node = self.node1
+            self.node1 = self.node2
+            self.node2 = tmp_node
+
+    # pylint: enable=W0613
+
+    def print(self, distance: int) -&gt; None:
+        &#34;&#34;&#34;It prints the connector mu, sigma values and its children values in
+           tree structure
+
+        Args:
+            distance: Depth in the tree
+        &#34;&#34;&#34;
+        print(
+            &#34;   |&#34; * distance
+            + &#34; - C&#34;
+            + str(self.ID)
+            + &#34; m: {} s: {}&#34;.format(self.mu, self.sigma)
+        )
+        self.node1.print(distance + 1)
+        self.node2.print(distance + 1)
+
+    def export(self, export_file, level: int) -&gt; None:
+        &#34;&#34;&#34;Exports Connector data to the given file
+
+        Args:
+            export_file (file): File to export the conector
+            level: Depth in the tree
+
+        &#34;&#34;&#34;
+        export_file.write(
+            &#34;\n&#34;
+            + &#34;   |&#34; * level
+            + &#34; - C&#34;
+            + str(self._id)
+            + &#34; m: {} s: {}&#34;.format(self._mu, self._sigma)
+        )
+        self.node1.export(export_file, level + 1)
+        self.node2.export(export_file, level + 1)
+
+    # pylint: disable=R0201
+    def is_connector(self) -&gt; bool:
+        &#34;&#34;&#34;node is connector
+
+        Returns:
+            True because is a connector
+        &#34;&#34;&#34;
+        return True
+
+    def is_pssm(self) -&gt; bool:
+        &#34;&#34;&#34;node is not a pssm
+
+        Returns:
+            False because is a connector
+        &#34;&#34;&#34;
+        return False</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.objects.node_object.Node" href="node_object.html#src.objects.node_object.Node">Node</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.objects.connector_object.ConnectorObject.count_nodes"><code class="name flex">
+<span>def <span class="ident">count_nodes</span></span>(<span>self) -> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Counts the number of nodes below the node (including itself)</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Number</code> of <code>nodes below the current connector</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def count_nodes(self) -&gt; int:
+    &#34;&#34;&#34;Counts the number of nodes below the node (including itself)
+
+    Returns:
+        Number of nodes below the current connector
+    &#34;&#34;&#34;
+    return self.node1.count_nodes() + self.node2.count_nodes() + 1</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.export"><code class="name flex">
+<span>def <span class="ident">export</span></span>(<span>self, export_file, level: int) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Exports Connector data to the given file</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>export_file</code></strong> :&ensp;<code>file</code></dt>
+<dd>File to export the conector</dd>
+<dt><strong><code>level</code></strong></dt>
+<dd>Depth in the tree</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export(self, export_file, level: int) -&gt; None:
+    &#34;&#34;&#34;Exports Connector data to the given file
+
+    Args:
+        export_file (file): File to export the conector
+        level: Depth in the tree
+
+    &#34;&#34;&#34;
+    export_file.write(
+        &#34;\n&#34;
+        + &#34;   |&#34; * level
+        + &#34; - C&#34;
+        + str(self._id)
+        + &#34; m: {} s: {}&#34;.format(self._mu, self._sigma)
+    )
+    self.node1.export(export_file, level + 1)
+    self.node2.export(export_file, level + 1)</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.get_all_pssm"><code class="name flex">
+<span>def <span class="ident">get_all_pssm</span></span>(<span>self) -> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns an array of all pssm objects of the organism</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List with all the pssm</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_all_pssm(self) -&gt; list:
+    &#34;&#34;&#34;returns an array of all pssm objects of the organism
+
+    Returns:
+        List with all the pssm
+    &#34;&#34;&#34;
+    return self.node1.getAllPssm() + self.node2.getAllPssm()</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.get_node"><code class="name flex">
+<span>def <span class="ident">get_node</span></span>(<span>self, objective: int, node_count: int) -> <a title="src.objects.node_object.Node" href="node_object.html#src.objects.node_object.Node">Node</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get a specific node based on a count and the objective node</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>objective</code></strong></dt>
+<dd>ID of the objectivo node to return</dd>
+<dt><strong><code>node_count</code></strong></dt>
+<dd>Number of nodes analized</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Node with the objective. None otherwise</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_node(self, objective: int, node_count: int) -&gt; Node:
+    &#34;&#34;&#34;Get a specific node based on a count and the objective node
+
+    Args:
+        objective: ID of the objectivo node to return
+        node_count: Number of nodes analized
+
+    Returns:
+        Node with the objective. None otherwise
+    &#34;&#34;&#34;
+    left_nodes = self.node1.count_nodes()
+    node_number = left_nodes + node_count
+    returned_node = None
+
+    if node_number == objective:
+        # We are on the node we are searching
+        returned_node = self
+    elif node_number &lt; objective:
+        # The node is on the right side
+        returned_node = self.node2.get_node(objective, node_number + 1)
+    elif node_number &gt; objective:
+        # The node is on the left side
+        returned_node = self.node1.get_node(objective, node_count)
+
+    return returned_node</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.get_parent"><code class="name flex">
+<span>def <span class="ident">get_parent</span></span>(<span>self, _id: int) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the parent node of a given ID and if it is the left child</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>_id</code></strong></dt>
+<dd>Identificator of the child node</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dictionary with the parent info if exists:</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>"isRootNode": True if the _id if from the root node and has.
+no parent
+"self":
+Node object with the parent of the _id child.
+"isLeftSide": True if _id child is on the left side.
+False otherwise.</p>
+<dl>
+<dt><code>if the parent does not exist, returns None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_parent(self, _id: int) -&gt; dict:
+    &#34;&#34;&#34;Get the parent node of a given ID and if it is the left child
+
+    Args:
+        _id: Identificator of the child node
+
+    Returns:
+        dictionary with the parent info if exists:
+        &#34;isRootNode&#34;: True if the _id if from the root node and has.
+                      no parent
+        &#34;self&#34;:       Node object with the parent of the _id child.
+        &#34;isLeftSide&#34;: True if _id child is on the left side.
+                      False otherwise.
+
+        if the parent does not exist, returns None
+    &#34;&#34;&#34;
+
+    if self.node1._id == _id:
+        # Return itself and specify child is on left side
+        return {&#34;is_root_node&#34;: False, &#34;self&#34;: self, &#34;is_left_side&#34;: True}
+
+    if self.node2._id == _id:
+        # Return itself and specify child is on right side
+        return {&#34;is_root_node&#34;: False, &#34;self&#34;: self, &#34;is_left_side&#34;: False}
+
+    check_node = None
+    check_node = self.node1.get_parent(_id)
+    if check_node is None:
+        check_node = self.node2.get_parent(_id)
+    return check_node</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.get_placement"><code class="name flex">
+<span>def <span class="ident">get_placement</span></span>(<span>self, sDNA: str, sDNAlen: int, blocks: list, blockers: list) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This is a position/score propagation method, defined for connector
+objects.
+It is invoked by the placement method in the organism, for the root
+connector object, and calls itself recursively.
+The function calls itself until reaching terminal connectors, which
+call onto PSSM objects.
+At that point, the call to the getPlacement function in PSSM nodes
+leads to the evaluation of the PSSM node across all the sequence,
+and it returns the score/position pairs, sorted by descending score.</p>
+<p>The connector function then propagates this up, taking the middle
+position between both PSSMs and adding the connector energy to the
+energies provided by the PSSMs.</p>
+<p>The connector determines (i.e. freezes) the PSSM locations, adding
+them to the block list that is passed as a parameter.</p>
+<p>Further connector objects proceed in the same manner, computing
+middle distance and adding their energy contribution, until the
+energy reaches the root node, and is returned as the fitness for
+the organism.</p>
+<p>The energy contribution of each connector is: EN1 + EN2 + Tau * EC,
+where EN1 is the energy of its daugher element 1, and EN2 that of
+daughter element 2. The EC connector energy component is an
+exponential function controlled by the difference in the observed
+distance of the elements
+of the connector with respect to an ideal
+mean distance (mu), and modulated by a dispersion parameter (sigma).
+Tau controls the "weight" of the connector contribution to energy.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>sDNA</code></strong></dt>
+<dd>DNA sequence to compute energy</dd>
+<dt><strong><code>sDNAlen</code></strong></dt>
+<dd>length of the DNA sequence</dd>
+<dt><strong><code>blocks</code></strong></dt>
+<dd>TODO</dd>
+<dt><strong><code>blockers</code></strong></dt>
+<dd>ids of the blocked nodes</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dictionary with the info about the energy</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>"pspairs": TODO
+"blocked": TODO
+"blocker": TODO</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_placement(
+    self, sDNA: str, sDNAlen: int, blocks: list, blockers: list
+) -&gt; dict:
+    &#34;&#34;&#34;This is a position/score propagation method, defined for connector
+       objects.
+       It is invoked by the placement method in the organism, for the root
+       connector object, and calls itself recursively.
+       The function calls itself until reaching terminal connectors, which
+       call onto PSSM objects.
+       At that point, the call to the getPlacement function in PSSM nodes
+       leads to the evaluation of the PSSM node across all the sequence,
+       and it returns the score/position pairs, sorted by descending score.
+
+       The connector function then propagates this up, taking the middle
+       position between both PSSMs and adding the connector energy to the
+       energies provided by the PSSMs.
+
+       The connector determines (i.e. freezes) the PSSM locations, adding
+       them to the block list that is passed as a parameter.
+
+       Further connector objects proceed in the same manner, computing
+       middle distance and adding their energy contribution, until the
+       energy reaches the root node, and is returned as the fitness for
+       the organism.
+
+       The energy contribution of each connector is: EN1 + EN2 + Tau * EC,
+       where EN1 is the energy of its daugher element 1, and EN2 that of
+       daughter element 2. The EC connector energy component is an
+       exponential function controlled by the difference in the observed
+       distance of the elements  of the connector with respect to an ideal
+       mean distance (mu), and modulated by a dispersion parameter (sigma).
+       Tau controls the &#34;weight&#34; of the connector contribution to energy.
+
+    Args:
+        sDNA: DNA sequence to compute energy
+        sDNAlen: length of the DNA sequence
+        blocks: TODO
+        blockers: ids of the blocked nodes
+
+    Returns:
+        dictionary with the info about the energy
+        &#34;pspairs&#34;: TODO
+        &#34;blocked&#34;: TODO
+        &#34;blocker&#34;: TODO
+
+    &#34;&#34;&#34;
+
+    # This tau shows how much value we give to the connector fit
+    tau = self.tau
+
+    # ask daughter nodes what their placement is
+    # placement call will return a vector of positions (for PSSMs) and
+    # their scores (sorted descending by score) , as well as an udpated
+    # block/blocker vector
+    node1 = self.node1.get_placement(sDNA, sDNAlen, blocks, blockers)
+    node2 = self.node2.get_placement(sDNA, sDNAlen, blocks, blockers)
+
+    # precompute connector energy term (not dependent on PSSM placement)
+    logterm = np.log10(10 + self._sigma ** 2)
+
+    maxenergy = -np.inf
+    maxposition = 0
+    max1 = 0
+    max2 = 0
+    placecnt = 0
+    placeopt = self.placement_options
+    confset = False
+    # iterate over all possible configurations of sub-node placements
+    # and determine the optimal one. this goes on for a _minimum_ number of
+    # iterations (user-defined), but continues if a satisfactory
+    # configuration has not been found (for instance, because
+    # all tried configurations generated conflicts with blocked positions)
+    # the two for loops iterate over possible subset of configurations
+    # if a valid solution is not found, they iterate over next subset
+    # this will take place when at least one of the nodes is a PSSM and has
+    # returned more than one possible position (although in theory
+    # connectors could also return more than one position)
+
+    while not confset:
+        # set range according to availability of positions
+        if len(node1[&#34;pspairs&#34;]) &gt; placeopt:
+            range1st = placecnt
+            range1nd = placecnt + placeopt
+        else:
+            range1st = 0
+            range1nd = 1
+        if len(node2[&#34;pspairs&#34;]) &gt; placeopt:
+            range2st = placecnt
+            range2nd = placecnt + placeopt
+        else:
+            range2st = 0
+            range2nd = 1
+
+        for n1count in range(range1st, range1nd):
+            for n2count in range(range2st, range2nd):
+                # compute connector energy terms that depend on PSSM
+                # placement
+                numerator = (
+                    self._mu
+                    - (
+                        node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                        - node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                    )
+                ) ** 2
+                exponent = -1.0 * numerator / (1 + 2 * (self._sigma ** 2))
+                expterm = np.exp(exponent)
+                # compute additive connector energy term
+                e_connector = (tau / logterm) * expterm
+                # submodel energy: additive
+                energy = (
+                    node1[&#34;pspairs&#34;][n1count][&#34;energy&#34;]
+                    + node2[&#34;pspairs&#34;][n2count][&#34;energy&#34;]
+                ) + e_connector
+                # submodel position: average of daughter positions
+                position = (
+                    node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                    + node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                ) / 2
+
+                # if BOTH nodes are pssms, avoid pssm overlapping
+                if self.node1.is_pssm() and self.node2.is_pssm():
+                    # determine largest PSSM
+                    p_len = (
+                        self.node1.get_length()
+                        if self.node1.get_length()
+                        &gt; self.node2.get_length()
+                        else self.node2.get_length()
+                    )
+                    # determine if overlap exists, skip combo if there is
+                    if (
+                            abs(
+                                round(node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;])
+                                - round(node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;])
+                            ) &lt; p_len
+                    ):
+                        continue
+
+                # if ONE of the nodes is a PSSM, make sure its position
+                # does not overlap with blocked positions
+                if self.node1.is_pssm():
+                    p_len = self.node1.get_length()
+                    startpos1 = round(
+                        node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                    ) - round(p_len / 2)
+                    blocked = False
+                    for jpos in range(startpos1, startpos1 + p_len):
+                        if jpos in blocks:
+                            blocked = True
+                            break
+                    # if position has been blocked, skip this combo
+                    if blocked:
+                        continue
+                if self.node2.is_pssm():
+                    p_len = self.node2.get_length()
+                    startpos2 = round(
+                        node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                    ) - round(p_len / 2)
+                    blocked = False
+                    for jpos in range(startpos2, startpos2 + p_len):
+                        if jpos in blocks:
+                            blocked = True
+                            break
+                    # if position has been blocked, skip this combo
+                    if blocked:
+                        continue
+                # if this energy is the best so far, annotate it
+                # set confset to true, since we have obtained a valid
+                # configuration
+                if energy &gt; maxenergy:
+                    maxenergy = energy
+                    maxposition = position
+                    max1 = n1count
+                    max2 = n2count
+                    confset = True
+
+            # increase base configuration counter
+            placecnt = placecnt + 1
+
+        # print(&#39;Max1: &#39;,node1[&#39;pspairs&#39;][max1][&#39;pos&#39;])
+        # print(&#39;Max2: &#39;,node2[&#39;pspairs&#39;][max2][&#39;pos&#39;])
+
+    # block the positions of this connector&#39;s PSSMs
+    if self.node1.is_pssm():
+        n1length = self.node1.get_length()
+        blockstartpos1 = round(node1[&#34;pspairs&#34;][max1][&#34;pos&#34;]) - round(
+            n1length / 2
+        )
+        for blockade in range(n1length):
+            blocks.append(blockstartpos1 + blockade)
+            blockers.append(self.node1._id)
+    if self.node2.is_pssm():
+        n2length = self.node2.get_length()
+        blockstartpos2 = round(node2[&#34;pspairs&#34;][max2][&#34;pos&#34;]) - round(
+            n2length / 2
+        )
+        for blockade in range(n2length):
+            blocks.append(blockstartpos2 + blockade)
+            blockers.append(self.node2._id)
+
+    pair = {&#34;pos&#34;: maxposition, &#34;energy&#34;: maxenergy}
+
+    return {&#34;pspairs&#34;: [pair], &#34;blocked&#34;: blocks, &#34;blocker&#34;: blockers}</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.is_connector"><code class="name flex">
+<span>def <span class="ident">is_connector</span></span>(<span>self) -> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>node is connector</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>True because is a connector</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_connector(self) -&gt; bool:
+    &#34;&#34;&#34;node is connector
+
+    Returns:
+        True because is a connector
+    &#34;&#34;&#34;
+    return True</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.is_pssm"><code class="name flex">
+<span>def <span class="ident">is_pssm</span></span>(<span>self) -> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>node is not a pssm</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>False because is a connector</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_pssm(self) -&gt; bool:
+    &#34;&#34;&#34;node is not a pssm
+
+    Returns:
+        False because is a connector
+    &#34;&#34;&#34;
+    return False</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.mutate"><code class="name flex">
+<span>def <span class="ident">mutate</span></span>(<span>self, org_factory) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>mutation for a connector</p>
+<h2 id="args">Args</h2>
+<p>org_factory(organism_factory): Organism Facory</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mutate(self, org_factory) -&gt; None:
+    &#34;&#34;&#34;mutation for a connector
+
+    Args:
+        org_factory(organism_factory): Organism Facory
+    &#34;&#34;&#34;
+    # print(&#34;Mutating Connector...&#34; + str(self.ID))
+    if random.random() &lt; self.mutate_probability_sigma:
+        # Alter sigma
+        self._sigma += random.randint(
+            -self.mutate_variance_sigma, self.mutate_variance_sigma
+        )
+
+    if random.random() &lt; self.mutate_probability_mu:
+        # Alter mu
+        self._mu += random.randint(
+            -self.mutate_variance_mu, self.mutate_variance_mu
+        )
+
+    if random.random() &lt; self.mutate_probability_swap:
+        # Swap connectors
+        tmp_node = self.node1
+        self.node1 = self.node2
+        self.node2 = tmp_node</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.print"><code class="name flex">
+<span>def <span class="ident">print</span></span>(<span>self, distance: int) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>It prints the connector mu, sigma values and its children values in
+tree structure</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>distance</code></strong></dt>
+<dd>Depth in the tree</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print(self, distance: int) -&gt; None:
+    &#34;&#34;&#34;It prints the connector mu, sigma values and its children values in
+       tree structure
+
+    Args:
+        distance: Depth in the tree
+    &#34;&#34;&#34;
+    print(
+        &#34;   |&#34; * distance
+        + &#34; - C&#34;
+        + str(self.ID)
+        + &#34; m: {} s: {}&#34;.format(self.mu, self.sigma)
+    )
+    self.node1.print(distance + 1)
+    self.node2.print(distance + 1)</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.reset_id"><code class="name flex">
+<span>def <span class="ident">reset_id</span></span>(<span>self, new_id: int) -> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Resets the id parameter based on a given_ID</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>new_id</code></strong></dt>
+<dd>Base id to set the subtree IDs</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>id</code> of <code>the last id assigned in the tree</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reset_id(self, new_id: int) -&gt; int:
+    &#34;&#34;&#34;Resets the id parameter based on a given_ID
+
+    Args:
+        new_id: Base id to set the subtree IDs
+
+    Returns:
+        id of the last id assigned in the tree
+
+    &#34;&#34;&#34;
+    new_id = self.node1.reset_id(new_id)
+    self._id = new_id
+    new_id = self.node2.reset_id(new_id + 1)
+    return new_id</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.set_mu"><code class="name flex">
+<span>def <span class="ident">set_mu</span></span>(<span>self, _mu: int) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set mu variable</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>_mu</code></strong></dt>
+<dd>Mean distance between node1 and node2</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_mu(self, _mu: int) -&gt; None:
+    &#34;&#34;&#34;Set mu variable
+
+    Args:
+        _mu: Mean distance between node1 and node2
+    &#34;&#34;&#34;
+    self._mu = _mu</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.set_node"><code class="name flex">
+<span>def <span class="ident">set_node</span></span>(<span>self, node, _id) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets the node on a given ID</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>Node to insert in the tree</dd>
+<dt><strong><code>_id</code></strong></dt>
+<dd>id to insert the node</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_node(self, node, _id) -&gt; None:
+    &#34;&#34;&#34;Sets the node on a given ID
+
+    Args:
+        node: Node to insert in the tree
+        _id: id to insert the node
+
+    &#34;&#34;&#34;
+
+    if self.node1._id == _id:
+        self.node1 = node
+    elif self.node2._id == _id:
+        self.node2 = node
+    else:
+        self.node1.set_node(node, _id)
+        self.node2.set_node(node, _id)</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.set_node1"><code class="name flex">
+<span>def <span class="ident">set_node1</span></span>(<span>self, node1: <a title="src.objects.node_object.Node" href="node_object.html#src.objects.node_object.Node">Node</a>) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set left node</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node1</code></strong></dt>
+<dd>Conceptual left node</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_node1(self, node1: Node) -&gt; None:
+    &#34;&#34;&#34;Set left node
+
+    Args:
+        node1: Conceptual left node
+    &#34;&#34;&#34;
+    self.node1 = node1</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.set_node2"><code class="name flex">
+<span>def <span class="ident">set_node2</span></span>(<span>self, node2: <a title="src.objects.node_object.Node" href="node_object.html#src.objects.node_object.Node">Node</a>) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set right node</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node2</code></strong></dt>
+<dd>Conceptual right node</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_node2(self, node2: Node) -&gt; None:
+    &#34;&#34;&#34;Set right node
+
+    Args:
+        node2: Conceptual right node
+    &#34;&#34;&#34;
+    self.node2 = node2</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.set_sigma"><code class="name flex">
+<span>def <span class="ident">set_sigma</span></span>(<span>self, sigma: int) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set sigma variable</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>sigma</code></strong></dt>
+<dd>Variance between node 1 and node2</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_sigma(self, sigma: int) -&gt; None:
+    &#34;&#34;&#34;Set sigma variable
+
+    Args:
+        sigma: Variance between node 1 and node2
+    &#34;&#34;&#34;
+    self._sigma = sigma</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.objects" href="index.html">src.objects</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.objects.connector_object.ConnectorObject" href="#src.objects.connector_object.ConnectorObject">ConnectorObject</a></code></h4>
+<ul class="two-column">
+<li><code><a title="src.objects.connector_object.ConnectorObject.count_nodes" href="#src.objects.connector_object.ConnectorObject.count_nodes">count_nodes</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.export" href="#src.objects.connector_object.ConnectorObject.export">export</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.get_all_pssm" href="#src.objects.connector_object.ConnectorObject.get_all_pssm">get_all_pssm</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.get_node" href="#src.objects.connector_object.ConnectorObject.get_node">get_node</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.get_parent" href="#src.objects.connector_object.ConnectorObject.get_parent">get_parent</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.get_placement" href="#src.objects.connector_object.ConnectorObject.get_placement">get_placement</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.is_connector" href="#src.objects.connector_object.ConnectorObject.is_connector">is_connector</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.is_pssm" href="#src.objects.connector_object.ConnectorObject.is_pssm">is_pssm</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.mutate" href="#src.objects.connector_object.ConnectorObject.mutate">mutate</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.print" href="#src.objects.connector_object.ConnectorObject.print">print</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.reset_id" href="#src.objects.connector_object.ConnectorObject.reset_id">reset_id</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.set_mu" href="#src.objects.connector_object.ConnectorObject.set_mu">set_mu</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.set_node" href="#src.objects.connector_object.ConnectorObject.set_node">set_node</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.set_node1" href="#src.objects.connector_object.ConnectorObject.set_node1">set_node1</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.set_node2" href="#src.objects.connector_object.ConnectorObject.set_node2">set_node2</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.set_sigma" href="#src.objects.connector_object.ConnectorObject.set_sigma">set_sigma</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
