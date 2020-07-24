@@ -204,10 +204,18 @@ class OrganismObject:
         """
 
         # call recursively to get the total fitness of the organism
-        node_root = self.root_node.get_placement(s_dna, len(s_dna), [], [])
+        node_root = self.root_node.get_placement_2(s_dna, len(s_dna))
+
+        if len(node_root) < 1:
+            print("Too few placement options")
+            return {
+                "energy": -1000,
+                "position": 0,
+                "lock_vector": []
+                    }
 
         # return score, blocks and blokcers in that sequence
-        return node_root
+        return node_root[0]
 
     def get_seq_set_fitness(self, a_dna: list) -> float:
         """Return the total Fitness for an array of DNA sequences and the
@@ -226,16 +234,16 @@ class OrganismObject:
         if self.cumulative_fit_method == "sum":
 
             for s_dna in a_dna:
-                sfit = self.get_seq_fitness(s_dna.lower())
-                score += sfit["pspairs"][0]["energy"]
+                sfit = self.get_seq_fitness(s_dna)
+                score += sfit["energy"]
 
         # mean method returns the mean of all fitness to SNA sequences
         elif self.cumulative_fit_method == "mean":
 
             scores = []
             for s_dna in a_dna:
-                sfit = self.get_seq_fitness(s_dna.lower())
-                scores.append(sfit["pspairs"][0]["energy"])
+                sfit = self.get_seq_fitness(s_dna)
+                scores.append(sfit["energy"])
             score = np.mean(scores)
 
         return score
@@ -351,23 +359,16 @@ class OrganismObject:
             # positions for PSSMs are in blocks and blocked lists, returned by
             # getSeqFitness. we zip them and then iterate over the zip to
             # print the PSSMs in their locations respective to the sequence
-            positions = sfit["blocked"]
-            nodes = sfit["blocker"]
-            stuff = list(zip(nodes, positions))
-            stuff.sort(key=lambda k: k[1])
-            alter = 0
-            for ids, pos in stuff:
+            positions = sfit["lock_vector"]
+            for pssm in positions:
                 # print _id, capped to the length of PSSM
-                str_id = str(ids)
-                _p = round(pos)
+                _p = round(pssm["position"])
+                pssm_str = (str(pssm["id"]) * pssm["length"])[:pssm["length"]]
+
                 # fill up map at correct positions
                 map_positions = (
-                    map_positions[0:_p]
-                    + str_id[alter]
-                    + map_positions[_p + 1:]
+                    map_positions[:_p] + pssm_str + map_positions[_p + pssm["length"]:]
                 )
-                if len(str_id) > 1:
-                    alter = 0 if alter == 1 else 1
 
             # write map to file for this sequence
             results_file.write(map_positions + "\n")
@@ -392,26 +393,21 @@ class OrganismObject:
 
         # create an empy positions map
         map_positions = "-" * len(s_dna)
-
+        
         # positions for PSSMs are in blocked and blocked lists, returned by
         # getSeqFitness. we zip them and then iterate over the zip to
         # print the PSSMs in their locations respective to the sequence
-        positions = sfit["blocked"]
-        nodes = sfit["blocker"]
-        stuff = list(zip(nodes, positions))
-        stuff.sort(key=lambda k: k[1])
-        alter = 0
-        for ids, pos in stuff:
+        positions = sfit["lock_vector"]
+        for pssm in positions:
             # print _id, capped to the length of PSSM
-            str_id = str(ids)
-            _p = round(pos)
+            _p = round(pssm["position"])
+            pssm_str = (str(pssm["id"]) * pssm["length"])[:pssm["length"]]
+
             # fill up map at correct positions
             map_positions = (
-                map_positions[0:_p] + str_id[alter] + map_positions[_p + 1:]
+                map_positions[:_p] + pssm_str + map_positions[_p + pssm["length"]:]
             )
             # handle two-digit positions, by alterning between digits
-            if len(str_id) > 1:
-                alter = 0 if alter == 1 else 1
 
         # return map for this sequence
         return "{}\n{}".format(s_dna, map_positions)

@@ -267,15 +267,22 @@ class ConnectorObject(Node):
                     # compute additive connector energy term
                     e_connector = (tau / logterm) * expterm
                     # submodel energy: additive
-                    energy = (
-                        node1["pspairs"][n1count]["energy"]
-                        + node2["pspairs"][n2count]["energy"]
-                    ) + e_connector
-                    # submodel position: average of daughter positions
-                    position = (
-                        node1["pspairs"][n1count]["pos"]
-                        + node2["pspairs"][n2count]["pos"]
-                    ) / 2
+                    try:
+                        energy = (
+                            node1["pspairs"][n1count]["energy"]
+                            + node2["pspairs"][n2count]["energy"]
+                        ) + e_connector
+                        # submodel position: average of daughter positions
+                        position = (
+                            node1["pspairs"][n1count]["pos"]
+                            + node2["pspairs"][n2count]["pos"]
+                        ) / 2
+
+                    except Exception as e:
+                        print(e)
+                        print("Values of\nn1count: {}\nn2count: {}\n".format(n1count, n2count))
+                        print("{} {}".format(len(node2["pspairs"]), placeopt))
+                        print("{} {}".format(len(node1["pspairs"]), placeopt))
 
                     # if BOTH nodes are pssms, avoid pssm overlapping
                     if self.node1.is_pssm() and self.node2.is_pssm():
@@ -294,6 +301,7 @@ class ConnectorObject(Node):
                                 ) < p_len
                         ):
                             continue
+                            #pass
 
                     # if ONE of the nodes is a PSSM, make sure its position
                     # does not overlap with blocked positions
@@ -363,6 +371,63 @@ class ConnectorObject(Node):
 
     # pylint: enable=R1702
     # pylint: enable=R0915
+    def get_placement_2(
+        self, s_dna: str, s_dna_len: int
+    ) -> list:
+        possible_candidates = []
+
+        possibilities_node_1 = self.node1.get_placement_2(s_dna, s_dna_len)
+        possibilities_node_2 = self.node2.get_placement_2(s_dna, s_dna_len)
+
+        logterm = np.log10(10 + self._sigma ** 2)
+
+        for possibility_1 in possibilities_node_1:
+            for possibility_2 in possibilities_node_2:
+
+                # Check that is not overlapping
+                is_overlapping = False
+                for pssm_1 in possibility_1["lock_vector"]:
+                    # if is_overlapping:
+                    #     continue
+                    for pssm_2 in possibility_2["lock_vector"]:
+                        # if is_overlapping:
+                        #     continue
+
+                        # It can be done in one sentence but in multiple lines
+                        # it looks more understandable.
+                        if (pssm_2["position"] < pssm_1["position"] + pssm_1["length"] and pssm_2["position"] >= pssm_1["position"]):
+                            is_overlapping = True
+
+                        if (pssm_1["position"] < pssm_2["position"] + pssm_2["length"] and pssm_1["position"] >= pssm_2["position"]):
+                            is_overlapping = True
+
+                if is_overlapping:
+                    continue
+
+                numerator = (
+                    self._mu
+                    - (
+                        possibility_2["position"] -
+                        possibility_1["position"]
+                    )
+                ) ** 2
+                exponent = -1.0 * numerator / (1 + 2 * (self._sigma ** 2))
+                expterm = np.exp(exponent)
+                # compute additive connector energy term
+                e_connector = (self.tau / logterm) * expterm
+
+                energy = possibility_1["energy"] + possibility_2["energy"] + e_connector
+                possible_candidates.append({
+                    "position": (possibility_1["position"] + possibility_2["position"]) / 2,
+                    "energy": energy,
+                    "lock_vector": possibility_1["lock_vector"] + possibility_2["lock_vector"]
+                    })
+
+        possible_candidates.sort(key=lambda c: c["energy"], reverse=True)
+
+        return possible_candidates[:self.placement_options]
+
+
 
     def set_node(self, node, _id) -> None:
         """Sets the node on a given ID

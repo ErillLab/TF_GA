@@ -40,6 +40,7 @@ class PssmObject(Node):
             "MUTATE_PROBABILITY_SHIFT_RIGHT"
         ]
         self.pseudo_count = config["PSEUDO_COUNT"]
+        self.placement_options = config["PLACEMENT_OPTIONS"]
         self.upper_print_probability = config["UPPER_PRINT_PROBABILITY"]
         self.scan_reverse_complement = config["SCAN_REVERSE_COMPLEMENT"]
         # It first calculates PSSM Matrix based on  pwm
@@ -243,6 +244,49 @@ class PssmObject(Node):
             "blocked": blocks,
             "blocker": blockers,
         }
+
+    def get_placement_2(
+            self, s_dna: str, s_dna_len: int
+    ) -> list:
+        """Sets the pssm in the DNA sequence.
+
+        Args:
+            s_dna: DNA sequence
+            s_dna_len: lenght of the dna sequence
+
+        Returns:
+            The N (placement_options configured) best options in dictionary
+            format:
+                "energy": Energy of the pssm
+                "position": Position of the pssm in the dna sequence
+                "lock_vector": list with the information of blocked pssm
+                    "ID": id of the pssm
+                    "position": starting position of the pssm
+                    "length": length of the pssm
+        """
+        possible_candidates = []
+        pssm_length = self.length
+        num_binding_sites = s_dna_len - pssm_length
+
+        for pos in range(num_binding_sites):
+            possible_candidates.append(
+                {
+                    "position": pos + (pssm_length/2),
+                    "energy": self.get_score(
+                        s_dna[pos: pos + pssm_length]
+                    ),
+                    "lock_vector": [{
+                        "id": self._id,
+                        "position": pos,
+                        "length": pssm_length
+                        }]
+                    }
+                )
+        possible_candidates.sort(key=lambda c: c["energy"], reverse=True)
+
+        return possible_candidates[:self.placement_options]
+
+
 
     def get_all_pssm(self) -> list:
         """Adds himself as a pssm recognizer
