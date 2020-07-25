@@ -191,7 +191,9 @@ class PssmObject(Node):
     def get_placement(
             self, s_dna: str, s_dna_len: int, blocks: list, blockers: list
     ) -> dict:
-        """Searchs sequence with PSSM ojbect returns position and score
+        """DEPRECATED
+        
+        Searchs sequence with PSSM ojbect returns position and score
 
         Args:
             s_dna: DNA sequence
@@ -249,6 +251,7 @@ class PssmObject(Node):
             self, s_dna: str, s_dna_len: int
     ) -> list:
         """Sets the pssm in the DNA sequence.
+        Iterate over the whole sequence and select the best N sites
 
         Args:
             s_dna: DNA sequence
@@ -285,8 +288,6 @@ class PssmObject(Node):
         possible_candidates.sort(key=lambda c: c["energy"], reverse=True)
 
         return possible_candidates[:self.placement_options]
-
-
 
     def get_all_pssm(self) -> list:
         """Adds himself as a pssm recognizer

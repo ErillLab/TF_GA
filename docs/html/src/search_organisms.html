@@ -711,7 +711,7 @@ def read_fasta_file(filename: str) -&gt; list:
     fasta_sequences = SeqIO.parse(open(filename), &#34;fasta&#34;)
 
     for fasta in fasta_sequences:
-        dataset.append(str(fasta.seq))
+        dataset.append(str(fasta.seq).lower())
 
     return dataset
 
@@ -1516,7 +1516,7 @@ we can adapt the current program to use Biopythons's Seq object.</p>
     fasta_sequences = SeqIO.parse(open(filename), &#34;fasta&#34;)
 
     for fasta in fasta_sequences:
-        dataset.append(str(fasta.seq))
+        dataset.append(str(fasta.seq).lower())
 
     return dataset</code></pre>
 </details>

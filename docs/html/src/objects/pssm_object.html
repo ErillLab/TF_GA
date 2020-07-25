@@ -69,6 +69,7 @@ class PssmObject(Node):
             &#34;MUTATE_PROBABILITY_SHIFT_RIGHT&#34;
         ]
         self.pseudo_count = config[&#34;PSEUDO_COUNT&#34;]
+        self.placement_options = config[&#34;PLACEMENT_OPTIONS&#34;]
         self.upper_print_probability = config[&#34;UPPER_PRINT_PROBABILITY&#34;]
         self.scan_reverse_complement = config[&#34;SCAN_REVERSE_COMPLEMENT&#34;]
         # It first calculates PSSM Matrix based on  pwm
@@ -219,7 +220,9 @@ class PssmObject(Node):
     def get_placement(
             self, s_dna: str, s_dna_len: int, blocks: list, blockers: list
     ) -&gt; dict:
-        &#34;&#34;&#34;Searchs sequence with PSSM ojbect returns position and score
+        &#34;&#34;&#34;DEPRECATED
+        
+        Searchs sequence with PSSM ojbect returns position and score
 
         Args:
             s_dna: DNA sequence
@@ -272,6 +275,48 @@ class PssmObject(Node):
             &#34;blocked&#34;: blocks,
             &#34;blocker&#34;: blockers,
         }
+
+    def get_placement_2(
+            self, s_dna: str, s_dna_len: int
+    ) -&gt; list:
+        &#34;&#34;&#34;Sets the pssm in the DNA sequence.
+        Iterate over the whole sequence and select the best N sites
+
+        Args:
+            s_dna: DNA sequence
+            s_dna_len: lenght of the dna sequence
+
+        Returns:
+            The N (placement_options configured) best options in dictionary
+            format:
+                &#34;energy&#34;: Energy of the pssm
+                &#34;position&#34;: Position of the pssm in the dna sequence
+                &#34;lock_vector&#34;: list with the information of blocked pssm
+                    &#34;ID&#34;: id of the pssm
+                    &#34;position&#34;: starting position of the pssm
+                    &#34;length&#34;: length of the pssm
+        &#34;&#34;&#34;
+        possible_candidates = []
+        pssm_length = self.length
+        num_binding_sites = s_dna_len - pssm_length
+
+        for pos in range(num_binding_sites):
+            possible_candidates.append(
+                {
+                    &#34;position&#34;: pos + (pssm_length/2),
+                    &#34;energy&#34;: self.get_score(
+                        s_dna[pos: pos + pssm_length]
+                    ),
+                    &#34;lock_vector&#34;: [{
+                        &#34;id&#34;: self._id,
+                        &#34;position&#34;: pos,
+                        &#34;length&#34;: pssm_length
+                        }]
+                    }
+                )
+        possible_candidates.sort(key=lambda c: c[&#34;energy&#34;], reverse=True)
+
+        return possible_candidates[:self.placement_options]
 
     def get_all_pssm(self) -&gt; list:
         &#34;&#34;&#34;Adds himself as a pssm recognizer
@@ -458,6 +503,7 @@ class PssmObject(Node):
             &#34;MUTATE_PROBABILITY_SHIFT_RIGHT&#34;
         ]
         self.pseudo_count = config[&#34;PSEUDO_COUNT&#34;]
+        self.placement_options = config[&#34;PLACEMENT_OPTIONS&#34;]
         self.upper_print_probability = config[&#34;UPPER_PRINT_PROBABILITY&#34;]
         self.scan_reverse_complement = config[&#34;SCAN_REVERSE_COMPLEMENT&#34;]
         # It first calculates PSSM Matrix based on  pwm
@@ -608,7 +654,9 @@ class PssmObject(Node):
     def get_placement(
             self, s_dna: str, s_dna_len: int, blocks: list, blockers: list
     ) -&gt; dict:
-        &#34;&#34;&#34;Searchs sequence with PSSM ojbect returns position and score
+        &#34;&#34;&#34;DEPRECATED
+        
+        Searchs sequence with PSSM ojbect returns position and score
 
         Args:
             s_dna: DNA sequence
@@ -661,6 +709,48 @@ class PssmObject(Node):
             &#34;blocked&#34;: blocks,
             &#34;blocker&#34;: blockers,
         }
+
+    def get_placement_2(
+            self, s_dna: str, s_dna_len: int
+    ) -&gt; list:
+        &#34;&#34;&#34;Sets the pssm in the DNA sequence.
+        Iterate over the whole sequence and select the best N sites
+
+        Args:
+            s_dna: DNA sequence
+            s_dna_len: lenght of the dna sequence
+
+        Returns:
+            The N (placement_options configured) best options in dictionary
+            format:
+                &#34;energy&#34;: Energy of the pssm
+                &#34;position&#34;: Position of the pssm in the dna sequence
+                &#34;lock_vector&#34;: list with the information of blocked pssm
+                    &#34;ID&#34;: id of the pssm
+                    &#34;position&#34;: starting position of the pssm
+                    &#34;length&#34;: length of the pssm
+        &#34;&#34;&#34;
+        possible_candidates = []
+        pssm_length = self.length
+        num_binding_sites = s_dna_len - pssm_length
+
+        for pos in range(num_binding_sites):
+            possible_candidates.append(
+                {
+                    &#34;position&#34;: pos + (pssm_length/2),
+                    &#34;energy&#34;: self.get_score(
+                        s_dna[pos: pos + pssm_length]
+                    ),
+                    &#34;lock_vector&#34;: [{
+                        &#34;id&#34;: self._id,
+                        &#34;position&#34;: pos,
+                        &#34;length&#34;: pssm_length
+                        }]
+                    }
+                )
+        possible_candidates.sort(key=lambda c: c[&#34;energy&#34;], reverse=True)
+
+        return possible_candidates[:self.placement_options]
 
     def get_all_pssm(self) -&gt; list:
         &#34;&#34;&#34;Adds himself as a pssm recognizer
@@ -968,7 +1058,8 @@ node</p>
 <span>def <span class="ident">get_placement</span></span>(<span>self, s_dna: str, s_dna_len: int, blocks: list, blockers: list) -> dict</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Searchs sequence with PSSM ojbect returns position and score</p>
+<div class="desc"><p>DEPRECATED</p>
+<p>Searchs sequence with PSSM ojbect returns position and score</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>s_dna</code></strong></dt>
@@ -995,7 +1086,9 @@ node</p>
 <pre><code class="python">def get_placement(
         self, s_dna: str, s_dna_len: int, blocks: list, blockers: list
 ) -&gt; dict:
-    &#34;&#34;&#34;Searchs sequence with PSSM ojbect returns position and score
+    &#34;&#34;&#34;DEPRECATED
+    
+    Searchs sequence with PSSM ojbect returns position and score
 
     Args:
         s_dna: DNA sequence
@@ -1048,6 +1141,78 @@ node</p>
         &#34;blocked&#34;: blocks,
         &#34;blocker&#34;: blockers,
     }</code></pre>
+</details>
+</dd>
+<dt id="src.objects.pssm_object.PssmObject.get_placement_2"><code class="name flex">
+<span>def <span class="ident">get_placement_2</span></span>(<span>self, s_dna: str, s_dna_len: int) -> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets the pssm in the DNA sequence.
+Iterate over the whole sequence and select the best N sites</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>s_dna</code></strong></dt>
+<dd>DNA sequence</dd>
+<dt><strong><code>s_dna_len</code></strong></dt>
+<dd>lenght of the dna sequence</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The N (placement_options configured) best options in dictionary</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>format:</code></dt>
+<dd>"energy": Energy of the pssm
+"position": Position of the pssm in the dna sequence
+"lock_vector": list with the information of blocked pssm
+"ID": id of the pssm
+"position": starting position of the pssm
+"length": length of the pssm</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_placement_2(
+        self, s_dna: str, s_dna_len: int
+) -&gt; list:
+    &#34;&#34;&#34;Sets the pssm in the DNA sequence.
+    Iterate over the whole sequence and select the best N sites
+
+    Args:
+        s_dna: DNA sequence
+        s_dna_len: lenght of the dna sequence
+
+    Returns:
+        The N (placement_options configured) best options in dictionary
+        format:
+            &#34;energy&#34;: Energy of the pssm
+            &#34;position&#34;: Position of the pssm in the dna sequence
+            &#34;lock_vector&#34;: list with the information of blocked pssm
+                &#34;ID&#34;: id of the pssm
+                &#34;position&#34;: starting position of the pssm
+                &#34;length&#34;: length of the pssm
+    &#34;&#34;&#34;
+    possible_candidates = []
+    pssm_length = self.length
+    num_binding_sites = s_dna_len - pssm_length
+
+    for pos in range(num_binding_sites):
+        possible_candidates.append(
+            {
+                &#34;position&#34;: pos + (pssm_length/2),
+                &#34;energy&#34;: self.get_score(
+                    s_dna[pos: pos + pssm_length]
+                ),
+                &#34;lock_vector&#34;: [{
+                    &#34;id&#34;: self._id,
+                    &#34;position&#34;: pos,
+                    &#34;length&#34;: pssm_length
+                    }]
+                }
+            )
+    possible_candidates.sort(key=lambda c: c[&#34;energy&#34;], reverse=True)
+
+    return possible_candidates[:self.placement_options]</code></pre>
 </details>
 </dd>
 <dt id="src.objects.pssm_object.PssmObject.get_score"><code class="name flex">
@@ -1397,6 +1562,7 @@ node</p>
 <li><code><a title="src.objects.pssm_object.PssmObject.get_node" href="#src.objects.pssm_object.PssmObject.get_node">get_node</a></code></li>
 <li><code><a title="src.objects.pssm_object.PssmObject.get_parent" href="#src.objects.pssm_object.PssmObject.get_parent">get_parent</a></code></li>
 <li><code><a title="src.objects.pssm_object.PssmObject.get_placement" href="#src.objects.pssm_object.PssmObject.get_placement">get_placement</a></code></li>
+<li><code><a title="src.objects.pssm_object.PssmObject.get_placement_2" href="#src.objects.pssm_object.PssmObject.get_placement_2">get_placement_2</a></code></li>
 <li><code><a title="src.objects.pssm_object.PssmObject.get_score" href="#src.objects.pssm_object.PssmObject.get_score">get_score</a></code></li>
 <li><code><a title="src.objects.pssm_object.PssmObject.is_connector" href="#src.objects.pssm_object.PssmObject.is_connector">is_connector</a></code></li>
 <li><code><a title="src.objects.pssm_object.PssmObject.is_pssm" href="#src.objects.pssm_object.PssmObject.is_pssm">is_pssm</a></code></li>

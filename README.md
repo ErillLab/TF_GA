@@ -109,6 +109,25 @@ You can create it using the following command:
 conda env create -f environment.yml
 ```
 
+## Generate documentation
+To generate documentation we use the `pdoc` command (not installed by default).
+
+```bash
+# Move to the source dir
+cd /path/to/project/src
+
+# Generate the new docmentation
+pdoc --html .
+
+# Remove old documentation
+rm -rf ../docs/html
+
+# Move the new documentation to the docs dir
+mv html/ ../docs/
+
+```
+
+
 ## Python related
 
 Developing in 

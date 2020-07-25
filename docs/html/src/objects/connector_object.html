@@ -190,35 +190,37 @@ class ConnectorObject(Node):
     def get_placement(
         self, sDNA: str, sDNAlen: int, blocks: list, blockers: list
     ) -&gt; dict:
-        &#34;&#34;&#34;This is a position/score propagation method, defined for connector
-           objects.
-           It is invoked by the placement method in the organism, for the root
-           connector object, and calls itself recursively.
-           The function calls itself until reaching terminal connectors, which
-           call onto PSSM objects.
-           At that point, the call to the getPlacement function in PSSM nodes
-           leads to the evaluation of the PSSM node across all the sequence,
-           and it returns the score/position pairs, sorted by descending score.
+        &#34;&#34;&#34;DEPRECATED
 
-           The connector function then propagates this up, taking the middle
-           position between both PSSMs and adding the connector energy to the
-           energies provided by the PSSMs.
+        This is a position/score propagation method, defined for connector
+        objects.
+        It is invoked by the placement method in the organism, for the root
+        connector object, and calls itself recursively.
+        The function calls itself until reaching terminal connectors, which
+        call onto PSSM objects.
+        At that point, the call to the getPlacement function in PSSM nodes
+        leads to the evaluation of the PSSM node across all the sequence,
+        and it returns the score/position pairs, sorted by descending score.
 
-           The connector determines (i.e. freezes) the PSSM locations, adding
-           them to the block list that is passed as a parameter.
+        The connector function then propagates this up, taking the middle
+        position between both PSSMs and adding the connector energy to the
+        energies provided by the PSSMs.
 
-           Further connector objects proceed in the same manner, computing
-           middle distance and adding their energy contribution, until the
-           energy reaches the root node, and is returned as the fitness for
-           the organism.
+        The connector determines (i.e. freezes) the PSSM locations, adding
+        them to the block list that is passed as a parameter.
 
-           The energy contribution of each connector is: EN1 + EN2 + Tau * EC,
-           where EN1 is the energy of its daugher element 1, and EN2 that of
-           daughter element 2. The EC connector energy component is an
-           exponential function controlled by the difference in the observed
-           distance of the elements  of the connector with respect to an ideal
-           mean distance (mu), and modulated by a dispersion parameter (sigma).
-           Tau controls the &#34;weight&#34; of the connector contribution to energy.
+        Further connector objects proceed in the same manner, computing
+        middle distance and adding their energy contribution, until the
+        energy reaches the root node, and is returned as the fitness for
+        the organism.
+
+        The energy contribution of each connector is: EN1 + EN2 + Tau * EC,
+        where EN1 is the energy of its daugher element 1, and EN2 that of
+        daughter element 2. The EC connector energy component is an
+        exponential function controlled by the difference in the observed
+        distance of the elements  of the connector with respect to an ideal
+        mean distance (mu), and modulated by a dispersion parameter (sigma).
+        Tau controls the &#34;weight&#34; of the connector contribution to energy.
 
         Args:
             sDNA: DNA sequence to compute energy
@@ -296,15 +298,22 @@ class ConnectorObject(Node):
                     # compute additive connector energy term
                     e_connector = (tau / logterm) * expterm
                     # submodel energy: additive
-                    energy = (
-                        node1[&#34;pspairs&#34;][n1count][&#34;energy&#34;]
-                        + node2[&#34;pspairs&#34;][n2count][&#34;energy&#34;]
-                    ) + e_connector
-                    # submodel position: average of daughter positions
-                    position = (
-                        node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
-                        + node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
-                    ) / 2
+                    try:
+                        energy = (
+                            node1[&#34;pspairs&#34;][n1count][&#34;energy&#34;]
+                            + node2[&#34;pspairs&#34;][n2count][&#34;energy&#34;]
+                        ) + e_connector
+                        # submodel position: average of daughter positions
+                        position = (
+                            node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                            + node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                        ) / 2
+
+                    except Exception as e:
+                        print(e)
+                        print(&#34;Values of\nn1count: {}\nn2count: {}\n&#34;.format(n1count, n2count))
+                        print(&#34;{} {}&#34;.format(len(node2[&#34;pspairs&#34;]), placeopt))
+                        print(&#34;{} {}&#34;.format(len(node1[&#34;pspairs&#34;]), placeopt))
 
                     # if BOTH nodes are pssms, avoid pssm overlapping
                     if self.node1.is_pssm() and self.node2.is_pssm():
@@ -323,6 +332,7 @@ class ConnectorObject(Node):
                                 ) &lt; p_len
                         ):
                             continue
+                            #pass
 
                     # if ONE of the nodes is a PSSM, make sure its position
                     # does not overlap with blocked positions
@@ -392,6 +402,75 @@ class ConnectorObject(Node):
 
     # pylint: enable=R1702
     # pylint: enable=R0915
+    def get_placement_2(
+        self, s_dna: str, s_dna_len: int
+    ) -&gt; list:
+        &#34;&#34;&#34;Compute the best option to connect its nodes.
+
+        Args:
+            s_dna: DNA sequence
+            s_dna_length: length of the DNA sequence
+
+        Returns:
+            list of the best placed nodes with this connector
+        &#34;&#34;&#34;
+
+
+        possible_candidates = []
+
+        possibilities_node_1 = self.node1.get_placement_2(s_dna, s_dna_len)
+        possibilities_node_2 = self.node2.get_placement_2(s_dna, s_dna_len)
+
+        logterm = np.log10(10 + self._sigma ** 2)
+
+        for possibility_1 in possibilities_node_1:
+            for possibility_2 in possibilities_node_2:
+
+                # Check that is not overlapping
+                is_overlapping = False
+                for pssm_1 in possibility_1[&#34;lock_vector&#34;]:
+                    # if is_overlapping:
+                    #     continue
+                    for pssm_2 in possibility_2[&#34;lock_vector&#34;]:
+                        # if is_overlapping:
+                        #     continue
+
+                        # It can be done in one sentence but in multiple lines
+                        # it looks more understandable.
+                        if (pssm_2[&#34;position&#34;] &lt; pssm_1[&#34;position&#34;] + pssm_1[&#34;length&#34;]
+                                and pssm_2[&#34;position&#34;] &gt;= pssm_1[&#34;position&#34;]):
+                            is_overlapping = True
+
+                        if (pssm_1[&#34;position&#34;] &lt; pssm_2[&#34;position&#34;] + pssm_2[&#34;length&#34;]
+                                and pssm_1[&#34;position&#34;] &gt;= pssm_2[&#34;position&#34;]):
+                            is_overlapping = True
+
+                if is_overlapping:
+                    continue
+
+                numerator = (
+                    self._mu
+                    - (
+                        possibility_2[&#34;position&#34;] -
+                        possibility_1[&#34;position&#34;]
+                    )
+                ) ** 2
+                exponent = -1.0 * numerator / (1 + 2 * (self._sigma ** 2))
+                expterm = np.exp(exponent)
+                # compute additive connector energy term
+                e_connector = (self.tau / logterm) * expterm
+
+                energy = possibility_1[&#34;energy&#34;] + possibility_2[&#34;energy&#34;] + e_connector
+
+                possible_candidates.append({
+                    &#34;position&#34;: (possibility_1[&#34;position&#34;] + possibility_2[&#34;position&#34;]) / 2,
+                    &#34;energy&#34;: energy,
+                    &#34;lock_vector&#34;: possibility_1[&#34;lock_vector&#34;] + possibility_2[&#34;lock_vector&#34;]
+                    })
+
+        possible_candidates.sort(key=lambda c: c[&#34;energy&#34;], reverse=True)
+
+        return possible_candidates[:self.placement_options]
 
     def set_node(self, node, _id) -&gt; None:
         &#34;&#34;&#34;Sets the node on a given ID
@@ -688,35 +767,37 @@ class ConnectorObject(Node):
     def get_placement(
         self, sDNA: str, sDNAlen: int, blocks: list, blockers: list
     ) -&gt; dict:
-        &#34;&#34;&#34;This is a position/score propagation method, defined for connector
-           objects.
-           It is invoked by the placement method in the organism, for the root
-           connector object, and calls itself recursively.
-           The function calls itself until reaching terminal connectors, which
-           call onto PSSM objects.
-           At that point, the call to the getPlacement function in PSSM nodes
-           leads to the evaluation of the PSSM node across all the sequence,
-           and it returns the score/position pairs, sorted by descending score.
+        &#34;&#34;&#34;DEPRECATED
 
-           The connector function then propagates this up, taking the middle
-           position between both PSSMs and adding the connector energy to the
-           energies provided by the PSSMs.
+        This is a position/score propagation method, defined for connector
+        objects.
+        It is invoked by the placement method in the organism, for the root
+        connector object, and calls itself recursively.
+        The function calls itself until reaching terminal connectors, which
+        call onto PSSM objects.
+        At that point, the call to the getPlacement function in PSSM nodes
+        leads to the evaluation of the PSSM node across all the sequence,
+        and it returns the score/position pairs, sorted by descending score.
 
-           The connector determines (i.e. freezes) the PSSM locations, adding
-           them to the block list that is passed as a parameter.
+        The connector function then propagates this up, taking the middle
+        position between both PSSMs and adding the connector energy to the
+        energies provided by the PSSMs.
 
-           Further connector objects proceed in the same manner, computing
-           middle distance and adding their energy contribution, until the
-           energy reaches the root node, and is returned as the fitness for
-           the organism.
+        The connector determines (i.e. freezes) the PSSM locations, adding
+        them to the block list that is passed as a parameter.
 
-           The energy contribution of each connector is: EN1 + EN2 + Tau * EC,
-           where EN1 is the energy of its daugher element 1, and EN2 that of
-           daughter element 2. The EC connector energy component is an
-           exponential function controlled by the difference in the observed
-           distance of the elements  of the connector with respect to an ideal
-           mean distance (mu), and modulated by a dispersion parameter (sigma).
-           Tau controls the &#34;weight&#34; of the connector contribution to energy.
+        Further connector objects proceed in the same manner, computing
+        middle distance and adding their energy contribution, until the
+        energy reaches the root node, and is returned as the fitness for
+        the organism.
+
+        The energy contribution of each connector is: EN1 + EN2 + Tau * EC,
+        where EN1 is the energy of its daugher element 1, and EN2 that of
+        daughter element 2. The EC connector energy component is an
+        exponential function controlled by the difference in the observed
+        distance of the elements  of the connector with respect to an ideal
+        mean distance (mu), and modulated by a dispersion parameter (sigma).
+        Tau controls the &#34;weight&#34; of the connector contribution to energy.
 
         Args:
             sDNA: DNA sequence to compute energy
@@ -794,15 +875,22 @@ class ConnectorObject(Node):
                     # compute additive connector energy term
                     e_connector = (tau / logterm) * expterm
                     # submodel energy: additive
-                    energy = (
-                        node1[&#34;pspairs&#34;][n1count][&#34;energy&#34;]
-                        + node2[&#34;pspairs&#34;][n2count][&#34;energy&#34;]
-                    ) + e_connector
-                    # submodel position: average of daughter positions
-                    position = (
-                        node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
-                        + node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
-                    ) / 2
+                    try:
+                        energy = (
+                            node1[&#34;pspairs&#34;][n1count][&#34;energy&#34;]
+                            + node2[&#34;pspairs&#34;][n2count][&#34;energy&#34;]
+                        ) + e_connector
+                        # submodel position: average of daughter positions
+                        position = (
+                            node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                            + node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                        ) / 2
+
+                    except Exception as e:
+                        print(e)
+                        print(&#34;Values of\nn1count: {}\nn2count: {}\n&#34;.format(n1count, n2count))
+                        print(&#34;{} {}&#34;.format(len(node2[&#34;pspairs&#34;]), placeopt))
+                        print(&#34;{} {}&#34;.format(len(node1[&#34;pspairs&#34;]), placeopt))
 
                     # if BOTH nodes are pssms, avoid pssm overlapping
                     if self.node1.is_pssm() and self.node2.is_pssm():
@@ -821,6 +909,7 @@ class ConnectorObject(Node):
                                 ) &lt; p_len
                         ):
                             continue
+                            #pass
 
                     # if ONE of the nodes is a PSSM, make sure its position
                     # does not overlap with blocked positions
@@ -890,6 +979,75 @@ class ConnectorObject(Node):
 
     # pylint: enable=R1702
     # pylint: enable=R0915
+    def get_placement_2(
+        self, s_dna: str, s_dna_len: int
+    ) -&gt; list:
+        &#34;&#34;&#34;Compute the best option to connect its nodes.
+
+        Args:
+            s_dna: DNA sequence
+            s_dna_length: length of the DNA sequence
+
+        Returns:
+            list of the best placed nodes with this connector
+        &#34;&#34;&#34;
+
+
+        possible_candidates = []
+
+        possibilities_node_1 = self.node1.get_placement_2(s_dna, s_dna_len)
+        possibilities_node_2 = self.node2.get_placement_2(s_dna, s_dna_len)
+
+        logterm = np.log10(10 + self._sigma ** 2)
+
+        for possibility_1 in possibilities_node_1:
+            for possibility_2 in possibilities_node_2:
+
+                # Check that is not overlapping
+                is_overlapping = False
+                for pssm_1 in possibility_1[&#34;lock_vector&#34;]:
+                    # if is_overlapping:
+                    #     continue
+                    for pssm_2 in possibility_2[&#34;lock_vector&#34;]:
+                        # if is_overlapping:
+                        #     continue
+
+                        # It can be done in one sentence but in multiple lines
+                        # it looks more understandable.
+                        if (pssm_2[&#34;position&#34;] &lt; pssm_1[&#34;position&#34;] + pssm_1[&#34;length&#34;]
+                                and pssm_2[&#34;position&#34;] &gt;= pssm_1[&#34;position&#34;]):
+                            is_overlapping = True
+
+                        if (pssm_1[&#34;position&#34;] &lt; pssm_2[&#34;position&#34;] + pssm_2[&#34;length&#34;]
+                                and pssm_1[&#34;position&#34;] &gt;= pssm_2[&#34;position&#34;]):
+                            is_overlapping = True
+
+                if is_overlapping:
+                    continue
+
+                numerator = (
+                    self._mu
+                    - (
+                        possibility_2[&#34;position&#34;] -
+                        possibility_1[&#34;position&#34;]
+                    )
+                ) ** 2
+                exponent = -1.0 * numerator / (1 + 2 * (self._sigma ** 2))
+                expterm = np.exp(exponent)
+                # compute additive connector energy term
+                e_connector = (self.tau / logterm) * expterm
+
+                energy = possibility_1[&#34;energy&#34;] + possibility_2[&#34;energy&#34;] + e_connector
+
+                possible_candidates.append({
+                    &#34;position&#34;: (possibility_1[&#34;position&#34;] + possibility_2[&#34;position&#34;]) / 2,
+                    &#34;energy&#34;: energy,
+                    &#34;lock_vector&#34;: possibility_1[&#34;lock_vector&#34;] + possibility_2[&#34;lock_vector&#34;]
+                    })
+
+        possible_candidates.sort(key=lambda c: c[&#34;energy&#34;], reverse=True)
+
+        return possible_candidates[:self.placement_options]
 
     def set_node(self, node, _id) -&gt; None:
         &#34;&#34;&#34;Sets the node on a given ID
@@ -1202,7 +1360,8 @@ False otherwise.</p>
 <span>def <span class="ident">get_placement</span></span>(<span>self, sDNA: str, sDNAlen: int, blocks: list, blockers: list) -> dict</span>
 </code></dt>
 <dd>
-<div class="desc"><p>This is a position/score propagation method, defined for connector
+<div class="desc"><p>DEPRECATED</p>
+<p>This is a position/score propagation method, defined for connector
 objects.
 It is invoked by the placement method in the organism, for the root
 connector object, and calls itself recursively.
@@ -1254,35 +1413,37 @@ Tau controls the "weight" of the connector contribution to energy.</p>
 <pre><code class="python">def get_placement(
     self, sDNA: str, sDNAlen: int, blocks: list, blockers: list
 ) -&gt; dict:
-    &#34;&#34;&#34;This is a position/score propagation method, defined for connector
-       objects.
-       It is invoked by the placement method in the organism, for the root
-       connector object, and calls itself recursively.
-       The function calls itself until reaching terminal connectors, which
-       call onto PSSM objects.
-       At that point, the call to the getPlacement function in PSSM nodes
-       leads to the evaluation of the PSSM node across all the sequence,
-       and it returns the score/position pairs, sorted by descending score.
+    &#34;&#34;&#34;DEPRECATED
 
-       The connector function then propagates this up, taking the middle
-       position between both PSSMs and adding the connector energy to the
-       energies provided by the PSSMs.
+    This is a position/score propagation method, defined for connector
+    objects.
+    It is invoked by the placement method in the organism, for the root
+    connector object, and calls itself recursively.
+    The function calls itself until reaching terminal connectors, which
+    call onto PSSM objects.
+    At that point, the call to the getPlacement function in PSSM nodes
+    leads to the evaluation of the PSSM node across all the sequence,
+    and it returns the score/position pairs, sorted by descending score.
 
-       The connector determines (i.e. freezes) the PSSM locations, adding
-       them to the block list that is passed as a parameter.
+    The connector function then propagates this up, taking the middle
+    position between both PSSMs and adding the connector energy to the
+    energies provided by the PSSMs.
 
-       Further connector objects proceed in the same manner, computing
-       middle distance and adding their energy contribution, until the
-       energy reaches the root node, and is returned as the fitness for
-       the organism.
+    The connector determines (i.e. freezes) the PSSM locations, adding
+    them to the block list that is passed as a parameter.
 
-       The energy contribution of each connector is: EN1 + EN2 + Tau * EC,
-       where EN1 is the energy of its daugher element 1, and EN2 that of
-       daughter element 2. The EC connector energy component is an
-       exponential function controlled by the difference in the observed
-       distance of the elements  of the connector with respect to an ideal
-       mean distance (mu), and modulated by a dispersion parameter (sigma).
-       Tau controls the &#34;weight&#34; of the connector contribution to energy.
+    Further connector objects proceed in the same manner, computing
+    middle distance and adding their energy contribution, until the
+    energy reaches the root node, and is returned as the fitness for
+    the organism.
+
+    The energy contribution of each connector is: EN1 + EN2 + Tau * EC,
+    where EN1 is the energy of its daugher element 1, and EN2 that of
+    daughter element 2. The EC connector energy component is an
+    exponential function controlled by the difference in the observed
+    distance of the elements  of the connector with respect to an ideal
+    mean distance (mu), and modulated by a dispersion parameter (sigma).
+    Tau controls the &#34;weight&#34; of the connector contribution to energy.
 
     Args:
         sDNA: DNA sequence to compute energy
@@ -1360,15 +1521,22 @@ Tau controls the "weight" of the connector contribution to energy.</p>
                 # compute additive connector energy term
                 e_connector = (tau / logterm) * expterm
                 # submodel energy: additive
-                energy = (
-                    node1[&#34;pspairs&#34;][n1count][&#34;energy&#34;]
-                    + node2[&#34;pspairs&#34;][n2count][&#34;energy&#34;]
-                ) + e_connector
-                # submodel position: average of daughter positions
-                position = (
-                    node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
-                    + node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
-                ) / 2
+                try:
+                    energy = (
+                        node1[&#34;pspairs&#34;][n1count][&#34;energy&#34;]
+                        + node2[&#34;pspairs&#34;][n2count][&#34;energy&#34;]
+                    ) + e_connector
+                    # submodel position: average of daughter positions
+                    position = (
+                        node1[&#34;pspairs&#34;][n1count][&#34;pos&#34;]
+                        + node2[&#34;pspairs&#34;][n2count][&#34;pos&#34;]
+                    ) / 2
+
+                except Exception as e:
+                    print(e)
+                    print(&#34;Values of\nn1count: {}\nn2count: {}\n&#34;.format(n1count, n2count))
+                    print(&#34;{} {}&#34;.format(len(node2[&#34;pspairs&#34;]), placeopt))
+                    print(&#34;{} {}&#34;.format(len(node1[&#34;pspairs&#34;]), placeopt))
 
                 # if BOTH nodes are pssms, avoid pssm overlapping
                 if self.node1.is_pssm() and self.node2.is_pssm():
@@ -1387,6 +1555,7 @@ Tau controls the "weight" of the connector contribution to energy.</p>
                             ) &lt; p_len
                     ):
                         continue
+                        #pass
 
                 # if ONE of the nodes is a PSSM, make sure its position
                 # does not overlap with blocked positions
@@ -1453,6 +1622,98 @@ Tau controls the "weight" of the connector contribution to energy.</p>
     pair = {&#34;pos&#34;: maxposition, &#34;energy&#34;: maxenergy}
 
     return {&#34;pspairs&#34;: [pair], &#34;blocked&#34;: blocks, &#34;blocker&#34;: blockers}</code></pre>
+</details>
+</dd>
+<dt id="src.objects.connector_object.ConnectorObject.get_placement_2"><code class="name flex">
+<span>def <span class="ident">get_placement_2</span></span>(<span>self, s_dna: str, s_dna_len: int) -> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compute the best option to connect its nodes.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>s_dna</code></strong></dt>
+<dd>DNA sequence</dd>
+<dt><strong><code>s_dna_length</code></strong></dt>
+<dd>length of the DNA sequence</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code> of <code>the best placed nodes with this connector</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_placement_2(
+    self, s_dna: str, s_dna_len: int
+) -&gt; list:
+    &#34;&#34;&#34;Compute the best option to connect its nodes.
+
+    Args:
+        s_dna: DNA sequence
+        s_dna_length: length of the DNA sequence
+
+    Returns:
+        list of the best placed nodes with this connector
+    &#34;&#34;&#34;
+
+
+    possible_candidates = []
+
+    possibilities_node_1 = self.node1.get_placement_2(s_dna, s_dna_len)
+    possibilities_node_2 = self.node2.get_placement_2(s_dna, s_dna_len)
+
+    logterm = np.log10(10 + self._sigma ** 2)
+
+    for possibility_1 in possibilities_node_1:
+        for possibility_2 in possibilities_node_2:
+
+            # Check that is not overlapping
+            is_overlapping = False
+            for pssm_1 in possibility_1[&#34;lock_vector&#34;]:
+                # if is_overlapping:
+                #     continue
+                for pssm_2 in possibility_2[&#34;lock_vector&#34;]:
+                    # if is_overlapping:
+                    #     continue
+
+                    # It can be done in one sentence but in multiple lines
+                    # it looks more understandable.
+                    if (pssm_2[&#34;position&#34;] &lt; pssm_1[&#34;position&#34;] + pssm_1[&#34;length&#34;]
+                            and pssm_2[&#34;position&#34;] &gt;= pssm_1[&#34;position&#34;]):
+                        is_overlapping = True
+
+                    if (pssm_1[&#34;position&#34;] &lt; pssm_2[&#34;position&#34;] + pssm_2[&#34;length&#34;]
+                            and pssm_1[&#34;position&#34;] &gt;= pssm_2[&#34;position&#34;]):
+                        is_overlapping = True
+
+            if is_overlapping:
+                continue
+
+            numerator = (
+                self._mu
+                - (
+                    possibility_2[&#34;position&#34;] -
+                    possibility_1[&#34;position&#34;]
+                )
+            ) ** 2
+            exponent = -1.0 * numerator / (1 + 2 * (self._sigma ** 2))
+            expterm = np.exp(exponent)
+            # compute additive connector energy term
+            e_connector = (self.tau / logterm) * expterm
+
+            energy = possibility_1[&#34;energy&#34;] + possibility_2[&#34;energy&#34;] + e_connector
+
+            possible_candidates.append({
+                &#34;position&#34;: (possibility_1[&#34;position&#34;] + possibility_2[&#34;position&#34;]) / 2,
+                &#34;energy&#34;: energy,
+                &#34;lock_vector&#34;: possibility_1[&#34;lock_vector&#34;] + possibility_2[&#34;lock_vector&#34;]
+                })
+
+    possible_candidates.sort(key=lambda c: c[&#34;energy&#34;], reverse=True)
+
+    return possible_candidates[:self.placement_options]</code></pre>
 </details>
 </dd>
 <dt id="src.objects.connector_object.ConnectorObject.is_connector"><code class="name flex">
@@ -1758,6 +2019,7 @@ tree structure</p>
 <li><code><a title="src.objects.connector_object.ConnectorObject.get_node" href="#src.objects.connector_object.ConnectorObject.get_node">get_node</a></code></li>
 <li><code><a title="src.objects.connector_object.ConnectorObject.get_parent" href="#src.objects.connector_object.ConnectorObject.get_parent">get_parent</a></code></li>
 <li><code><a title="src.objects.connector_object.ConnectorObject.get_placement" href="#src.objects.connector_object.ConnectorObject.get_placement">get_placement</a></code></li>
+<li><code><a title="src.objects.connector_object.ConnectorObject.get_placement_2" href="#src.objects.connector_object.ConnectorObject.get_placement_2">get_placement_2</a></code></li>
 <li><code><a title="src.objects.connector_object.ConnectorObject.is_connector" href="#src.objects.connector_object.ConnectorObject.is_connector">is_connector</a></code></li>
 <li><code><a title="src.objects.connector_object.ConnectorObject.is_pssm" href="#src.objects.connector_object.ConnectorObject.is_pssm">is_pssm</a></code></li>
 <li><code><a title="src.objects.connector_object.ConnectorObject.mutate" href="#src.objects.connector_object.ConnectorObject.mutate">mutate</a></code></li>

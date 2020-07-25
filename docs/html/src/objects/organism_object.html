@@ -233,10 +233,18 @@ class OrganismObject:
         &#34;&#34;&#34;
 
         # call recursively to get the total fitness of the organism
-        node_root = self.root_node.get_placement(s_dna, len(s_dna), [], [])
+        node_root = self.root_node.get_placement_2(s_dna, len(s_dna))
+
+        if len(node_root) &lt; 1:
+            print(&#34;Too few placement options&#34;)
+            return {
+                &#34;energy&#34;: -1000,
+                &#34;position&#34;: 0,
+                &#34;lock_vector&#34;: []
+                    }
 
         # return score, blocks and blokcers in that sequence
-        return node_root
+        return node_root[0]
 
     def get_seq_set_fitness(self, a_dna: list) -&gt; float:
         &#34;&#34;&#34;Return the total Fitness for an array of DNA sequences and the
@@ -255,16 +263,16 @@ class OrganismObject:
         if self.cumulative_fit_method == &#34;sum&#34;:
 
             for s_dna in a_dna:
-                sfit = self.get_seq_fitness(s_dna.lower())
-                score += sfit[&#34;pspairs&#34;][0][&#34;energy&#34;]
+                sfit = self.get_seq_fitness(s_dna)
+                score += sfit[&#34;energy&#34;]
 
         # mean method returns the mean of all fitness to SNA sequences
         elif self.cumulative_fit_method == &#34;mean&#34;:
 
             scores = []
             for s_dna in a_dna:
-                sfit = self.get_seq_fitness(s_dna.lower())
-                scores.append(sfit[&#34;pspairs&#34;][0][&#34;energy&#34;])
+                sfit = self.get_seq_fitness(s_dna)
+                scores.append(sfit[&#34;energy&#34;])
             score = np.mean(scores)
 
         return score
@@ -380,23 +388,16 @@ class OrganismObject:
             # positions for PSSMs are in blocks and blocked lists, returned by
             # getSeqFitness. we zip them and then iterate over the zip to
             # print the PSSMs in their locations respective to the sequence
-            positions = sfit[&#34;blocked&#34;]
-            nodes = sfit[&#34;blocker&#34;]
-            stuff = list(zip(nodes, positions))
-            stuff.sort(key=lambda k: k[1])
-            alter = 0
-            for ids, pos in stuff:
+            positions = sfit[&#34;lock_vector&#34;]
+            for pssm in positions:
                 # print _id, capped to the length of PSSM
-                str_id = str(ids)
-                _p = round(pos)
+                _p = round(pssm[&#34;position&#34;])
+                pssm_str = (str(pssm[&#34;id&#34;]) * pssm[&#34;length&#34;])[:pssm[&#34;length&#34;]]
+
                 # fill up map at correct positions
                 map_positions = (
-                    map_positions[0:_p]
-                    + str_id[alter]
-                    + map_positions[_p + 1:]
+                    map_positions[:_p] + pssm_str + map_positions[_p + pssm[&#34;length&#34;]:]
                 )
-                if len(str_id) &gt; 1:
-                    alter = 0 if alter == 1 else 1
 
             # write map to file for this sequence
             results_file.write(map_positions + &#34;\n&#34;)
@@ -421,26 +422,21 @@ class OrganismObject:
 
         # create an empy positions map
         map_positions = &#34;-&#34; * len(s_dna)
-
+        
         # positions for PSSMs are in blocked and blocked lists, returned by
         # getSeqFitness. we zip them and then iterate over the zip to
         # print the PSSMs in their locations respective to the sequence
-        positions = sfit[&#34;blocked&#34;]
-        nodes = sfit[&#34;blocker&#34;]
-        stuff = list(zip(nodes, positions))
-        stuff.sort(key=lambda k: k[1])
-        alter = 0
-        for ids, pos in stuff:
+        positions = sfit[&#34;lock_vector&#34;]
+        for pssm in positions:
             # print _id, capped to the length of PSSM
-            str_id = str(ids)
-            _p = round(pos)
+            _p = round(pssm[&#34;position&#34;])
+            pssm_str = (str(pssm[&#34;id&#34;]) * pssm[&#34;length&#34;])[:pssm[&#34;length&#34;]]
+
             # fill up map at correct positions
             map_positions = (
-                map_positions[0:_p] + str_id[alter] + map_positions[_p + 1:]
+                map_positions[:_p] + pssm_str + map_positions[_p + pssm[&#34;length&#34;]:]
             )
             # handle two-digit positions, by alterning between digits
-            if len(str_id) &gt; 1:
-                alter = 0 if alter == 1 else 1
 
         # return map for this sequence
         return &#34;{}\n{}&#34;.format(s_dna, map_positions)</code></pre>
@@ -672,10 +668,18 @@ class OrganismObject:
         &#34;&#34;&#34;
 
         # call recursively to get the total fitness of the organism
-        node_root = self.root_node.get_placement(s_dna, len(s_dna), [], [])
+        node_root = self.root_node.get_placement_2(s_dna, len(s_dna))
+
+        if len(node_root) &lt; 1:
+            print(&#34;Too few placement options&#34;)
+            return {
+                &#34;energy&#34;: -1000,
+                &#34;position&#34;: 0,
+                &#34;lock_vector&#34;: []
+                    }
 
         # return score, blocks and blokcers in that sequence
-        return node_root
+        return node_root[0]
 
     def get_seq_set_fitness(self, a_dna: list) -&gt; float:
         &#34;&#34;&#34;Return the total Fitness for an array of DNA sequences and the
@@ -694,16 +698,16 @@ class OrganismObject:
         if self.cumulative_fit_method == &#34;sum&#34;:
 
             for s_dna in a_dna:
-                sfit = self.get_seq_fitness(s_dna.lower())
-                score += sfit[&#34;pspairs&#34;][0][&#34;energy&#34;]
+                sfit = self.get_seq_fitness(s_dna)
+                score += sfit[&#34;energy&#34;]
 
         # mean method returns the mean of all fitness to SNA sequences
         elif self.cumulative_fit_method == &#34;mean&#34;:
 
             scores = []
             for s_dna in a_dna:
-                sfit = self.get_seq_fitness(s_dna.lower())
-                scores.append(sfit[&#34;pspairs&#34;][0][&#34;energy&#34;])
+                sfit = self.get_seq_fitness(s_dna)
+                scores.append(sfit[&#34;energy&#34;])
             score = np.mean(scores)
 
         return score
@@ -819,23 +823,16 @@ class OrganismObject:
             # positions for PSSMs are in blocks and blocked lists, returned by
             # getSeqFitness. we zip them and then iterate over the zip to
             # print the PSSMs in their locations respective to the sequence
-            positions = sfit[&#34;blocked&#34;]
-            nodes = sfit[&#34;blocker&#34;]
-            stuff = list(zip(nodes, positions))
-            stuff.sort(key=lambda k: k[1])
-            alter = 0
-            for ids, pos in stuff:
+            positions = sfit[&#34;lock_vector&#34;]
+            for pssm in positions:
                 # print _id, capped to the length of PSSM
-                str_id = str(ids)
-                _p = round(pos)
+                _p = round(pssm[&#34;position&#34;])
+                pssm_str = (str(pssm[&#34;id&#34;]) * pssm[&#34;length&#34;])[:pssm[&#34;length&#34;]]
+
                 # fill up map at correct positions
                 map_positions = (
-                    map_positions[0:_p]
-                    + str_id[alter]
-                    + map_positions[_p + 1:]
+                    map_positions[:_p] + pssm_str + map_positions[_p + pssm[&#34;length&#34;]:]
                 )
-                if len(str_id) &gt; 1:
-                    alter = 0 if alter == 1 else 1
 
             # write map to file for this sequence
             results_file.write(map_positions + &#34;\n&#34;)
@@ -860,26 +857,21 @@ class OrganismObject:
 
         # create an empy positions map
         map_positions = &#34;-&#34; * len(s_dna)
-
+        
         # positions for PSSMs are in blocked and blocked lists, returned by
         # getSeqFitness. we zip them and then iterate over the zip to
         # print the PSSMs in their locations respective to the sequence
-        positions = sfit[&#34;blocked&#34;]
-        nodes = sfit[&#34;blocker&#34;]
-        stuff = list(zip(nodes, positions))
-        stuff.sort(key=lambda k: k[1])
-        alter = 0
-        for ids, pos in stuff:
+        positions = sfit[&#34;lock_vector&#34;]
+        for pssm in positions:
             # print _id, capped to the length of PSSM
-            str_id = str(ids)
-            _p = round(pos)
+            _p = round(pssm[&#34;position&#34;])
+            pssm_str = (str(pssm[&#34;id&#34;]) * pssm[&#34;length&#34;])[:pssm[&#34;length&#34;]]
+
             # fill up map at correct positions
             map_positions = (
-                map_positions[0:_p] + str_id[alter] + map_positions[_p + 1:]
+                map_positions[:_p] + pssm_str + map_positions[_p + pssm[&#34;length&#34;]:]
             )
             # handle two-digit positions, by alterning between digits
-            if len(str_id) &gt; 1:
-                alter = 0 if alter == 1 else 1
 
         # return map for this sequence
         return &#34;{}\n{}&#34;.format(s_dna, map_positions)</code></pre>
@@ -986,23 +978,16 @@ class OrganismObject:
         # positions for PSSMs are in blocks and blocked lists, returned by
         # getSeqFitness. we zip them and then iterate over the zip to
         # print the PSSMs in their locations respective to the sequence
-        positions = sfit[&#34;blocked&#34;]
-        nodes = sfit[&#34;blocker&#34;]
-        stuff = list(zip(nodes, positions))
-        stuff.sort(key=lambda k: k[1])
-        alter = 0
-        for ids, pos in stuff:
+        positions = sfit[&#34;lock_vector&#34;]
+        for pssm in positions:
             # print _id, capped to the length of PSSM
-            str_id = str(ids)
-            _p = round(pos)
+            _p = round(pssm[&#34;position&#34;])
+            pssm_str = (str(pssm[&#34;id&#34;]) * pssm[&#34;length&#34;])[:pssm[&#34;length&#34;]]
+
             # fill up map at correct positions
             map_positions = (
-                map_positions[0:_p]
-                + str_id[alter]
-                + map_positions[_p + 1:]
+                map_positions[:_p] + pssm_str + map_positions[_p + pssm[&#34;length&#34;]:]
             )
-            if len(str_id) &gt; 1:
-                alter = 0 if alter == 1 else 1
 
         # write map to file for this sequence
         results_file.write(map_positions + &#34;\n&#34;)
@@ -1193,10 +1178,18 @@ Parent node of the _id child
     &#34;&#34;&#34;
 
     # call recursively to get the total fitness of the organism
-    node_root = self.root_node.get_placement(s_dna, len(s_dna), [], [])
+    node_root = self.root_node.get_placement_2(s_dna, len(s_dna))
+
+    if len(node_root) &lt; 1:
+        print(&#34;Too few placement options&#34;)
+        return {
+            &#34;energy&#34;: -1000,
+            &#34;position&#34;: 0,
+            &#34;lock_vector&#34;: []
+                }
 
     # return score, blocks and blokcers in that sequence
-    return node_root</code></pre>
+    return node_root[0]</code></pre>
 </details>
 </dd>
 <dt id="src.objects.organism_object.OrganismObject.get_seq_set_fitness"><code class="name flex">
@@ -1236,16 +1229,16 @@ fitness method</p>
     if self.cumulative_fit_method == &#34;sum&#34;:
 
         for s_dna in a_dna:
-            sfit = self.get_seq_fitness(s_dna.lower())
-            score += sfit[&#34;pspairs&#34;][0][&#34;energy&#34;]
+            sfit = self.get_seq_fitness(s_dna)
+            score += sfit[&#34;energy&#34;]
 
     # mean method returns the mean of all fitness to SNA sequences
     elif self.cumulative_fit_method == &#34;mean&#34;:
 
         scores = []
         for s_dna in a_dna:
-            sfit = self.get_seq_fitness(s_dna.lower())
-            scores.append(sfit[&#34;pspairs&#34;][0][&#34;energy&#34;])
+            sfit = self.get_seq_fitness(s_dna)
+            scores.append(sfit[&#34;energy&#34;])
         score = np.mean(scores)
 
     return score</code></pre>
@@ -1407,26 +1400,21 @@ components</dd>
 
     # create an empy positions map
     map_positions = &#34;-&#34; * len(s_dna)
-
+    
     # positions for PSSMs are in blocked and blocked lists, returned by
     # getSeqFitness. we zip them and then iterate over the zip to
     # print the PSSMs in their locations respective to the sequence
-    positions = sfit[&#34;blocked&#34;]
-    nodes = sfit[&#34;blocker&#34;]
-    stuff = list(zip(nodes, positions))
-    stuff.sort(key=lambda k: k[1])
-    alter = 0
-    for ids, pos in stuff:
+    positions = sfit[&#34;lock_vector&#34;]
+    for pssm in positions:
         # print _id, capped to the length of PSSM
-        str_id = str(ids)
-        _p = round(pos)
+        _p = round(pssm[&#34;position&#34;])
+        pssm_str = (str(pssm[&#34;id&#34;]) * pssm[&#34;length&#34;])[:pssm[&#34;length&#34;]]
+
         # fill up map at correct positions
         map_positions = (
-            map_positions[0:_p] + str_id[alter] + map_positions[_p + 1:]
+            map_positions[:_p] + pssm_str + map_positions[_p + pssm[&#34;length&#34;]:]
         )
         # handle two-digit positions, by alterning between digits
-        if len(str_id) &gt; 1:
-            alter = 0 if alter == 1 else 1
 
     # return map for this sequence
     return &#34;{}\n{}&#34;.format(s_dna, map_positions)</code></pre>
