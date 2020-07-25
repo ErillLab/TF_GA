@@ -86,43 +86,73 @@
   - Probability to execute the Substitute pssm mutator. It creates a random pssm recognizer and inserts it in a random node position.
   - Range
 - MUTATE_PROBABILITY_RISE_CHILD
-  - Probability to execute the rise child mutator. It selects a random node in the organism and 
+  - Probability to execute the rise child mutator. It selects a random node in the organism and raises it to an upper level.
 - MUTATE_PROBABILITY_NODE_MUTATION
+  - Probability to  execute the node mutation mutator. It selectas a random node in the organism and applies a mutation to that specific node.
 - MUTATE_PROBABILITY_SUNK_CHILD
+  - Probability to execute the sunk child mutator. It selects a random node in the organism and pulls it down to an lower level.
 - MIN_NODES
+  - Minimum number of nodes allowed in an organism. If organism has less nodes that specified, it will apply an extra complexity penalty.
 - MAX_NODES
+  - Maximum number of nodes allowed in an organism. If organism has more nodes that specified, it will apply an extra complexity penalty.
 
 ## Factory
 
 - INITIAL_CONNECTOR_PROBABILITY
+  - Probability to generate a connector object on the root node of the organismi when created.
 - REDUCER_PROBABILITY_FACTOR
+  - Every time a we go down a level in the organism (due to connectors), the probability of generating a new connector is lowered by multiplying the actual probability by this factor.
 - MIN_MU
+  - Minimum starting value of Mu variable for connectors
 - MAX_MU
+  - Maximum starting value of Mu variable for connectors
 - MIN_SIGMA
+  - Minimum starting value of Sigma variable for connectors
 - MAX_SIGMA
+  - Maximum starting value of Sigma variable for connectors
 - PWM_LENGTH
+  - Number of bases the recognizer can recognize
 - PWM_PROBABILITY_STEP
+  - Step of the points assigned to every base. This allows to specify if final probabilities go from 0.1 to 0.1 or 0.05 to 0.05.
 - PWM_PROBABILITY_BASE
+  - Total points to assign to the bases in a specific mutation. When all the points are assigned points are divided by the PROBABILITY_BASE to generate a probability.
 - PWM_PROBABILITY_DECIMALS
+  - Number of decimals used to compute probabilities
 
 ## Connector
 
 - MUTATE_PROBABILITY_SIGMA
+  - Probability to execute the Sigma mutator. It modifies the Sigma value of the connector.
 - MUTATE_PROBABILITY_MU
+  - Probability to execute the Mu mutator. It modifies the Mu value of the connector.
 - MUTATE_PROBABILITY_SWAP
+  - Probability to execute the swap mutator. It swaps the 2 nodes.
 - TAU
+  - Modules the value of the connector term when computing the connector energy
 - MUTATE_VARIANCE_SIGMA
+  - Value to change when the Sigma mutator is applied
 - MUTATE_VARIANCE_MU
+  - Value to change when Mu mutator is applied
 - PLACEMENT_OPTIONS
+  - Number of "best" options returned by the connector
 
 ## PSSM recognizer
 
 - MUTATE_PROBABILITY_RANDOM_COL
+  - Probability to execute the random column mutator. Generates a new random column and insterts it in a random position of the PWM
 - MUTATE_PROBABILITY_FLIP_COL
+  - Probability to execute the flip column mutator. Selects 2 random columns in the PWM and filps it.
 - MUTATE_PROBABILITY_FLIP_ROW
+  - Probability to execute the flip row mutator. Selects 2 random rows in the PWM and filps it.
 - MUTATE_PROBABILITY_SHIFT_LEFT
+  - Probability to execute the shift left mutator. Shifts to the left the PWM with feedback.
 - MUTATE_PROBABILITY_SHIFT_RIGHT
+  - Probability to execute the shift right mutator. Shifts to the right the PWM with feedback.
 - UPPER_PRINT_PROBABILITY
+  - Probability to show upper case bases when printing a recognizer
 - PSEUDO_COUNT
+  - Pseudo-count added to deal with negative infinities when computing the PSSM from PWM.
 - PLACEMENT_OPTIONS
+  - Number of "best" options returned by the pssm recognizer
 - SCAN_REVERSE_COMPLEMENT
+  - True if the reverse complement of the sequence should be checked. False otherwise.
