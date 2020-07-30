@@ -130,12 +130,12 @@ class OrganismFactory:
         """It return a PSSM object with a specific length
 
         Args:
-            length: positions a recognizer can recognize
+            min_length: minimum positions a recognizer can recognize
+            max_length: maximum positions a recognizer can recognize
 
         Returns:
             A pssm with an initializated PWM
         """
-
         pwm = []
         # Generate as much as needed
         for _ in range(length):

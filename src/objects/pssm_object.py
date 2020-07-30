@@ -39,6 +39,15 @@ class PssmObject(Node):
         self.mutate_probability_shift_right = config[
             "MUTATE_PROBABILITY_SHIFT_RIGHT"
         ]
+        self.mutate_probability_increase_pwm = config[
+            "MUTATE_PROBABILITY_INCREASE_PWM"
+                ]
+        self.mutate_probability_decrease_pwm = config[
+            "MUTATE_PROBABILITY_DECREASE_PWM"
+                ]
+        self.min_columns = config["MIN_COLUMNS"]
+        self.max_columns = config["MAX_COLUMNS"]
+
         self.pseudo_count = config["PSEUDO_COUNT"]
         self.placement_options = config["PLACEMENT_OPTIONS"]
         self.upper_print_probability = config["UPPER_PRINT_PROBABILITY"]
@@ -132,6 +141,36 @@ class PssmObject(Node):
         if random.random() < self.mutate_probability_shift_right:
             # Shift to right/left
             self.pwm = np.roll(self.pwm, 1)
+
+        if random.random() < self.mutate_probability_increase_pwm:
+            # Increase PWM
+            if self.length < self.max_columns:
+
+                new_col = org_factory.get_pwm_column()
+
+                # Insert the new column in one side randomly
+                if random.random() < 0.5:
+                    # Insert it in front
+                    tmp_array = [new_col] + self.pwm.tolist()
+                else:
+                    tmp_array = self.pwm.tolist() + [new_col]
+
+                self.pwm = np.array(tmp_array)
+                self.length += 1
+
+        if random.random() < self.mutate_probability_decrease_pwm:
+            # Decrease PWM
+            if self.length > self.min_columns:
+
+                # Delete a random column
+                column = random.randint(1, self.length - 1)
+                first_part = self.pwm[:column - 1].tolist()
+                second_part = self.pwm[column:].tolist()
+
+                self.pwm = np.array(first_part + second_part)
+
+                # Insert the new column in one side randomly
+                self.length -= 1
 
         self.recalculate_pssm()
 
