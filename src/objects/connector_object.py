@@ -384,6 +384,24 @@ class ConnectorObject(Node):
 
         Returns:
             list of the best placed nodes with this connector
+
+        Description:
+            This function implements the placement behavior for connectors.
+            The placement problem is defined as who to best position an
+            organism on a sequence (i.e. how to maximize its fitness given
+            the sequence).
+            The implementation in this function follows the recursive 
+            formulation of the organism. 
+            
+            Connectors receive from lower nodes (either connectors or PSSMs)
+            a ranked, truncated list of possible placements, which includes the
+            positions that have been blocked for PSSMs under those placements.
+            
+            The connector then iterates over all possible combinations of
+            these placements, computing the overall energy (i.e. including its
+            daugther nodes energies and its own energy term), and returns a
+            ranked list of placements (and their blocked positions) to the 
+            upper level connector.
         """
 
 
@@ -392,12 +410,16 @@ class ConnectorObject(Node):
         possibilities_node_1 = self.node1.get_placement_2(s_dna, s_dna_len)
         possibilities_node_2 = self.node2.get_placement_2(s_dna, s_dna_len)
 
+        #precompute the log term of the connector energy component, which is
+        #not dependent on the placement of daugther nodes
         logterm = np.log10(10 + self._sigma ** 2)
 
+        #for all possible daughter placement combinations
         for possibility_1 in possibilities_node_1:
             for possibility_2 in possibilities_node_2:
 
-                # Check that is not overlapping
+                #Check that the placement of PSSMs for one daugther (i.e. its
+                #lock vector) does not conflict with the other one
                 is_overlapping = False
                 for pssm_1 in possibility_1["lock_vector"]:
                     # if is_overlapping:
@@ -408,17 +430,30 @@ class ConnectorObject(Node):
 
                         # It can be done in one sentence but in multiple lines
                         # it looks more understandable.
+                        #check for daughter node conflict:
+                        #check for overlap of the form:
+                        #   2222
+                        # 1111
                         if (pssm_2["position"] < pssm_1["position"] + pssm_1["length"]
                                 and pssm_2["position"] >= pssm_1["position"]):
                             is_overlapping = True
 
+                        #check for overlap of the form:
+                        # 2222
+                        #  1111
                         if (pssm_1["position"] < pssm_2["position"] + pssm_2["length"]
                                 and pssm_1["position"] >= pssm_2["position"]):
                             is_overlapping = True
 
+                #if there is overlap, disregard combination, go for next
+                #daughter node 2 placement option
                 if is_overlapping:
                     continue
 
+                #if there is no overlap, compute the overall energy of the
+                #arrangement and add it to the list of possible placements
+                
+                #compute the rest of the connector energy term
                 numerator = (
                     self._mu
                     - (
@@ -431,16 +466,24 @@ class ConnectorObject(Node):
                 # compute additive connector energy term
                 e_connector = (self.tau / logterm) * expterm
 
+                #compute overall placement energy (connector + children)
                 energy = possibility_1["energy"] + possibility_2["energy"] + e_connector
 
+                #add placement to list of possible placements
+                #include the position (average of daughter nodes for connector)
+                #the energy (connector + daughter nodes)
+                #and the blocked PSSM positions inherited from the daugther nodes
                 possible_candidates.append({
                     "position": (possibility_1["position"] + possibility_2["position"]) / 2,
                     "energy": energy,
                     "lock_vector": possibility_1["lock_vector"] + possibility_2["lock_vector"]
                     })
 
+        #reverse sort the list of candidate placements based on energy
         possible_candidates.sort(key=lambda c: c["energy"], reverse=True)
 
+        #return the truncated (at self.placement_options) list of best
+        #possible placements
         return possible_candidates[:self.placement_options]
 
     def set_node(self, node, _id) -> None:

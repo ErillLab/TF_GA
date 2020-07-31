@@ -201,11 +201,52 @@ class OrganismObject:
 
         Returns:
            score, blocked and blockers
+
+        Description:
+            This function implements the placement behavior for organism.
+            The placement problem is defined as who to best position an
+            organism on a sequence (i.e. how to maximize its fitness given
+            the sequence).
+            The implementation in this function follows the recursive 
+            formulation of the organism, calling on the organisms root node
+            "get_placement" function in order obtain the list of best possible
+            placements for the organism. The best placement is chosen.
+            
+            If the root organism returns an empty list, because the placement
+            procedure has been unable to identify a non-conflicting placement,
+            the function sets the energy to a large negative value.
+            
+            The overall placement strategy, implemented via the recursive 
+            calling to the get_placement function of connectors and PSSMs is 
+            as follows:
+                
+                - PSSMs evaluate the sequence and return a list of candidate
+                  placements, with a list of blocked positions for those 
+                  placemenets
+                - PSSMs connectors receive list of candidate positions for 
+                  PSSMs, determine all viable (non-conflicting) combinations,
+                  rank them taking into account their energy, and return them
+                - General connectors receive list of candidate positions for 
+                  lower connectors, determine viable combinations, rank them 
+                  and return them
+            
+            Notes on the placement implementation:
+                - This is a greedy placement strategy, in the sense that a 
+                  connector only "sees" its subtree, so sister connectors
+                  may independently choose placement options with conflicting
+                  PSSM placements. The placement option number for connectors
+                  hence plays a crucial role in determining whether the 
+                  organism will be capable of identifying a correct placement.
+                  This problem will be more severe as the depth of the organism
+                  grows.
         """
 
-        # call recursively to get the total fitness of the organism
+        # call recursively to get the list of best placement options for 
+        # the organism (root node)
         node_root = self.root_node.get_placement_2(s_dna, len(s_dna))
 
+        #handle the case in which no viable placement options have been
+        #identified
         if len(node_root) < 1:
             print("Too few placement options")
             return {
