@@ -311,14 +311,35 @@ class PssmObject(Node):
                     "ID": id of the pssm
                     "position": starting position of the pssm
                     "length": length of the pssm
+                    
+        Description:
+            This function implements the placement behavior for PSSMs.
+            The placement problem is defined as who to best position an
+            organism on a sequence (i.e. how to maximize its fitness given
+            the sequence).
+            The implementation in this function follows the recursive 
+            formulation of the organism. PSSMs identify and rank their best N 
+            possible binding positions (N = self.placement_options) after 
+            scanning the entire sequence.
+            They return, for each placement option, the position and energy
+            of that option, as well as a blocking vector (for PSSMs always of 
+            size 1), of blocked positions.
+            The connector that receives these options will thereafter 
+            determine which placement combinations work best and are not in
+            conflict with other placement options, and pass on this arrangement
+            (as well as its blocks) to the upper level connector.
         """
         possible_candidates = []
         pssm_length = self.length
         num_binding_sites = s_dna_len - pssm_length
 
+        #for each computable position in the sequence
         for pos in range(num_binding_sites):
+            #add the position as a possible placement
             possible_candidates.append(
                 {
+                    #include the position and energy, as well as the list
+                    #of positions that this placement "blocks"
                     "position": pos + (pssm_length/2),
                     "energy": self.get_score(
                         s_dna[pos: pos + pssm_length]
@@ -330,10 +351,13 @@ class PssmObject(Node):
                         }]
                     }
                 )
+        #reverse sort the list of candidate placements based on energy
         possible_candidates.sort(key=lambda c: c["energy"], reverse=True)
 
         options = automatic_placement_options if is_automatic_placement_options else self.placement_options
 
+        #return the truncated (at self.placement_options) list of best
+        #possible placements
         return possible_candidates[:options]
 
     def get_all_pssm(self) -> list:
