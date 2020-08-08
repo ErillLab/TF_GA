@@ -287,7 +287,10 @@ class PssmObject(Node):
         }
 
     def get_placement_2(
-            self, s_dna: str, s_dna_len: int
+            self, s_dna: str,
+            s_dna_len: int,
+            automatic_placement_options: int,
+            is_automatic_placement_options: bool
     ) -> list:
         """Sets the pssm in the DNA sequence.
         Iterate over the whole sequence and select the best N sites
@@ -295,6 +298,9 @@ class PssmObject(Node):
         Args:
             s_dna: DNA sequence
             s_dna_len: lenght of the dna sequence
+            automatic_placement_options: Computed automatic placement options
+            is_automatic_placement_options: true if automatic placement options should be plaed
+
 
         Returns:
             The N (placement_options configured) best options in dictionary
@@ -326,7 +332,9 @@ class PssmObject(Node):
                 )
         possible_candidates.sort(key=lambda c: c["energy"], reverse=True)
 
-        return possible_candidates[:self.placement_options]
+        options = automatic_placement_options if is_automatic_placement_options else self.placement_options
+
+        return possible_candidates[:options]
 
     def get_all_pssm(self) -> list:
         """Adds himself as a pssm recognizer

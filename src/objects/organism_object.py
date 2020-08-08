@@ -11,12 +11,13 @@ class OrganismObject:
     """Organism object
     """
 
-    def __init__(self, _id: int, conf: dict, root_node=None) -> None:
+    def __init__(self, _id: int, conf: dict, max_pssm_length: int, root_node=None) -> None:
         """Organism constructor
 
         Args:
             _id: Organism identifier
             conf: Configuration from JSON file
+            max_pssm_length: Maximum column size of the pssm recognizer
             root_node (Node): Top-level node for the tree data structure
         """
         self._id = _id
@@ -39,6 +40,12 @@ class OrganismObject:
         self.min_nodes = conf["MIN_NODES"]
         self.max_nodes = conf["MAX_NODES"]
         self.is_tracked = False
+
+        self.is_automatic_placement_options = conf[
+            "AUTOMATIC_PLACEMENT_OPTIONS"
+        ]
+        self.max_pssm_length = max_pssm_length
+
 
     # Setters an getters
     def set_root_node(self, root_node) -> None:
@@ -203,8 +210,18 @@ class OrganismObject:
            score, blocked and blockers
         """
 
+        # Compute the number of nodes for automatic placement
+        num_pssm = (self.count_nodes() - 1) / 2 + 1
+
+        automatic_placement_options = int((self.max_pssm_length + 1) * num_pssm)
+
         # call recursively to get the total fitness of the organism
-        node_root = self.root_node.get_placement_2(s_dna, len(s_dna))
+        node_root = self.root_node.get_placement_2(
+            s_dna,
+            len(s_dna),
+            automatic_placement_options,
+            self.is_automatic_placement_options
+                )
 
         if len(node_root) < 1:
             print("Too few placement options")
@@ -212,7 +229,7 @@ class OrganismObject:
                 "energy": -1000,
                 "position": 0,
                 "lock_vector": []
-                    }
+                }
 
         # return score, blocks and blokcers in that sequence
         return node_root[0]

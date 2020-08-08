@@ -374,23 +374,38 @@ class ConnectorObject(Node):
     # pylint: enable=R1702
     # pylint: enable=R0915
     def get_placement_2(
-        self, s_dna: str, s_dna_len: int
+                self,
+            s_dna: str,
+            s_dna_len: int,
+            automatic_placement_options: int,
+            is_automatic_placement_options: bool
     ) -> list:
         """Compute the best option to connect its nodes.
 
         Args:
             s_dna: DNA sequence
-            s_dna_length: length of the DNA sequence
+            s_dna_len: length of the DNA sequence
+            automatic_placement_options: Computed automatic placement options
+            is_automatic_placement_options: true if automatic placement options should be plaed
 
         Returns:
             list of the best placed nodes with this connector
         """
 
-
         possible_candidates = []
 
-        possibilities_node_1 = self.node1.get_placement_2(s_dna, s_dna_len)
-        possibilities_node_2 = self.node2.get_placement_2(s_dna, s_dna_len)
+        possibilities_node_1 = self.node1.get_placement_2(
+                s_dna,
+                s_dna_len,
+                automatic_placement_options,
+                is_automatic_placement_options
+                )
+        possibilities_node_2 = self.node2.get_placement_2(
+                s_dna,
+                s_dna_len,
+                automatic_placement_options,
+                is_automatic_placement_options
+                )
 
         logterm = np.log10(10 + self._sigma ** 2)
 
@@ -440,8 +455,9 @@ class ConnectorObject(Node):
                     })
 
         possible_candidates.sort(key=lambda c: c["energy"], reverse=True)
+        options = automatic_placement_options if is_automatic_placement_options else self.placement_options
 
-        return possible_candidates[:self.placement_options]
+        return possible_candidates[:options]
 
     def set_node(self, node, _id) -> None:
         """Sets the node on a given ID

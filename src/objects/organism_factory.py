@@ -62,7 +62,7 @@ class OrganismFactory:
             A new organism based on JSON config file
         """
 
-        new_organism = OrganismObject(self.get_id(), self.conf_org)
+        new_organism = OrganismObject(self.get_id(), self.conf_org, self.conf_pssm["MAX_COLUMNS"])
         root_node = None
 
         # Based on a random probability, we assign a connector or a PSSM object
@@ -218,7 +218,7 @@ class OrganismFactory:
 
         for organism in organism_json:
 
-            new_organism = OrganismObject(self.get_id(), self.conf_org)
+            new_organism = OrganismObject(self.get_id(), self.conf_org, self.conf_pssm["MAX_COLUMNS"])
             root_node = None
 
             if organism["rootNode"]["objectType"] == "pssm":
