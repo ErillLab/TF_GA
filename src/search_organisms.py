@@ -74,6 +74,7 @@ def main():
     )
 
     mean_nodes = 0
+    mean_recognizers = 0
     mean_fitness = 0
     """
     Generate initial population
@@ -95,6 +96,10 @@ def main():
             organism_population.append(new_organism)
 
             mean_nodes += new_organism.count_nodes()
+
+	    # count recognizers
+            new_organism.count_nodes()
+            mean_recognizers += new_organism.num_recognizers
 
     elif POPULATION_ORIGIN.lower() == "file":
         # Set the file organisms and fill with random/same organisms
@@ -126,6 +131,10 @@ def main():
         for org in organism_population:
             mean_nodes += org.count_nodes()
 
+	    # count recognizers
+            org.count_nodes()
+            mean_recognizers += org.num_recognizers
+
     else:
         raise (
             Exception,
@@ -135,6 +144,7 @@ def main():
 
     # Convert node count into mean
     mean_nodes /= POPULATION_LENGTH
+    mean_recognizers /= POPULATION_LENGTH
     print("len = {}".format(len(organism_population)))
     """
     Initialize iteration variables.
@@ -239,9 +249,9 @@ def main():
                 n_2 = second_organism.get_seq_set_fitness(
                     negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG]
                 )
-                # Compute complexity after gettig the score
-                c_1 = first_organism.get_complexity(mean_nodes, mean_fitness)
-                c_2 = second_organism.get_complexity(mean_nodes, mean_fitness)
+                # Compute complexity
+                c_1 = first_organism.get_complexity(mean_recognizers, mean_fitness)
+                c_2 = second_organism.get_complexity(mean_recognizers, mean_fitness)
 
                 # Assign effective fitness
                 fitness1 = p_1 - n_1

@@ -23,6 +23,7 @@ class OrganismObject:
         self._id = _id
         self.root_node = root_node
         self.num_nodes = 0
+	self.num_recognizers = 0
 
         self.cumulative_fit_method = conf["CUMULATIVE_FIT_METHOD"]
         self.mutate_probability_substitute_pssm = conf[
@@ -168,11 +169,11 @@ class OrganismObject:
             mutated_node = self.get_node(random_node)
             mutated_node.mutate(org_factory)
 
-    def get_complexity(self, mean_nodes: float, mean_fitness: float) -> float:
+    def get_complexity(self, mean_recognizers: float, mean_fitness: float) -> float:
         """Returns the implicit complexity assiciated to the  current organism
 
         Args:
-            mean_nodes: Average number of nodes of the population
+            mean_recognizers: Average number of recognizers of the population
             mean_fitness: Average fitness of the population
 
         Returns:
@@ -180,7 +181,7 @@ class OrganismObject:
 
         """
         # Complexity is calculed as:
-        # meanFitnessScore * # nodes / mean_nodes
+        # meanFitnessScore * # nodes / mean_recognizers
 
         # Check complexity of the organism
         # If its over/under organism MAX/MIN apply an extra complexity penalty
@@ -189,7 +190,7 @@ class OrganismObject:
         base_penalty = 0.0
         nodes = self.count_nodes()
 
-        base_penalty = mean_fitness * self.num_nodes / mean_nodes
+        base_penalty = mean_fitness * self.num_recognizers / mean_recognizers
 
         # introduce bound for number of nodes
         # organisms containing more nodes get an additional penalty factor
@@ -352,12 +353,14 @@ class OrganismObject:
 
     def count_nodes(self) -> int:
         """Returns the number of nodes of the organism
+	It also sets num_recognizers
 
         Returns:
             Number of nodes of hte organism
         """
 
         self.num_nodes = self.root_node.count_nodes()
+	self.num_recognizers = int((self.num_nodes + 1) / 2)
 
         return self.num_nodes
 
