@@ -8,6 +8,7 @@ Connects two nodes at a specific distance
 import random
 from .node_object import Node
 import numpy as np
+import math
 
 
 # pylint: disable=R0902
@@ -425,9 +426,10 @@ class ConnectorObject(Node):
             is_automatic_placement_options
                 )
 
-        # precompute the log term of the connector energy component, which is
-        # not dependent on the placement of daugther nodes
-        logterm = np.log10(10 + self._sigma ** 2)
+	
+	#denominator = 1 / s_dna_len
+	denominator = 1 / 200
+	
 
         # for all possible daughter placement combinations
         for possibility_1 in possibilities_node_1:
@@ -467,19 +469,36 @@ class ConnectorObject(Node):
 
                 # if there is no overlap, compute the overall energy of the
                 # arrangement and add it to the list of possible placements
+		
+		
+		# Distance d
+                d = possibility_2["position"] - possibility_1["position"]
+		
+		mean = self._mu
+                sd = self._sigma
+		
+		# Compute p(d|mean,sigma)
+		if sd != 0:
+                    var = float(sd)**2
+                    denom = (2*math.pi*var)**.5
+                    num = math.exp(-(float(d)-float(mean))**2/(2*var))
+                    p = num/denom
+                else:
+                    # when sd is 0
+                    if d == mean:
+                        p = 1
+                    else:
+                        p = 0
                 
-                # compute the rest of the connector energy term
-                numerator = (
-                    self._mu
-                    - (
-                        possibility_2["position"] -
-                        possibility_1["position"]
-                    )
-                ) ** 2
-                exponent = -1.0 * numerator / (1 + 2 * (self._sigma ** 2))
-                expterm = np.exp(exponent)
+                numerator = p
+		
+		# Avoid log(0) error when computing e_connector
+		if numerator < 1e-100:
+                    numerator = 1e-100
+		
+		
                 # compute additive connector energy term
-                e_connector = (self.tau / logterm) * expterm
+                e_connector = np.log2(numerator / denominator)
 
                 # compute overall placement energy (connector + children)
                 energy = possibility_1["energy"] + possibility_2["energy"] + e_connector
