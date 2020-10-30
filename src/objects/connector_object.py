@@ -563,7 +563,7 @@ class ConnectorObject(Node):
         # print("Mutating Connector..." + str(self.ID))
         if random.random() < self.mutate_probability_sigma:
             # Alter sigma
-            self._sigma += random.randint(
+            self._sigma += random.uniform(
                 -self.mutate_variance_sigma, self.mutate_variance_sigma
             )
 
