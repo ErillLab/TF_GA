@@ -569,7 +569,7 @@ class ConnectorObject(Node):
 
         if random.random() < self.mutate_probability_mu:
             # Alter mu
-            self._mu += random.randint(
+            self._mu += random.uniform(
                 -self.mutate_variance_mu, self.mutate_variance_mu
             )
 
