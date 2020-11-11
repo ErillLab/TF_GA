@@ -427,8 +427,14 @@ class ConnectorObject(Node):
                 )
 
 	
-	#denominator = 1 / s_dna_len
-	denominator = 1 / 200
+	# Denominator: p(d) according to null model
+	# The probabity to observe d depends on the number of ways of getting d,
+	# given two randomly selected position within a sequence of lentgth L.
+	# There are L - abs(d) ways of getting two random position to be at
+	# distance d within a sequence of length L.
+	# The total number of equally likely combinations is L*(L-1).
+	# Therefore  p(d|null_model) = (L-abs(d)) / (L*(L-1))
+	denominator = (s_dna_len - abs(d)) / (s_dna_len * (s_dna_len-1))
 	
 
         # for all possible daughter placement combinations
