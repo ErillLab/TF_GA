@@ -11,6 +11,28 @@ import numpy as np
 import math
 
 
+def norm_pdf(x, mu, sigma):
+    if sigma != 0:
+        var = float(sigma)**2
+        denom = (2*math.pi*var)**.5
+        num = math.exp(-(float(x)-float(mu))**2/(2*var))
+        p = num/denom
+    else:
+        # when sigma is 0
+        if x == mu:
+            p = 1
+        else:
+            p = 0
+    return p
+
+
+def norm_cdf(x, mu, sigma):
+    # Cumulative distribution function for the normal distribution
+    z = (x-mu)/abs(sigma)
+    return (1.0 + math.erf(z / math.sqrt(2.0))) / 2.0
+
+
+
 # pylint: disable=R0902
 class ConnectorObject(Node):
     """Connector Object is a node that connects two nodes
@@ -425,17 +447,7 @@ class ConnectorObject(Node):
             automatic_placement_options,
             is_automatic_placement_options
                 )
-
-	
-	# Denominator: p(d) according to null model
-	# The probabity to observe d depends on the number of ways of getting d,
-	# given two randomly selected position within a sequence of lentgth L.
-	# There are L - abs(d) ways of getting two random position to be at
-	# distance d within a sequence of length L.
-	# The total number of equally likely combinations is L*(L-1).
-	# Therefore  p(d|null_model) = (L-abs(d)) / (L*(L-1))
-	denominator = (s_dna_len - abs(d)) / (s_dna_len * (s_dna_len-1))
-	
+        
 
         # for all possible daughter placement combinations
         for possibility_1 in possibilities_node_1:
@@ -475,37 +487,56 @@ class ConnectorObject(Node):
 
                 # if there is no overlap, compute the overall energy of the
                 # arrangement and add it to the list of possible placements
-		
-		
-		# Distance d
-                d = possibility_2["position"] - possibility_1["position"]
-		
-		mean = self._mu
-                sd = self._sigma
-		
-		# Compute p(d|mean,sigma)
-		if sd != 0:
-                    var = float(sd)**2
-                    denom = (2*math.pi*var)**.5
-                    num = math.exp(-(float(d)-float(mean))**2/(2*var))
-                    p = num/denom
-                else:
-                    # when sd is 0
-                    if d == mean:
-                        p = 1
-                    else:
-                        p = 0
                 
-                numerator = p
-		
-		# Avoid log(0) error when computing e_connector
-		if numerator < 1e-100:
+                
+                # Distance d
+                d = possibility_2["position"] - possibility_1["position"]
+                
+                
+                # Numerator                
+                numerator = norm_pdf(d, self._mu, self._sigma)
+                
+                # Normalize by AUC within the range of observable d values
+                
+                max_d = s_dna_len - 1  # Maximum d observable
+                min_d = -1 * max_d  # Minimum d observable
+                
+                if self._sigma == 0:
+                    auc = 1.0  # all the gaussian is within the [-(L-1), +(L-1)] range
+                else:
+                    auc = norm_cdf(max_d, self._mu, self._sigma) - norm_cdf(min_d, self._mu, self._sigma)
+                
+                
+		# avoid zero-division error
+		# This will never happen, unless an organism evolves a really extreme sigma
+                if auc < 1e-100:
+                    auc = 1e-100 
+                    print("AUC was 0 with mu =", self._mu, "and sigma =", self._sigma)
+                
+                
+                                
+                # avoid log(0) error when computing e_connector
+                if numerator < 1e-100:
                     numerator = 1e-100
-		
-		
+                
+
+                # Normalize
+                numerator = numerator / auc
+                
+                
+                # Denominator
+                # p(d) according to null model
+            	# The probabity to observe d depends on the number of ways of getting d,
+            	# given two randomly selected positions within a sequence of lentgth L.
+            	# There are L - abs(d) ways of getting two random position at
+            	# distance d within a sequence of length L.
+            	# The total number of equally likely couples (-> distances) is L*(L-1).
+            	# Therefore  p(d|null_model) = (L-abs(d)) / (L*(L-1))
+                denominator = (s_dna_len - abs(d)) / (s_dna_len * (s_dna_len-1))
+                
                 # compute additive connector energy term
                 e_connector = np.log2(numerator / denominator)
-
+                
                 # compute overall placement energy (connector + children)
                 energy = possibility_1["energy"] + possibility_2["energy"] + e_connector
 
