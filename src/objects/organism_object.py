@@ -256,7 +256,7 @@ class OrganismObject:
 
         # call recursively to get the list of best placement options for 
         # the organism (root node)
-        node_root = self.root_node.get_placement_2(
+        node_root = self.root_node.get_placement(
             s_dna,
             len(s_dna),
             automatic_placement_options,

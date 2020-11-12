@@ -227,66 +227,8 @@ class PssmObject(Node):
             self.optimal_combination = tmp_optimal
         # print(self.optimal_combination)
 
+
     def get_placement(
-            self, s_dna: str, s_dna_len: int, blocks: list, blockers: list
-    ) -> dict:
-        """DEPRECATED
-        
-        Searchs sequence with PSSM ojbect returns position and score
-
-        Args:
-            s_dna: DNA sequence
-            s_dna_len: length of the DNA sequence
-            blocks: TODO
-            blockers: IDs of the blocked nodes
-
-        Returns:
-            dictionary with info about the energy
-            "pspairs": TODO
-            "blocked": TODO
-            "blocker": TODO
-
-        """
-
-        scores_on_seq = []
-        pssm_length = self.length
-
-        # Check every position possible on the sequence
-        for pos in range(s_dna_len - pssm_length):
-            mypos = float(pos) + pssm_length / 2
-            blocked = False
-            for jpos in range(pos, pos + pssm_length):
-                if jpos in blocks:
-                    blocked = True
-                    break
-            # if the position has not been blocked by another PSSM
-            if not blocked:
-                # Compute the score of PSSM at position in sequence
-                # append them to list
-                scores_on_seq.append(
-                    {
-                        "pos": mypos,
-                        "energy": self.get_score(
-                            s_dna[pos: pos + pssm_length]
-                        ),
-                    }
-                )
-            # otherwise just add large negative
-            else:
-                scores_on_seq.append({"pos": mypos, "energy": -10000.0})
-
-        # print (blocks)
-        # print(scoresonseq,'\n')
-        # sort list and return it
-        scores_on_seq.sort(key=lambda k: k["energy"], reverse=True)
-
-        return {
-            "pspairs": scores_on_seq,
-            "blocked": blocks,
-            "blocker": blockers,
-        }
-
-    def get_placement_2(
             self, s_dna: str,
             s_dna_len: int,
             automatic_placement_options: int,
