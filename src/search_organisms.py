@@ -236,19 +236,11 @@ def main():
                 second_organism = pair_children[j][1]  # Chid Organism
 
                 # Compute fitness for organisms
-                p_1 = first_organism.get_seq_set_fitness(
-                    positive_dataset[:MAX_SEQUENCES_TO_FIT_POS]
-                )
-                n_1 = first_organism.get_seq_set_fitness(
-                    negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG]
-                )
+                p_1 = first_organism.get_seq_set_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])["score"]
+                n_1 = first_organism.get_seq_set_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])["score"]
 
-                p_2 = second_organism.get_seq_set_fitness(
-                    positive_dataset[:MAX_SEQUENCES_TO_FIT_POS]
-                )
-                n_2 = second_organism.get_seq_set_fitness(
-                    negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG]
-                )
+                p_2 = second_organism.get_seq_set_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])["score"]
+                n_2 = second_organism.get_seq_set_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])["score"]
 
                 # Assign fitness
                 fitness1 = p_1 - n_1

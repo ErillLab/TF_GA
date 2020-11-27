@@ -7,6 +7,50 @@ import random
 import numpy as np
 
 
+def gini_RSV(values_for_each_class):
+    '''
+    Gini coefficient, modified in order to be alble to deal with negative
+    values as in "Inequality measures and the issue of negative incomes"
+    (Raffinetti, Siletti, Vernizzi)
+
+    Parameters
+    ----------
+    values_for_each_class : array-like object
+        Values associated to each class.
+        They don't need to be already sorted and/or normalized.
+        They can also be negative.
+
+    Returns
+    -------
+    giniRSV : float
+        Ranges from 0 (perfect equality) to 1 (maximal inequality).
+
+    '''
+    
+    N = len(values_for_each_class)
+    if N==1:
+        return 0  # return 0 inequality when a single number is the input
+    
+    numerator = 0
+    for i in values_for_each_class:
+        for j in values_for_each_class:
+            numerator += abs(i - j)
+    
+    pos = 0  # sum over the positive values
+    neg = 0  # sum over the negative values (in absolute value)
+    for x in values_for_each_class:
+        if x > 0:
+            pos += x
+        else:
+            neg += -x
+    
+    mu_RSV = (N - 1) * (pos + neg) / N**2
+    denominator = 2 * N**2 * mu_RSV
+    giniRSV = numerator / denominator
+    
+    return giniRSV
+
+
 class OrganismObject:
     """Organism object
     """
@@ -292,21 +336,41 @@ class OrganismObject:
 
         # sum method returns the sum of all fitness to DNA sequences
         if self.cumulative_fit_method == "sum":
-
+	    
+	    ginis = []
             for s_dna in a_dna:
                 sfit = self.get_seq_fitness(s_dna)
-                score += sfit["energy"]
+		energy = sfit["energy"]
+		pssm_scores = sfit["recognizers_scores"]
+		if len(pssm_scores) > 0:
+                    gini = gini_RSV(pssm_scores)  # Gini coefficient
+                else:
+                    gini = 1
+                score += energy
+		ginis.append(gini)
+	    avg_gini = np.prod(ginis) ** (1/len(ginis))  # geometric mean of the gini
+		
 
         # mean method returns the mean of all fitness to SNA sequences
         elif self.cumulative_fit_method == "mean":
 
             scores = []
+	    ginis = []
             for s_dna in a_dna:
                 sfit = self.get_seq_fitness(s_dna)
-                scores.append(sfit["energy"])
+		energy = sfit["energy"]  # energy
+		pssm_scores = sfit["recognizers_scores"]  # PSSMs scores
+		if len(pssm_scores) > 0:
+                    gini = gini_RSV(pssm_scores)  # Gini coefficient
+                else:
+                    gini = 1
+                scores.append(energy)
+		ginis.append(gini)
+	    
             score = np.mean(scores)
+	    avg_gini = np.prod(ginis) ** (1/len(ginis))  # geometric mean of the gini
 
-        return score
+        return {"score": score, "avg_Gini": avg_gini}
 
     def get_boltz_fitness(self, pos_dataset: list, neg_dataset: list, genome_length: int) -> float:
         """Returns the organism's fitness, defined as the probability that the regulator binds a
