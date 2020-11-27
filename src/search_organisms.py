@@ -250,12 +250,25 @@ def main():
                     negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG]
                 )
 
-                # Assign effective fitness
+                # Assign fitness
                 fitness1 = p_1 - n_1
-                effective_fitness_1 = fitness1
+		fitness2 = p_2 - n_2
+		
+		
+		if MAX_NODES != None:
+                    # Upper_bound to complexity
+                    if first_organism.count_nodes() > MAX_NODES:
+                        print(first_organism.count_nodes(), "nodes")
+                        fitness1 = -1000 * int(first_organism.count_nodes())
+                    
+                    if second_organism.count_nodes() > MAX_NODES:
+                        print(second_organism.count_nodes(), "nodes")
+                        fitness2 = -1000 * int(second_organism.count_nodes())
+		
 
-                fitness2 = p_2 - n_2
+		effective_fitness_1 = fitness1
                 effective_fitness_2 = fitness2
+
 
                 # print(
                 #    (
@@ -608,6 +621,8 @@ def set_up():
     global OUTPUT_FILENAME
     global RECOMBINATION_PROBABILITY
     global PERIODIC_EXPORT
+    global MAX_NODES
+    global MIN_NODES
 
     # Config data
     global configOrganism
@@ -638,6 +653,8 @@ def set_up():
     OUTPUT_FILENAME = config["main"]["OUTPUT_FILENAME"]
     RECOMBINATION_PROBABILITY = config["main"]["RECOMBINATION_PROBABILITY"]
     PERIODIC_EXPORT = config["main"]["PERIODIC_EXPORT"]
+    MAX_NODES = config["organism"]["MAX_NODES"]
+    MIN_NODES = config["organism"]["MIN_NODES"]
 
     # Create directory where the output and results will be stored
     os.mkdir(RESULT_BASE_PATH_DIR)
