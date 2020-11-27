@@ -249,16 +249,13 @@ def main():
                 n_2 = second_organism.get_seq_set_fitness(
                     negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG]
                 )
-                # Compute complexity
-                c_1 = first_organism.get_complexity(mean_recognizers, mean_fitness)
-                c_2 = second_organism.get_complexity(mean_recognizers, mean_fitness)
 
                 # Assign effective fitness
                 fitness1 = p_1 - n_1
-                effective_fitness_1 = fitness1 - COMPLEXITY_FACTOR * c_1
+                effective_fitness_1 = fitness1
 
                 fitness2 = p_2 - n_2
-                effective_fitness_2 = fitness2 - COMPLEXITY_FACTOR * c_2
+                effective_fitness_2 = fitness2
 
                 # print(
                 #    (
@@ -297,7 +294,6 @@ def main():
                             first_organism,
                             effective_fitness_1,
                             first_organism.count_nodes(),
-                            c_1,
                         )
 
                     # Check if its the max score so far and if it is set it as
@@ -346,7 +342,6 @@ def main():
                             second_organism,
                             effective_fitness_2,
                             second_organism.count_nodes(),
-                            c_2,
                         )
 
                     # Check if its the max score so far and if it is set it as
@@ -372,8 +367,8 @@ def main():
         print_ln(
             (
                 "Iter: {} AN:{:.2f} AF:{:.2f} - MO: {} MF: {:.2f} MN: {} "
-                + "MP: {:.2f} MSP: {:.2f} -  BO: {} BF: {:.2f} BN: {} "
-                + "BP: {:.2f} Time: {}"
+                + "MSP: {:.2f} -  BO: {} BF: {:.2f} BN: {} "
+                + "Time: {}"
             ).format(
                 iterations,
                 mean_nodes,
@@ -381,12 +376,10 @@ def main():
                 max_organism[0]._id,
                 max_organism[1],
                 max_organism[2],
-                max_organism[3],
                 max_score_p,
                 best_organism[0]._id,
                 best_organism[1],
                 best_organism[2],
-                best_organism[3],
                 s_time,
             ),
             RESULT_BASE_PATH_DIR + OUTPUT_FILENAME,
@@ -609,7 +602,6 @@ def set_up():
     global MIN_ITERATIONS
     global MIN_FITNESS
     global THRESHOLD
-    global COMPLEXITY_FACTOR
     global POPULATION_ORIGIN
     global POPULATION_FILL_TYPE
     global INPUT_FILENAME
@@ -640,7 +632,6 @@ def set_up():
     MIN_FITNESS = config["main"]["MIN_FITNESS"]
     THRESHOLD = config["main"]["THRESHOLD"]
     END_WHILE_METHOD = config["main"]["END_WHILE_METHOD"]
-    COMPLEXITY_FACTOR = config["main"]["COMPLEXITY_FACTOR"]
     POPULATION_ORIGIN = config["main"]["POPULATION_ORIGIN"]
     POPULATION_FILL_TYPE = config["main"]["POPULATION_FILL_TYPE"]
     INPUT_FILENAME = config["main"]["INPUT_FILENAME"]
