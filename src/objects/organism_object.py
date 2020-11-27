@@ -270,7 +270,8 @@ class OrganismObject:
             return {
                 "energy": -1000,
                 "position": 0,
-                "lock_vector": []
+                "lock_vector": [],
+		"recognizers_scores": []
                 }
 
         # return score, blocks and blokcers in that sequence

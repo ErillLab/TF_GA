@@ -333,7 +333,8 @@ class ConnectorObject(Node):
                 possible_candidates.append({
                     "position": (possibility_1["position"] + possibility_2["position"]) / 2,
                     "energy": energy,
-                    "lock_vector": possibility_1["lock_vector"] + possibility_2["lock_vector"]
+                    "lock_vector": possibility_1["lock_vector"] + possibility_2["lock_vector"],
+		    "recognizers_scores": possibility_1["recognizers_scores"] + possibility_2["recognizers_scores"]
                     })
 
         # reverse sort the list of candidate placements based on energy
