@@ -612,6 +612,7 @@ def set_up():
     global RESULT_PATH_PATH_DIR
     global MAX_SEQUENCES_TO_FIT_POS
     global MAX_SEQUENCES_TO_FIT_NEG
+    global FITNESS_FUNCTION
     global MIN_ITERATIONS
     global MIN_FITNESS
     global THRESHOLD
@@ -643,6 +644,7 @@ def set_up():
     NEGATIVE_FILENAME = config["main"]["NEGATIVE_FILENAME"]
     MAX_SEQUENCES_TO_FIT_POS = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
     MAX_SEQUENCES_TO_FIT_NEG = config["main"]["MAX_SEQUENCES_TO_FIT_NEG"]
+    FITNESS_FUNCTION = config["main"]["FITNESS_FUNCTION"]
     MIN_ITERATIONS = config["main"]["MIN_ITERATIONS"]
     MIN_FITNESS = config["main"]["MIN_FITNESS"]
     THRESHOLD = config["main"]["THRESHOLD"]

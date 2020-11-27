@@ -12,6 +12,7 @@
     "OUTPUT_FILENAME":"output.txt",
     "MAX_SEQUENCES_TO_FIT_POS":50,
     "MAX_SEQUENCES_TO_FIT_NEG":50,
+    "FITNESS_FUNCTION": "boltzmannian",
     "END_WHILE_METHOD":"iterations",
     "MIN_ITERATIONS":50,
     "MIN_FITNESS":10,
