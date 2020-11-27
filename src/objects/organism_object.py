@@ -307,6 +307,46 @@ class OrganismObject:
 
         return score
 
+    def get_boltz_fitness(self, pos_dataset: list, neg_dataset: list, genome_length: int) -> float:
+        """Returns the organism's fitness, defined as the probability that the regulator binds a
+	positive sequence. All the binding energies are turned into probabilities according to a
+	Boltzmannian distribution. The probability of binding a particular sequence, given the binding
+	energy on that sequence, is p = e**binding_energy / Z
+	where Z is the partition function.
+	A high number of negative sequences is assumed to be present (emulating the environment of a
+	regulator that needs to find its targets on an entire genome).
+	A coefficient called neg_factor is computed, so that the value of Z can be as high as if there
+	were as	many negative sequences as required to cover the entire genome.
+
+        Args:
+            pos_dataset: list of dna sequences in the positive dataset
+            neg_dataset: list of dna sequences in the negative dataset
+	    genome_length: integer representing the length of the genome
+
+        Returns:
+            fitness assigned to the organism
+        """
+        
+        pos_probabilities = []
+        for s_dna in pos_dataset:
+            sfit = self.get_seq_fitness(s_dna)
+            boltz_probability = np.e**sfit["energy"]
+            pos_probabilities.append(boltz_probability)
+        
+        neg_probabilities = []
+        neg_lengths = []
+        for s_dna in neg_dataset:
+            sfit = self.get_seq_fitness(s_dna)
+            boltz_probability = np.e**sfit["energy"]
+            neg_probabilities.append(boltz_probability)
+            neg_lengths.append(len(s_dna))
+        
+        neg_factor = genome_length//sum(neg_lengths)
+        
+        boltz_fitness = sum(pos_probabilities) / (sum(pos_probabilities) + neg_factor * sum(neg_probabilities))
+        
+        return boltz_fitness
+
     def get_node(self, objective: int):
         """Returns a node Number N based on in-order search. [0-N)
 
