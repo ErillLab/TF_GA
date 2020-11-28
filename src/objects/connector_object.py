@@ -274,10 +274,8 @@ class ConnectorObject(Node):
                 # if there is no overlap, compute the overall energy of the
                 # arrangement and add it to the list of possible placements
                 
-                
                 # Distance d
                 d = possibility_2["position"] - possibility_1["position"]
-                
                 
                 # Numerator                
                 numerator = norm_pdf(d, self._mu, self._sigma)
@@ -293,22 +291,18 @@ class ConnectorObject(Node):
                     auc = norm_cdf(max_d, self._mu, self._sigma) - norm_cdf(min_d, self._mu, self._sigma)
                 
                 
-		# avoid zero-division error
-		# This will never happen, unless an organism evolves a really extreme sigma
+                # avoid zero-division error
+                # This will never happen, unless an organism evolves a really extreme sigma
                 if auc < 1e-100:
                     auc = 1e-100 
-                    print("AUC was 0 with mu =", self._mu, "and sigma =", self._sigma)
-                
-                
+                    print("AUC was 0 with mu =", self._mu, "and sigma =", self._sigma)                
                                 
                 # avoid log(0) error when computing e_connector
                 if numerator < 1e-100:
                     numerator = 1e-100
                 
-
                 # Normalize
                 numerator = numerator / auc
-                
                 
                 # Denominator
                 # p(d) according to null model
@@ -327,14 +321,16 @@ class ConnectorObject(Node):
                 energy = possibility_1["energy"] + possibility_2["energy"] + e_connector
 
                 # add placement to list of possible placements
-                # include the position (average of daughter nodes for connector)
+                # The candidate placement includes:
+                # the position (average of daughter nodes for connector)
                 # the energy (connector + daughter nodes)
-                # and the blocked PSSM positions inherited from the daugther nodes
+                # the blocked PSSM positions inherited from the daugther nodes
+                # the list of all the scores of the recognizers
                 possible_candidates.append({
                     "position": (possibility_1["position"] + possibility_2["position"]) / 2,
                     "energy": energy,
                     "lock_vector": possibility_1["lock_vector"] + possibility_2["lock_vector"],
-		    "recognizers_scores": possibility_1["recognizers_scores"] + possibility_2["recognizers_scores"]
+                    "recognizers_scores": possibility_1["recognizers_scores"] + possibility_2["recognizers_scores"]
                     })
 
         # reverse sort the list of candidate placements based on energy

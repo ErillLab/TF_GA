@@ -12,7 +12,7 @@
     "OUTPUT_FILENAME":"output.txt",
     "MAX_SEQUENCES_TO_FIT_POS":50,
     "MAX_SEQUENCES_TO_FIT_NEG":50,
-    "FITNESS_FUNCTION": "discriminative",
+    "FITNESS_FUNCTION": "boltzmannian",
     "INEQUALITY_PENALTY": "avg_gini",
     "INEQUALITY_PENALTY_PARAM": 2,
     "GENOME_LENGTH": 4600000,

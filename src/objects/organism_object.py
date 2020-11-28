@@ -67,7 +67,7 @@ class OrganismObject:
         self._id = _id
         self.root_node = root_node
         self.num_nodes = 0
-	self.num_recognizers = 0
+        self.num_recognizers = 0
 
         self.cumulative_fit_method = conf["CUMULATIVE_FIT_METHOD"]
         self.mutate_probability_substitute_pssm = conf[
@@ -315,7 +315,7 @@ class OrganismObject:
                 "energy": -1000,
                 "position": 0,
                 "lock_vector": [],
-		"recognizers_scores": []
+                "recognizers_scores": []
                 }
 
         # return score, blocks and blokcers in that sequence
@@ -332,56 +332,42 @@ class OrganismObject:
             score assigned to the organism
         """
 
-        score = 0
-
-        # sum method returns the sum of all fitness to DNA sequences
+        scores = []
+        ginis = []
+        for s_dna in a_dna:
+            sfit = self.get_seq_fitness(s_dna)
+            energy = sfit["energy"]  # energy
+            pssm_scores = sfit["recognizers_scores"]  # PSSMs scores
+            if len(pssm_scores) > 0:
+                gini = gini_RSV(pssm_scores)  # Gini coefficient
+            else:
+                gini = 1
+            scores.append(energy)
+            ginis.append(gini)
+        
         if self.cumulative_fit_method == "sum":
-	    
-	    ginis = []
-            for s_dna in a_dna:
-                sfit = self.get_seq_fitness(s_dna)
-		energy = sfit["energy"]
-		pssm_scores = sfit["recognizers_scores"]
-		if len(pssm_scores) > 0:
-                    gini = gini_RSV(pssm_scores)  # Gini coefficient
-                else:
-                    gini = 1
-                score += energy
-		ginis.append(gini)
-	    avg_gini = np.prod(ginis) ** (1/len(ginis))  # geometric mean of the gini
-		
-
-        # mean method returns the mean of all fitness to SNA sequences
+            # Compute fitness score as sum over the positive scores
+            score = np.sum(scores)
+        
         elif self.cumulative_fit_method == "mean":
-
-            scores = []
-	    ginis = []
-            for s_dna in a_dna:
-                sfit = self.get_seq_fitness(s_dna)
-		energy = sfit["energy"]  # energy
-		pssm_scores = sfit["recognizers_scores"]  # PSSMs scores
-		if len(pssm_scores) > 0:
-                    gini = gini_RSV(pssm_scores)  # Gini coefficient
-                else:
-                    gini = 1
-                scores.append(energy)
-		ginis.append(gini)
-	    
+            # Compute fitness score as average positive score
             score = np.mean(scores)
-	    avg_gini = np.prod(ginis) ** (1/len(ginis))  # geometric mean of the gini
-
+        
+        # Compute the average Gini coefficient as the geometric mean
+        avg_gini = np.prod(ginis) ** (1/len(ginis))
+        
         return {"score": score, "avg_gini": avg_gini}
 
     def get_boltz_fitness(self, pos_dataset: list, neg_dataset: list, genome_length: int) -> float:
         """Returns the organism's fitness, defined as the probability that the regulator binds a
-	positive sequence. All the binding energies are turned into probabilities according to a
-	Boltzmannian distribution. The probability of binding a particular sequence, given the binding
-	energy on that sequence, is p = e**binding_energy / Z
-	where Z is the partition function.
-	A high number of negative sequences is assumed to be present (emulating the environment of a
-	regulator that needs to find its targets on an entire genome).
-	A coefficient called neg_factor is computed, so that the value of Z can be as high as if there
-	were as	many negative sequences as required to cover the entire genome.
+        positive sequence. All the binding energies are turned into probabilities according to a
+        Boltzmannian distribution. The probability of binding a particular sequence, given the binding
+        energy on that sequence, is p = e**binding_energy / Z
+        where Z is the partition function.
+        A high number of negative sequences is assumed to be present (emulating the environment of a
+        regulator that needs to find its targets on an entire genome).
+        A coefficient called neg_factor is computed, so that the value of Z can be as high as if there
+        were as	many negative sequences as required to cover the entire genome.
 
         Args:
             pos_dataset: list of dna sequences in the positive dataset
@@ -392,21 +378,24 @@ class OrganismObject:
             fitness assigned to the organism
         """
         
+        # Values onthe positive set
         pos_values = []
-	ginis = []
+        ginis = []
         for s_dna in pos_dataset:
             sfit = self.get_seq_fitness(s_dna)
             boltz_exp = np.e**sfit["energy"]  # exp(energy)
-	    pssm_scores = sfit["recognizers_scores"]  # PSSMs scores
-	    if len(pssm_scores) > 0:
+            pssm_scores = sfit["recognizers_scores"]  # PSSMs scores
+            if len(pssm_scores) > 0:
                 gini = gini_RSV(pssm_scores)  # Gini coefficient
             else:
                 gini = 1
             pos_values.append(boltz_exp)
-	    ginis.append(gini)
+            ginis.append(gini)
         
-	avg_gini = np.prod(ginis) ** (1/len(ginis))  # geometric mean of the gini
-	
+        # Compute the average Gini coefficient as the geometric mean
+        avg_gini = np.prod(ginis) ** (1/len(ginis))
+        
+        # Values onthe negative set
         neg_values = []
         neg_lengths = []
         for s_dna in neg_dataset:
@@ -415,9 +404,15 @@ class OrganismObject:
             neg_values.append(boltz_exp)
             neg_lengths.append(len(s_dna))
         
+        # Scaling factor, used to over-represent the negative scores, so that
+        # it simulates a genome of specified length
         neg_factor = genome_length//sum(neg_lengths)
         
-        boltz_fitness = sum(pos_values) / (sum(pos_values) + neg_factor * sum(neg_values))
+        # Partition function
+        Z = sum(pos_values) + neg_factor * sum(neg_values)
+        
+        # Compute fitness score as a Boltzmannian probability
+        boltz_fitness = sum(pos_values) / Z
         
         return {"score": boltz_fitness, "avg_gini": avg_gini}
 
@@ -474,7 +469,7 @@ class OrganismObject:
         """
 
         self.num_nodes = self.root_node.count_nodes()
-	self.num_recognizers = int((self.num_nodes + 1) / 2)
+        self.num_recognizers = int((self.num_nodes + 1) / 2)
 
         return self.num_nodes
 

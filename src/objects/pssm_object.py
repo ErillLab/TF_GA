@@ -280,8 +280,11 @@ class PssmObject(Node):
             #add the position as a possible placement
             possible_candidates.append(
                 {
-                    #include the position and energy, as well as the list
-                    #of positions that this placement "blocks"
+                    # include the position
+                    # the energy
+                    # the list of positions that this placement "blocks"
+                    # a list that is going to be used to keep track of the
+                    # scores of the recognizers in larger organisms
                     "position": pos + (pssm_length/2),
                     "energy": self.get_score(
                         s_dna[pos: pos + pssm_length]
