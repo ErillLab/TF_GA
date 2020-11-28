@@ -136,11 +136,9 @@ def main():
             mean_recognizers += org.num_recognizers
 
     else:
-        raise (
-            Exception,
-            "Not a valid population origin, "
-            + "check the configuration file.",
-        )
+        raise Exception("Not a valid population origin, "
+            + "check the configuration file.")
+    
 
     # Convert node count into mean
     mean_nodes /= POPULATION_LENGTH
