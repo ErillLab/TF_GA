@@ -370,7 +370,7 @@ class OrganismObject:
             score = np.mean(scores)
 	    avg_gini = np.prod(ginis) ** (1/len(ginis))  # geometric mean of the gini
 
-        return {"score": score, "avg_Gini": avg_gini}
+        return {"score": score, "avg_gini": avg_gini}
 
     def get_boltz_fitness(self, pos_dataset: list, neg_dataset: list, genome_length: int) -> float:
         """Returns the organism's fitness, defined as the probability that the regulator binds a
@@ -392,25 +392,34 @@ class OrganismObject:
             fitness assigned to the organism
         """
         
-        pos_probabilities = []
+        pos_values = []
+	ginis = []
         for s_dna in pos_dataset:
             sfit = self.get_seq_fitness(s_dna)
-            boltz_probability = np.e**sfit["energy"]
-            pos_probabilities.append(boltz_probability)
+            boltz_exp = np.e**sfit["energy"]  # exp(energy)
+	    pssm_scores = sfit["recognizers_scores"]  # PSSMs scores
+	    if len(pssm_scores) > 0:
+                gini = gini_RSV(pssm_scores)  # Gini coefficient
+            else:
+                gini = 1
+            pos_values.append(boltz_exp)
+	    ginis.append(gini)
         
-        neg_probabilities = []
+	avg_gini = np.prod(ginis) ** (1/len(ginis))  # geometric mean of the gini
+	
+        neg_values = []
         neg_lengths = []
         for s_dna in neg_dataset:
             sfit = self.get_seq_fitness(s_dna)
-            boltz_probability = np.e**sfit["energy"]
-            neg_probabilities.append(boltz_probability)
+            boltz_exp = np.e**sfit["energy"]  # exp(energy)
+            neg_values.append(boltz_exp)
             neg_lengths.append(len(s_dna))
         
         neg_factor = genome_length//sum(neg_lengths)
         
-        boltz_fitness = sum(pos_probabilities) / (sum(pos_probabilities) + neg_factor * sum(neg_probabilities))
+        boltz_fitness = sum(pos_values) / (sum(pos_values) + neg_factor * sum(neg_values))
         
-        return boltz_fitness
+        return {"score": boltz_fitness, "avg_gini": avg_gini}
 
     def get_node(self, objective: int):
         """Returns a node Number N based on in-order search. [0-N)

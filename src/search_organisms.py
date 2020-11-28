@@ -236,29 +236,42 @@ def main():
                 second_organism = pair_children[j][1]  # Chid Organism
 		
 		
-		# Boltzmannian fitness
+                # Boltzmannian fitness
                 if FITNESS_FUNCTION == "boltzmannian":
-                    fitness1 = first_organism.get_boltz_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
+                    performance1 = first_organism.get_boltz_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
                                                                 negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
                                                                 GENOME_LENGTH)
+                    fitness1 = performance1["score"]
+                    gini1 = performance1["avg_gini"]
                     
-                    fitness2 = second_organism.get_boltz_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
+                    performance2 = second_organism.get_boltz_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
                                                                  negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
                                                                  GENOME_LENGTH)
-		
-		# Discriminative fitness
-                elif FITNESS_FUNCTION == "discriminative":
-                    p_1 = first_organism.get_discriminative_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])["score"]
-                    n_1 = first_organism.get_discriminative_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])["score"]
-                    fitness1 =  p_1 - n_1
+                    fitness2 = performance2["score"]
+                    gini2 = performance2["avg_gini"]
                     
-                    p_2 = second_organism.get_discriminative_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])["score"]
-                    n_2 = second_organism.get_discriminative_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])["score"]
+                    fitness1 = round(fitness1, 8)
+                    fitness2 = round(fitness2, 8)
+                
+                # Discriminative fitness
+                elif FITNESS_FUNCTION == "discriminative":
+                    positive_performance1 = first_organism.get_discriminative_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])
+                    negative_performance1 = first_organism.get_discriminative_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])
+                    p_1 = positive_performance1["score"]
+                    n_1 = negative_performance1["score"]
+                    fitness1 =  p_1 - n_1
+                    gini1 = positive_performance1["avg_gini"]
+                    
+                    positive_performance2 = second_organism.get_discriminative_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])
+                    negative_performance2 = second_organism.get_discriminative_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])
+                    p_2 = positive_performance2["score"]
+                    n_2 = negative_performance2["score"]
                     fitness2 =  p_2 - n_2
-		
-		
-		
-		if MAX_NODES != None:
+                    gini2 = positive_performance2["avg_gini"]
+
+
+                if MAX_NODES != None:
+                    
                     # Upper_bound to complexity
                     if first_organism.count_nodes() > MAX_NODES:
                         print(first_organism.count_nodes(), "nodes")
@@ -267,30 +280,12 @@ def main():
                     if second_organism.count_nodes() > MAX_NODES:
                         print(second_organism.count_nodes(), "nodes")
                         fitness2 = -1000 * int(second_organism.count_nodes())
-		
-
-		effective_fitness_1 = fitness1
+                
+                
+                
+                effective_fitness_1 = fitness1
                 effective_fitness_2 = fitness2
 
-
-                # print(
-                #    (
-                #        "ID1: {} EFitness1:{:.2f}-{:.2f}-{:.2f} =  {:.2f}"
-                #        + " \nID2: {} EFitness2: {:.2f}-{:.2f}-{:.2f} "
-                #        + "= {:.2f}"
-                #    ).format(
-                #        first_organism._id,
-                #        p_1,
-                #        n_1,
-                #        c_1,
-                #        effective_fitness_1,
-                #        second_organism._id,
-                #        p_2,
-                #        n_2,
-                #        c_2,
-                #        effective_fitness_2,
-                #    )
-                # )
 
                 if (
                         effective_fitness_1 > effective_fitness_2
@@ -304,12 +299,12 @@ def main():
 
                     # Check if its the max score in that iteration
                     if effective_fitness_1 > max_score:
-                        max_score_p = p_1
                         max_score = effective_fitness_1
                         max_organism = (
                             first_organism,
                             effective_fitness_1,
                             first_organism.count_nodes(),
+                            gini1,
                         )
 
                     # Check if its the max score so far and if it is set it as
@@ -352,12 +347,12 @@ def main():
 
                     # Check if its the max score in that iteration
                     if effective_fitness_2 > max_score:
-                        max_score_p = p_2
                         max_score = effective_fitness_2
                         max_organism = (
                             second_organism,
                             effective_fitness_2,
                             second_organism.count_nodes(),
+                            gini2,
                         )
 
                     # Check if its the max score so far and if it is set it as
@@ -383,20 +378,21 @@ def main():
         print_ln(
             (
                 "Iter: {} AN:{:.2f} AF:{:.2f} - MO: {} MF: {:.2f} MN: {} "
-                + "MSP: {:.2f} -  BO: {} BF: {:.2f} BN: {} "
-                + "Time: {}"
+                + "MP: {:.2f} -  BO: {} BF: {:.2f} BN: {} "
+                + "BP: {:.2f} Time: {}"
             ).format(
-                iterations,
-                mean_nodes,
-                mean_fitness,
-                max_organism[0]._id,
-                max_organism[1],
-                max_organism[2],
-                max_score_p,
-                best_organism[0]._id,
-                best_organism[1],
-                best_organism[2],
-                s_time,
+                iterations,  # Iter
+                mean_nodes,  # AN
+                mean_fitness,  # AF
+                max_organism[0]._id,  # MO
+                max_organism[1],  # MF (fitness)
+                max_organism[2],  # MN (nodes)
+                max_organism[3],  # MP (penalty)
+                best_organism[0]._id,  # BO
+                best_organism[1],  # BF (fitness)
+                best_organism[2],  # BN (nodes)
+                best_organism[3],  # BP (penalty)
+                s_time,  # Time
             ),
             RESULT_BASE_PATH_DIR + OUTPUT_FILENAME,
         )
