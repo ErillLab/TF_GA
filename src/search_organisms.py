@@ -616,6 +616,7 @@ def set_up():
     global MAX_SEQUENCES_TO_FIT_POS
     global MAX_SEQUENCES_TO_FIT_NEG
     global FITNESS_FUNCTION
+    global GENOME_LENGTH
     global MIN_ITERATIONS
     global MIN_FITNESS
     global THRESHOLD
@@ -648,6 +649,7 @@ def set_up():
     MAX_SEQUENCES_TO_FIT_POS = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
     MAX_SEQUENCES_TO_FIT_NEG = config["main"]["MAX_SEQUENCES_TO_FIT_NEG"]
     FITNESS_FUNCTION = config["main"]["FITNESS_FUNCTION"]
+    GENOME_LENGTH = config["main"]["GENOME_LENGTH"]
     MIN_ITERATIONS = config["main"]["MIN_ITERATIONS"]
     MIN_FITNESS = config["main"]["MIN_FITNESS"]
     THRESHOLD = config["main"]["THRESHOLD"]
