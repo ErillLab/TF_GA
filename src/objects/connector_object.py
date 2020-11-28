@@ -187,7 +187,9 @@ class ConnectorObject(Node):
             s_dna: str,
             s_dna_len: int,
             automatic_placement_options: int,
-            is_automatic_placement_options: bool
+            is_automatic_placement_options: bool,
+            E_threshold_method: str,
+            E_threshold_value: float
     ) -> list:
         """Compute the best option to connect its nodes.
 
@@ -225,13 +227,17 @@ class ConnectorObject(Node):
             s_dna,
             s_dna_len,
             automatic_placement_options,
-            is_automatic_placement_options
+            is_automatic_placement_options,
+            E_threshold_method,
+            E_threshold_value
                 )
         possibilities_node_2 = self.node2.get_placement(
             s_dna,
             s_dna_len,
             automatic_placement_options,
-            is_automatic_placement_options
+            is_automatic_placement_options,
+            E_threshold_method,
+            E_threshold_value
                 )
         
 
@@ -316,6 +322,13 @@ class ConnectorObject(Node):
                 
                 # compute additive connector energy term
                 e_connector = np.log2(numerator / denominator)
+                
+                if E_threshold_method=="recognizers":
+                    if (possibility_1["energy"] <= E_threshold_value) or (
+                            possibility_1["energy"] <= E_threshold_value):
+                        # If one or both the binding energies of the child nodes
+                        # are non-relevant, there's no bonus from e_connector
+                        e_connector = 0
                 
                 # compute overall placement energy (connector + children)
                 energy = possibility_1["energy"] + possibility_2["energy"] + e_connector

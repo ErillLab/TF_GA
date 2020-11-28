@@ -232,7 +232,9 @@ class PssmObject(Node):
             self, s_dna: str,
             s_dna_len: int,
             automatic_placement_options: int,
-            is_automatic_placement_options: bool
+            is_automatic_placement_options: bool,
+            E_threshold_method: str,
+            E_threshold_value: float
     ) -> list:
         """Sets the pssm in the DNA sequence.
         Iterate over the whole sequence and select the best N sites
@@ -277,24 +279,32 @@ class PssmObject(Node):
 
         #for each computable position in the sequence
         for pos in range(num_binding_sites):
-            #add the position as a possible placement
+            
+            # PSSM score at that position
+            energy = self.get_score(s_dna[pos: pos + pssm_length])
+            
+            # Apply threshold if required
+            if E_threshold_method == "recognizer":
+                if energy < E_threshold_value:
+                    energy = E_threshold_value
+            
+            # Add the position as a possible placement
             possible_candidates.append(
                 {
-                    # include the position
-                    # the energy
-                    # the list of positions that this placement "blocks"
-                    # a list that is going to be used to keep track of the
+                    # It includes:
+                    # The position
+                    # The energy score
+                    # The list of positions that this placement "blocks"
+                    # A list that is going to be used to keep track of the
                     # scores of the recognizers in larger organisms
                     "position": pos + (pssm_length/2),
-                    "energy": self.get_score(
-                        s_dna[pos: pos + pssm_length]
-                    ),
+                    "energy": energy,
                     "lock_vector": [{
                         "id": self._id,
                         "position": pos,
                         "length": pssm_length
                         }],
-                    "recognizers_scores": [self.get_score(s_dna[pos: pos + pssm_length])]
+                    "recognizers_scores": [energy]
                     }
                 )
         #reverse sort the list of candidate placements based on energy
