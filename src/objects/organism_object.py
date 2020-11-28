@@ -321,7 +321,7 @@ class OrganismObject:
         # return score, blocks and blokcers in that sequence
         return node_root[0]
 
-    def get_seq_set_fitness(self, a_dna: list) -> float:
+    def get_discriminative_fitness(self, a_dna: list) -> float:
         """Return the total Fitness for an array of DNA sequences and the
         fitness method
 

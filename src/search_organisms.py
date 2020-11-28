@@ -234,17 +234,28 @@ def main():
 
                 first_organism = pair_children[j][0]  # Parent Organism
                 second_organism = pair_children[j][1]  # Chid Organism
-
-                # Compute fitness for organisms
-                p_1 = first_organism.get_seq_set_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])["score"]
-                n_1 = first_organism.get_seq_set_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])["score"]
-
-                p_2 = second_organism.get_seq_set_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])["score"]
-                n_2 = second_organism.get_seq_set_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])["score"]
-
-                # Assign fitness
-                fitness1 = p_1 - n_1
-		fitness2 = p_2 - n_2
+		
+		
+		# Boltzmannian fitness
+                if FITNESS_FUNCTION == "boltzmannian":
+                    fitness1 = first_organism.get_boltz_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
+                                                                negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
+                                                                GENOME_LENGTH)
+                    
+                    fitness2 = second_organism.get_boltz_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
+                                                                 negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
+                                                                 GENOME_LENGTH)
+		
+		# Discriminative fitness
+                elif FITNESS_FUNCTION == "discriminative":
+                    p_1 = first_organism.get_discriminative_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])["score"]
+                    n_1 = first_organism.get_discriminative_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])["score"]
+                    fitness1 =  p_1 - n_1
+                    
+                    p_2 = second_organism.get_discriminative_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])["score"]
+                    n_2 = second_organism.get_discriminative_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])["score"]
+                    fitness2 =  p_2 - n_2
+		
 		
 		
 		if MAX_NODES != None:
