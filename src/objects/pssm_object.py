@@ -291,7 +291,7 @@ class PssmObject(Node):
                         "position": pos,
                         "length": pssm_length
                         }],
-		    "recognizers_scores": [self.get_score(s_dna[pos: pos + pssm_length])]
+                    "recognizers_scores": [self.get_score(s_dna[pos: pos + pssm_length])]
                     }
                 )
         #reverse sort the list of candidate placements based on energy

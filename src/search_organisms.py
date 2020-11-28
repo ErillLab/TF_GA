@@ -239,14 +239,14 @@ def main():
                 # Boltzmannian fitness
                 if FITNESS_FUNCTION == "boltzmannian":
                     performance1 = first_organism.get_boltz_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
-                                                                negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
-                                                                GENOME_LENGTH)
+                                                                    negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
+                                                                    GENOME_LENGTH)
                     fitness1 = performance1["score"]
                     gini1 = performance1["avg_gini"]
                     
                     performance2 = second_organism.get_boltz_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
-                                                                 negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
-                                                                 GENOME_LENGTH)
+                                                                     negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
+                                                                     GENOME_LENGTH)
                     fitness2 = performance2["score"]
                     gini2 = performance2["avg_gini"]
                     
@@ -268,17 +268,20 @@ def main():
                     n_2 = negative_performance2["score"]
                     fitness2 =  p_2 - n_2
                     gini2 = positive_performance2["avg_gini"]
+                
+                else:
+                    raise Exception("Not a valid fitness function name, "
+                        + "check the configuration file.")
 
 
-                if MAX_NODES != None:
+                if MAX_NODES != None:  # Upper_bound to complexity
                     
-                    # Upper_bound to complexity
                     if first_organism.count_nodes() > MAX_NODES:
-                        print(first_organism.count_nodes(), "nodes")
+                        #print(first_organism.count_nodes(), "nodes")
                         fitness1 = -1000 * int(first_organism.count_nodes())
                     
                     if second_organism.count_nodes() > MAX_NODES:
-                        print(second_organism.count_nodes(), "nodes")
+                        #print(second_organism.count_nodes(), "nodes")
                         fitness2 = -1000 * int(second_organism.count_nodes())
                 
                 
@@ -383,13 +386,13 @@ def main():
         s_time = "{}h:{}m:{:.2f}s".format(int(_h), int(_m), _s)
         print_ln(
             (
-                "Iter: {} AN:{:.2f} AF:{:.2f} - MO: {} MF: {:.2f} MN: {} "
+                "Iter: {} AF:{:.2f} AN:{:.2f} - MO: {} MF: {:.2f} MN: {} "
                 + "MP: {:.2f} -  BO: {} BF: {:.2f} BN: {} "
                 + "BP: {:.2f} Time: {}"
             ).format(
                 iterations,  # Iter
-                mean_nodes,  # AN
                 mean_fitness,  # AF
+                mean_nodes,  # AN
                 max_organism[0]._id,  # MO
                 max_organism[1],  # MF (fitness)
                 max_organism[2],  # MN (nodes)
