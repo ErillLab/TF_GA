@@ -282,9 +282,15 @@ def main():
                         fitness2 = -1000 * int(second_organism.count_nodes())
                 
                 
-                
-                effective_fitness_1 = fitness1
-                effective_fitness_2 = fitness2
+                if INEQUALITY_PENALTY=="avg_gini":
+                    # INEQUALITY_PENALTY_PARAM acts as a penalty buffer
+                    # The higher this parameter, the less important is the effect of the Gini penalty
+                    # It's meant to work in the range [1, +inf)
+                    effective_fitness_1 = fitness1 * (INEQUALITY_PENALTY_PARAM - gini1)
+                    effective_fitness_2 = fitness2 * (INEQUALITY_PENALTY_PARAM - gini2)
+                else:
+                    effective_fitness_1 = fitness1
+                    effective_fitness_2 = fitness2
 
 
                 if (
@@ -612,6 +618,8 @@ def set_up():
     global MAX_SEQUENCES_TO_FIT_POS
     global MAX_SEQUENCES_TO_FIT_NEG
     global FITNESS_FUNCTION
+    global INEQUALITY_PENALTY
+    global INEQUALITY_PENALTY_PARAM
     global GENOME_LENGTH
     global MIN_ITERATIONS
     global MIN_FITNESS
@@ -645,6 +653,8 @@ def set_up():
     MAX_SEQUENCES_TO_FIT_POS = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
     MAX_SEQUENCES_TO_FIT_NEG = config["main"]["MAX_SEQUENCES_TO_FIT_NEG"]
     FITNESS_FUNCTION = config["main"]["FITNESS_FUNCTION"]
+    INEQUALITY_PENALTY = config["main"]["INEQUALITY_PENALTY"]
+    INEQUALITY_PENALTY_PARAM = config["main"]["INEQUALITY_PENALTY_PARAM"]
     GENOME_LENGTH = config["main"]["GENOME_LENGTH"]
     MIN_ITERATIONS = config["main"]["MIN_ITERATIONS"]
     MIN_FITNESS = config["main"]["MIN_FITNESS"]
