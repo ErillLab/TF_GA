@@ -381,7 +381,6 @@ def main():
         gini_fitness = gini_RSV(a_fitness)
         # Mean number of nodes per organism in the population
         mean_nodes = np.mean(a_nodes)
-        print(a_fitness)
 
         # Show IDs of final array
         # print("-"*10)

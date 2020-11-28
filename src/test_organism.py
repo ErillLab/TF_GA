@@ -21,17 +21,16 @@ def main():
         config["main"]["DATASET_BASE_PATH_DIR"]
         + config["main"]["NEGATIVE_FILENAME"]
     )
-    complexity_factor = config["main"]["COMPLEXITY_FACTOR"]
     max_sequences_to_fit_pos = config["main"]["MAX_SEQUENCES_TO_FIT_POS"]
     max_sequences_to_fit_neg = config["main"]["MAX_SEQUENCES_TO_FIT_NEG"]
 
     input_organisms_path = config["main"]["INPUT_FILENAME"]
-    mean_nodes = 3.0
-    mean_fitness = 150
     positive_dataset = read_fasta_file(posititve_path)
     positive_dataset.sort()
     negative_dataset = read_fasta_file(negative_path)
     print("{} {}".format(len(positive_dataset), len(negative_dataset)))
+    
+    genome_length = config["main"]["GENOME_LENGTH"]
 
     organism_factory = OrganismFactory(
         config["organism"],
@@ -47,25 +46,35 @@ def main():
 
         # org.print()
         nodes = org.count_nodes()
-
-        p_1 = org.get_seq_set_fitness(
-            positive_dataset[:max_sequences_to_fit_pos]
-        )
-        n_1 = org.get_seq_set_fitness(
-            negative_dataset[:max_sequences_to_fit_neg]
-        )
-        # p1 = 20
-        # n1 = org.getSeqSetFitness(negativeDataset[31:32])
-        c_1 = org.get_complexity(mean_nodes, mean_fitness)
-
-        # Score
-        fitness = p_1 - n_1
-        effective_fitness = fitness - complexity_factor * c_1
+        
+        # Boltzmannian fitness
+        performance1 = org.get_boltz_fitness(positive_dataset[:max_sequences_to_fit_pos],
+                                             negative_dataset[:max_sequences_to_fit_neg],
+                                             genome_length)
+        boltz_fitness = performance1["score"]
+        
+        # Gini coeff
+        gini_coeff = performance1["avg_gini"]
+        
+        # Discriminative fitness
+        P = org.get_discriminative_fitness(positive_dataset[:max_sequences_to_fit_pos])["score"]
+        N = org.get_discriminative_fitness(negative_dataset[:max_sequences_to_fit_neg])["score"]
+        discr_fitness =  P - N
+        
+        
         print(
             (
-                "ORG {} N: {:.2f} P: {:.2f} N: {:.2f} C: {:.2f} F: {:.2f}"
-                + " EF: {:.2f}\n"
-            ).format(org._id, nodes, p_1, n_1, c_1, fitness, effective_fitness)
+                "Org {} Nodes: {:.2f} GiniPSSMs: {:.2f} P: {:.2f} N: {:.2f}"
+                + " DiscrF: {:.2f} BoltzF: {:.2f}\n"
+            ).format(
+                org._id,  # "Org"
+                nodes,  # "Nodes"
+                gini_coeff, # GiniPSSMs
+                P,  # "P"
+                N,  # "N"
+                discr_fitness,  # "DiscrF"
+                boltz_fitness,  # "BoltzF"
+                )
         )
 
         export_organism(
