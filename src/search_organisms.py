@@ -373,9 +373,15 @@ def main():
 
             # END FOR i
 
-        # Compute mean fitness of the organisms
+        # Mean fitness in the population
         mean_fitness = np.mean(a_fitness)
+        # Standard deviation of fitness in the population
+        standard_dev_fitness = np.std(a_fitness)
+        # Inequality of fitness in the population (measured with the Gini coefficient)
+        gini_fitness = gini_RSV(a_fitness)
+        # Mean number of nodes per organism in the population
         mean_nodes = np.mean(a_nodes)
+        print(a_fitness)
 
         # Show IDs of final array
         # print("-"*10)
@@ -384,21 +390,23 @@ def main():
         s_time = "{}h:{}m:{:.2f}s".format(int(_h), int(_m), _s)
         print_ln(
             (
-                "Iter: {} AF:{:.2f} AN:{:.2f} - MO: {} MF: {:.2f} MN: {} "
-                + "MP: {:.2f} -  BO: {} BF: {:.2f} BN: {} "
-                + "BP: {:.2f} Time: {}"
+                "Iter: {} AF:{:.2f} SDF:{:.2f} GF:{:.2f} AN:{:.2f}"
+                + " - MO: {} MF: {:.2f} MN: {} MP: {:.2f}"
+                + " -  BO: {} BF: {:.2f} BN: {} BP: {:.2f} Time: {}"
             ).format(
-                iterations,  # Iter
-                mean_fitness,  # AF
-                mean_nodes,  # AN
-                max_organism[0]._id,  # MO
-                max_organism[1],  # MF (fitness)
-                max_organism[2],  # MN (nodes)
-                max_organism[3],  # MP (penalty)
-                best_organism[0]._id,  # BO
-                best_organism[1],  # BF (fitness)
-                best_organism[2],  # BN (nodes)
-                best_organism[3],  # BP (penalty)
+                iterations,  # "Iter"
+                mean_fitness,  # "AF"
+                standard_dev_fitness,  # "SDF"
+                gini_fitness,  # "GF"
+                mean_nodes,  # "AN"
+                max_organism[0]._id,  # "MO"
+                max_organism[1],  # "MF" (fitness)
+                max_organism[2],  # "MN" (nodes)
+                max_organism[3],  # "MP" (penalty)
+                best_organism[0]._id,  # "BO"
+                best_organism[1],  # "BF" (fitness)
+                best_organism[2],  # "BN" (nodes)
+                best_organism[3],  # "BP" (penalty)
                 s_time,  # Time
             ),
             RESULT_BASE_PATH_DIR + OUTPUT_FILENAME,
@@ -767,6 +775,50 @@ def print_ln(string: str, name_file: str) -> None:
     _f = open(name_file, "a+")
     _f.write(string + "\n")
     _f.close()
+
+
+def gini_RSV(values_for_each_class):
+    '''
+    Gini coefficient, modified in order to be alble to deal with negative
+    values as in "Inequality measures and the issue of negative incomes"
+    (Raffinetti, Siletti, Vernizzi)
+
+    Parameters
+    ----------
+    values_for_each_class : array-like object
+        Values associated to each class.
+        They don't need to be already sorted and/or normalized.
+        They can also be negative.
+
+    Returns
+    -------
+    giniRSV : float
+        Ranges from 0 (perfect equality) to 1 (maximal inequality).
+
+    '''
+    
+    N = len(values_for_each_class)
+    if N==1:
+        return 0  # return 0 inequality when a single number is the input
+    
+    numerator = 0
+    for i in values_for_each_class:
+        for j in values_for_each_class:
+            numerator += abs(i - j)
+    
+    pos = 0  # sum over the positive values
+    neg = 0  # sum over the negative values (in absolute value)
+    for x in values_for_each_class:
+        if x > 0:
+            pos += x
+        else:
+            neg += -x
+    
+    mu_RSV = (N - 1) * (pos + neg) / N**2
+    denominator = 2 * N**2 * mu_RSV
+    giniRSV = numerator / denominator
+    
+    return giniRSV
 
 
 # Entry point to app execution
