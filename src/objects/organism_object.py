@@ -354,9 +354,9 @@ class OrganismObject:
             
             if len(pssm_scores) > 0:
                 gini = gini_RSV(pssm_scores)  # Gini coefficient
+                ginis.append(gini)
 
             scores.append(energy)
-            ginis.append(gini)
         
         if self.cumulative_fit_method == "sum":
             # Compute fitness score as sum over the positive scores
@@ -367,7 +367,10 @@ class OrganismObject:
             score = np.mean(scores)
         
         # Compute the average Gini coefficient as the geometric mean
-        avg_gini = np.prod(ginis) ** (1/len(ginis))
+        if len(ginis) == 0:  # Case where no placement was available for any sequence
+            avg_gini = 1  # maximum penalty is arbitrarily assigned
+        else:
+            avg_gini = np.prod(ginis) ** (1/len(ginis))  # geometric mean
         
         return {"score": score, "avg_gini": avg_gini}
 
@@ -402,12 +405,15 @@ class OrganismObject:
             pssm_scores = sfit["recognizers_scores"]  # PSSMs scores
             if len(pssm_scores) > 0:
                 gini = gini_RSV(pssm_scores)  # Gini coefficient
+                ginis.append(gini)
 
             pos_values.append(boltz_exp)
-            ginis.append(gini)
         
         # Compute the average Gini coefficient as the geometric mean
-        avg_gini = np.prod(ginis) ** (1/len(ginis))
+        if len(ginis) == 0:  # Case where no placement was available for any sequence
+            avg_gini = 1  # maximum penalty is arbitrarily assigned
+        else:
+            avg_gini = np.prod(ginis) ** (1/len(ginis))  # geometric mean
         
         # Values onthe negative set
         neg_values = []
