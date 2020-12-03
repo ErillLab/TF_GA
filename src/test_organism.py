@@ -6,7 +6,6 @@ from objects.organism_factory import OrganismFactory
 
 CONFIG_FILE = "config.json"
 
-
 def main():
     """Main execution for the test organisms
 
@@ -28,10 +27,10 @@ def main():
     positive_dataset = read_fasta_file(posititve_path)
     positive_dataset.sort()
     negative_dataset = read_fasta_file(negative_path)
-    print("{} {}".format(len(positive_dataset), len(negative_dataset)))
+    #print("{} {}".format(len(positive_dataset), len(negative_dataset)))
     
     genome_length = config["main"]["GENOME_LENGTH"]
-
+    
     organism_factory = OrganismFactory(
         config["organism"],
         config["organismFactory"],
@@ -53,12 +52,14 @@ def main():
                                              genome_length)
         boltz_fitness = performance1["score"]
         
-        # Gini coeff
+        # Gini coefficient
         gini_coeff = performance1["avg_gini"]
         
         # Discriminative fitness
         P = org.get_discriminative_fitness(positive_dataset[:max_sequences_to_fit_pos])["score"]
+        
         N = org.get_discriminative_fitness(negative_dataset[:max_sequences_to_fit_neg])["score"]
+        
         discr_fitness =  P - N
         
         
@@ -76,7 +77,10 @@ def main():
                 boltz_fitness,  # "BoltzF"
                 )
         )
-
+        
+        
+        
+        
         export_organism(
             org,
             positive_dataset,
@@ -100,9 +104,11 @@ def main():
             ),
             organism_factory,
         )
-
+        
 
 if __name__ == "__main__":
-
+    
     # TODO: Add the profiler here to improve the fitness calculation performance
+    
     main()
+

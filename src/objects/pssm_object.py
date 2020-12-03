@@ -52,6 +52,10 @@ class PssmObject(Node):
         self.placement_options = config["PLACEMENT_OPTIONS"]
         self.upper_print_probability = config["UPPER_PRINT_PROBABILITY"]
         self.scan_reverse_complement = config["SCAN_REVERSE_COMPLEMENT"]
+        
+        self.energy_threshold_method = config["ENERGY_THRESHOLD_METHOD"]
+        self.energy_threshold_value = config["ENERGY_THRESHOLD_PARAM"]
+        
         # It first calculates PSSM Matrix based on  pwm
         self.recalculate_pssm()
 
@@ -232,9 +236,7 @@ class PssmObject(Node):
             self, s_dna: str,
             s_dna_len: int,
             automatic_placement_options: int,
-            is_automatic_placement_options: bool,
-            E_threshold_method: str,
-            E_threshold_value: float
+            is_automatic_placement_options: bool
     ) -> list:
         """Sets the pssm in the DNA sequence.
         Iterate over the whole sequence and select the best N sites
@@ -276,6 +278,10 @@ class PssmObject(Node):
         possible_candidates = []
         pssm_length = self.length
         num_binding_sites = s_dna_len - pssm_length
+        
+        # Set energy threshold method and value
+        E_threshold_method = self.energy_threshold_method
+        E_threshold_value = self.energy_threshold_value
 
         #for each computable position in the sequence
         for pos in range(num_binding_sites):

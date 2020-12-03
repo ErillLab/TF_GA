@@ -238,17 +238,13 @@ def main():
                 if FITNESS_FUNCTION == "boltzmannian":
                     performance1 = first_organism.get_boltz_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
                                                                     negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
-                                                                    GENOME_LENGTH,
-                                                                    ENERGY_THRESHOLD_METHOD,
-                                                                    ENERGY_THRESHOLD_PARAM)
+                                                                    GENOME_LENGTH)
                     fitness1 = performance1["score"]
                     gini1 = performance1["avg_gini"]
                     
                     performance2 = second_organism.get_boltz_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
                                                                      negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
-                                                                     GENOME_LENGTH,
-                                                                     ENERGY_THRESHOLD_METHOD,
-                                                                     ENERGY_THRESHOLD_PARAM)
+                                                                     GENOME_LENGTH)
                     fitness2 = performance2["score"]
                     gini2 = performance2["avg_gini"]
                     
@@ -257,23 +253,15 @@ def main():
                 
                 # Discriminative fitness
                 elif FITNESS_FUNCTION == "discriminative":
-                    positive_performance1 = first_organism.get_discriminative_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
-                                                                                      ENERGY_THRESHOLD_METHOD,
-                                                                                      ENERGY_THRESHOLD_PARAM)
-                    negative_performance1 = first_organism.get_discriminative_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
-                                                                                      ENERGY_THRESHOLD_METHOD,
-                                                                                      ENERGY_THRESHOLD_PARAM)
+                    positive_performance1 = first_organism.get_discriminative_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])
+                    negative_performance1 = first_organism.get_discriminative_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])
                     p_1 = positive_performance1["score"]
                     n_1 = negative_performance1["score"]
                     fitness1 =  p_1 - n_1
                     gini1 = positive_performance1["avg_gini"]
                     
-                    positive_performance2 = second_organism.get_discriminative_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS],
-                                                                                       ENERGY_THRESHOLD_METHOD,
-                                                                                       ENERGY_THRESHOLD_PARAM)
-                    negative_performance2 = second_organism.get_discriminative_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG],
-                                                                                       ENERGY_THRESHOLD_METHOD,
-                                                                                       ENERGY_THRESHOLD_PARAM)
+                    positive_performance2 = second_organism.get_discriminative_fitness(positive_dataset[:MAX_SEQUENCES_TO_FIT_POS])
+                    negative_performance2 = second_organism.get_discriminative_fitness(negative_dataset[:MAX_SEQUENCES_TO_FIT_NEG])
                     p_2 = positive_performance2["score"]
                     n_2 = negative_performance2["score"]
                     fitness2 =  p_2 - n_2
@@ -425,7 +413,7 @@ def main():
 
         # Print against a random positive sequence
         random.shuffle(positive_dataset)
-        print(max_organism[0].print_result(positive_dataset[0],ENERGY_THRESHOLD_METHOD, ENERGY_THRESHOLD_PARAM))
+        print(max_organism[0].print_result(positive_dataset[0]))
 
         # Export organism if new best organism
         if changed_best_score:
@@ -502,7 +490,7 @@ def export_organism(
     results_file = "{}{}_results.txt".format(RESULT_BASE_PATH_DIR, filename)
 
     organism.export(organism_file)
-    organism.export_results(dataset, results_file, ENERGY_THRESHOLD_METHOD, ENERGY_THRESHOLD_PARAM)
+    organism.export_results(dataset, results_file)
     factory.export_organisms([organism], organism_file_json)
 
 
@@ -641,8 +629,6 @@ def set_up():
     global GENOME_LENGTH
     global INEQUALITY_PENALTY_METHOD
     global INEQUALITY_PENALTY_PARAM
-    global ENERGY_THRESHOLD_METHOD
-    global ENERGY_THRESHOLD_PARAM
     global MIN_ITERATIONS
     global MIN_FITNESS
     global THRESHOLD
@@ -678,8 +664,6 @@ def set_up():
     GENOME_LENGTH = config["main"]["GENOME_LENGTH"]
     INEQUALITY_PENALTY_METHOD = config["main"]["INEQUALITY_PENALTY_METHOD"]
     INEQUALITY_PENALTY_PARAM = config["main"]["INEQUALITY_PENALTY_PARAM"]
-    ENERGY_THRESHOLD_METHOD = config["main"]["ENERGY_THRESHOLD_METHOD"]
-    ENERGY_THRESHOLD_PARAM = config["main"]["ENERGY_THRESHOLD_PARAM"]
     MIN_ITERATIONS = config["main"]["MIN_ITERATIONS"]
     MIN_FITNESS = config["main"]["MIN_FITNESS"]
     THRESHOLD = config["main"]["THRESHOLD"]

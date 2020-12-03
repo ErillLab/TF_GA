@@ -43,6 +43,15 @@ class OrganismFactory:
         self.conf_org = conf_org
         self.conf_con = conf_con
         self.conf_pssm = conf_pssm
+        
+        # Add ENERGY_THRESHOLD_METHOD and ENERGY_THRESHOLD_PARAM from
+        # conf_org to conf_con and conf_pssm
+        self.conf_con["ENERGY_THRESHOLD_METHOD"] = conf_org["ENERGY_THRESHOLD_METHOD"]
+        self.conf_pssm["ENERGY_THRESHOLD_METHOD"] = conf_org["ENERGY_THRESHOLD_METHOD"]
+        
+        self.conf_con["ENERGY_THRESHOLD_PARAM"] = conf_org["ENERGY_THRESHOLD_PARAM"]
+        self.conf_pssm["ENERGY_THRESHOLD_PARAM"] = conf_org["ENERGY_THRESHOLD_PARAM"]
+        
 
     def get_id(self) -> int:
         """Gives a new ID for an organism

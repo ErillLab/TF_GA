@@ -75,6 +75,10 @@ class OrganismObject:
         self.num_recognizers = 0
 
         self.cumulative_fit_method = conf["CUMULATIVE_FIT_METHOD"]
+        
+        self.energy_threshold_method = conf["ENERGY_THRESHOLD_METHOD"]
+        self.energy_threshold_value = conf["ENERGY_THRESHOLD_PARAM"]
+        
         self.mutate_probability_substitute_pssm = conf[
             "MUTATE_PROBABILITY_SUBSTITUTE_PSSM"
         ]
@@ -250,8 +254,7 @@ class OrganismObject:
 
         return base_penalty + extra_penalty
 
-    def get_seq_fitness(self, s_dna: str, E_threshold_method,
-                        E_threshold_value) -> dict:
+    def get_seq_fitness(self, s_dna: str) -> dict:
         """Return the fitness of the organism for a given DNA sequence
 
         Args:
@@ -303,6 +306,10 @@ class OrganismObject:
         num_pssm = (self.count_nodes() - 1) / 2 + 1
 
         automatic_placement_options = int((self.max_pssm_length + 1) * num_pssm)
+        
+        # Set energy threshold method and value
+        E_threshold_method = self.energy_threshold_method
+        E_threshold_value = self.energy_threshold_value
 
         # call recursively to get the list of best placement options for 
         # the organism (root node)
@@ -310,9 +317,7 @@ class OrganismObject:
             s_dna,
             len(s_dna),
             automatic_placement_options,
-            self.is_automatic_placement_options,
-            E_threshold_method,
-            E_threshold_value
+            self.is_automatic_placement_options
                 )
 
         # handle the case in which no viable placement options have been
@@ -334,7 +339,7 @@ class OrganismObject:
         # return score, blocks and blokcers and PSSMs scores in that sequence
         return node_root[0]
 
-    def get_discriminative_fitness(self, a_dna: list, E_threshold_method, E_threshold_value) -> float:
+    def get_discriminative_fitness(self, a_dna: list) -> float:
         """Return the total Fitness for an array of DNA sequences and the
         fitness method
 
@@ -348,7 +353,7 @@ class OrganismObject:
         scores = []
         ginis = []
         for s_dna in a_dna:
-            sfit = self.get_seq_fitness(s_dna, E_threshold_method, E_threshold_value)
+            sfit = self.get_seq_fitness(s_dna)
             energy = sfit["energy"]  # energy
             pssm_scores = sfit["recognizers_scores"]  # PSSMs scores
             
@@ -375,8 +380,7 @@ class OrganismObject:
         return {"score": score, "avg_gini": avg_gini}
 
     def get_boltz_fitness(self, pos_dataset: list, neg_dataset: list,
-                          genome_length: int, E_threshold_method: str,
-                          E_threshold_value: float) -> float:
+                          genome_length: int) -> float:
         """Returns the organism's fitness, defined as the probability that the regulator binds a
         positive sequence. All the binding energies are turned into probabilities according to a
         Boltzmannian distribution. The probability of binding a particular sequence, given the binding
@@ -400,7 +404,7 @@ class OrganismObject:
         pos_values = []
         ginis = []
         for s_dna in pos_dataset:
-            sfit = self.get_seq_fitness(s_dna, E_threshold_method, E_threshold_value)
+            sfit = self.get_seq_fitness(s_dna)
             boltz_exp = np.e**sfit["energy"]  # exp(energy)
             pssm_scores = sfit["recognizers_scores"]  # PSSMs scores
             if len(pssm_scores) > 0:
@@ -419,7 +423,7 @@ class OrganismObject:
         neg_values = []
         neg_lengths = []
         for s_dna in neg_dataset:
-            sfit = self.get_seq_fitness(s_dna, E_threshold_method, E_threshold_value)
+            sfit = self.get_seq_fitness(s_dna)
             boltz_exp = np.e**sfit["energy"]  # exp(energy)
             neg_values.append(boltz_exp)
             neg_lengths.append(len(s_dna))
@@ -519,7 +523,7 @@ class OrganismObject:
         organism_file.write("\n")
         organism_file.close()
 
-    def export_results(self, a_dna: list, filename: str, E_threshold_method, E_threshold_value) -> None:
+    def export_results(self, a_dna: list, filename: str) -> None:
         """Exports all DNA sequences organism binding to a file
 
         Args:
@@ -538,7 +542,7 @@ class OrganismObject:
         for s_dna in a_dna:
 
             # call fitness evaluation for sequence
-            sfit = self.get_seq_fitness(s_dna.lower(), E_threshold_method, E_threshold_value)
+            sfit = self.get_seq_fitness(s_dna.lower())
 
             # write out the sequence
             results_file.write("\n{}\n".format(s_dna))
@@ -566,7 +570,7 @@ class OrganismObject:
 
         results_file.close()
 
-    def print_result(self, s_dna: str, E_threshold_method, E_threshold_value) -> str:
+    def print_result(self, s_dna: str) -> str:
         """Prints the results of s_dna binding sites to stdout
 
         Args:
@@ -579,7 +583,7 @@ class OrganismObject:
         s_dna = s_dna.lower()
 
         # call fitness evaluation for sequence
-        sfit = self.get_seq_fitness(s_dna.lower(), E_threshold_method, E_threshold_value)
+        sfit = self.get_seq_fitness(s_dna.lower())
 
         # create an empy positions map
         map_positions = "-" * len(s_dna)

@@ -68,6 +68,8 @@ class ConnectorObject(Node):
         self.mutate_variance_sigma = config["MUTATE_VARIANCE_SIGMA"]
         self.mutate_variance_mu = config["MUTATE_VARIANCE_MU"]
         self.placement_options = config["PLACEMENT_OPTIONS"]
+        self.energy_threshold_method = config["ENERGY_THRESHOLD_METHOD"]
+        self.energy_threshold_value = config["ENERGY_THRESHOLD_PARAM"]
 
         self.node1 = node_1
         self.node2 = node_2
@@ -188,8 +190,6 @@ class ConnectorObject(Node):
             s_dna_len: int,
             automatic_placement_options: int,
             is_automatic_placement_options: bool,
-            E_threshold_method: str,
-            E_threshold_value: float
     ) -> list:
         """Compute the best option to connect its nodes.
 
@@ -227,19 +227,18 @@ class ConnectorObject(Node):
             s_dna,
             s_dna_len,
             automatic_placement_options,
-            is_automatic_placement_options,
-            E_threshold_method,
-            E_threshold_value
+            is_automatic_placement_options
                 )
         possibilities_node_2 = self.node2.get_placement(
             s_dna,
             s_dna_len,
             automatic_placement_options,
-            is_automatic_placement_options,
-            E_threshold_method,
-            E_threshold_value
+            is_automatic_placement_options
                 )
         
+        # Set energy threshold method and value
+        E_threshold_method = self.energy_threshold_method
+        E_threshold_value = self.energy_threshold_value
 
         # for all possible daughter placement combinations
         for possibility_1 in possibilities_node_1:
@@ -323,12 +322,15 @@ class ConnectorObject(Node):
                 # compute additive connector energy term
                 e_connector = np.log2(numerator / denominator)
                 
-                if E_threshold_method=="recognizers":
-                    if (possibility_1["energy"] <= E_threshold_value) or (
-                            possibility_1["energy"] <= E_threshold_value):
-                        # If one or both the binding energies of the child nodes
-                        # are non-relevant, there's no bonus from e_connector
+                if E_threshold_method=="recognizer":
+                    # If one or both the binding energies of the child nodes
+                    # are non-relevant, there's no bonus from e_connector
+                    if possibility_1["energy"] <= E_threshold_value:
                         e_connector = 0
+                        possibility_1["energy"] = E_threshold_value
+                    if possibility_2["energy"] <= E_threshold_value:
+                        e_connector = 0
+                        possibility_2["energy"] = E_threshold_value
                 
                 # compute overall placement energy (connector + children)
                 energy = possibility_1["energy"] + possibility_2["energy"] + e_connector
